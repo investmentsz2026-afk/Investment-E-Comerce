@@ -12,7 +12,7 @@ import { ease } from "@/lib/motion";
 import { colorInStock, findVariant, isSoldOut, sizeInStock } from "@/lib/variant-stock";
 import { Reveal } from "@/components/motion/reveal";
 import { ProductCard } from "@/components/product/product-card";
-import { useNotice } from "@/components/feedback/notice-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useCart } from "@/components/cart/cart-provider";
 
 interface ProductDetailViewProps {
@@ -22,7 +22,8 @@ interface ProductDetailViewProps {
 }
 
 export function ProductDetailView({ product, related, userRole }: ProductDetailViewProps) {
-  const { announcePending } = useNotice();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorited = isFavorite(product.slug);
   const { addItem, pendingVariantId } = useCart();
 
   // Image gallery state
@@ -404,11 +405,22 @@ export function ProductDetailView({ product, related, userRole }: ProductDetailV
               </button>
               <button
                 type="button"
-                onClick={() => announcePending("favorites")}
-                className="flex size-14 items-center justify-center border border-ink/20 text-ink transition-colors duration-300 hover:border-ink"
-                aria-label="Agregar a favoritos"
+                data-testid="product-detail-favorite-button"
+                aria-pressed={favorited}
+                onClick={() => void toggleFavorite(product.slug, product.name)}
+                className={cn(
+                  "flex size-14 items-center justify-center border transition-colors duration-300",
+                  favorited
+                    ? "border-cochinilla bg-cochinilla text-paper hover:bg-cochinilla-deep"
+                    : "border-ink/20 text-ink hover:border-ink",
+                )}
+                aria-label={
+                  favorited
+                    ? `Quitar ${product.name} de favoritos`
+                    : `Guardar ${product.name} en favoritos`
+                }
               >
-                <Heart className="size-5" />
+                <Heart className={cn("size-5", favorited && "fill-current")} />
               </button>
             </div>
 
@@ -549,9 +561,7 @@ export function ProductDetailView({ product, related, userRole }: ProductDetailV
           <div className="mt-10 grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:grid-cols-3 lg:gap-x-6 xl:grid-cols-4">
             {related.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.06}>
-                <Link href={`/producto/${p.slug}`} className="block">
-                  <ProductCard product={p} eager={i < 2} />
-                </Link>
+                <ProductCard product={p} eager={i < 2} />
               </Reveal>
             ))}
           </div>

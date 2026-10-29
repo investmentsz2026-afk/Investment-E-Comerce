@@ -10,7 +10,7 @@ import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/brand/logo";
 import { ActionLink } from "@/components/ui/action-link";
 import { Marquee } from "@/components/motion/marquee";
-import { useNotice } from "@/components/feedback/notice-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useCart } from "@/components/cart/cart-provider";
 import { useEscapeKey } from "@/hooks/use-overlay";
 import { cn } from "@/lib/utils";
@@ -49,8 +49,9 @@ export function SiteHeader() {
 
   // Solo la portada tiene un hero oscuro bajo el header; en el resto de rutas el header es sólido desde el inicio.
   const overHero = pathname === "/";
-  const { announcePending } = useNotice();
+  const { count: favoritesCount, snapshot: favSnapshot } = useFavorites();
   const { cart, openDrawer } = useCart();
+  const favoritesHref = favSnapshot.isAuthenticated ? "/cuenta/favoritos" : "/favoritos";
 
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -172,9 +173,26 @@ export function SiteHeader() {
               >
                 <UserRound className="size-[1.15rem]" aria-hidden />
               </Link>
-              <HeaderIcon label="Favoritos (próximamente)" onClick={() => announcePending("favorites")} className="hidden lg:flex">
-                <Heart className="size-[1.15rem]" aria-hidden />
-              </HeaderIcon>
+              <Link
+                href={favoritesHref}
+                data-testid="header-favorites-link"
+                aria-label={`Favoritos, ${favoritesCount} ${favoritesCount === 1 ? "prenda" : "prendas"}`}
+                title={`Favoritos (${favoritesCount})`}
+                className="hidden lg:flex size-11 items-center justify-center rounded-full transition-[transform,opacity] duration-300 ease-luxe hover:opacity-70 active:scale-90"
+              >
+                <span className="relative">
+                  <Heart
+                    className={cn("size-[1.15rem]", favoritesCount > 0 && "fill-cochinilla text-cochinilla")}
+                    aria-hidden
+                  />
+                  <span
+                    data-testid="header-favorites-count"
+                    className="absolute -right-1.5 -top-1 flex min-w-3.5 h-3.5 items-center justify-center rounded-full bg-cochinilla px-1 text-[0.5rem] font-semibold text-paper tabular-nums"
+                  >
+                    {favoritesCount}
+                  </span>
+                </span>
+              </Link>
               <HeaderIcon
                 label={`Bolsa de compras, ${cart.totalUnits} ${cart.totalUnits === 1 ? "producto" : "productos"}`}
                 onClick={openDrawer}

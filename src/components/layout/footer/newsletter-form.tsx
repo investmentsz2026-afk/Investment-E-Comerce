@@ -1,28 +1,42 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, useTransition, type FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { ease } from "@/lib/motion";
+import { subscribeNewsletterAction } from "@/server/actions/favorites";
 
-type Status = "idle" | "invalid" | "pending";
+type Status = "idle" | "invalid" | "success" | "error";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/**
- * Formulario visual de newsletter.
- * Valida el correo en el cliente, pero NO lo envía ni lo almacena:
- * la suscripción real se implementará en una fase futura y así se comunica.
- */
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+  const [serverMessage, setServerMessage] = useState<string>("");
+  const [isPending, startTransition] = useTransition();
   const inputId = useId();
   const messageId = useId();
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    setStatus(EMAIL_PATTERN.test(email.trim()) ? "pending" : "invalid");
+    const cleanEmail = email.trim();
+    if (!EMAIL_PATTERN.test(cleanEmail)) {
+      setStatus("invalid");
+      return;
+    }
+
+    startTransition(async () => {
+      const res = await subscribeNewsletterAction({ email: cleanEmail });
+      if (res.success) {
+        setStatus("success");
+        setServerMessage("¡Gracias por suscribirte! Recibirás nuestras novedades y lanzamientos de temporada.");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setServerMessage(res.error ?? "No se pudo procesar tu suscripción. Intenta nuevamente.");
+      }
+    });
   };
 
   return (
@@ -37,20 +51,39 @@ export function NewsletterForm() {
           inputMode="email"
           autoComplete="email"
           value={email}
+          disabled={isPending}
           onChange={(e) => {
             setEmail(e.target.value);
             if (status !== "idle") setStatus("idle");
           }}
           placeholder="tu@correo.com"
-          aria-invalid={status === "invalid"}
-          className="min-w-0 flex-1 bg-transparent py-2 text-lg text-ink outline-none placeholder:text-taupe-300 focus-visible:outline-none"
+          aria-invalid={status === "invalid" || status === "error"}
+          className="min-w-0 flex-1 bg-transparent py-2 text-lg text-ink outline-none placeholder:text-taupe-300 focus-visible:outline-none disabled:opacity-50"
         />
         <button
           type="submit"
-          className="group/send flex h-11 shrink-0 items-center gap-2 bg-ink px-5 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors duration-300 hover:bg-cochinilla"
+          disabled={isPending}
+          className="group/send flex h-11 shrink-0 items-center gap-2 bg-ink px-5 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors duration-300 hover:bg-cochinilla disabled:opacity-50"
         >
-          Suscribirme
-          <ArrowRight className="size-3.5 transition-transform duration-500 ease-luxe group-hover/send:translate-x-1" aria-hidden />
+          {isPending ? (
+            <>
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              Enviando...
+            </>
+          ) : status === "success" ? (
+            <>
+              <Check className="size-3.5" aria-hidden />
+              Suscrito
+            </>
+          ) : (
+            <>
+              Suscribirme
+              <ArrowRight
+                className="size-3.5 transition-transform duration-500 ease-luxe group-hover/send:translate-x-1"
+                aria-hidden
+              />
+            </>
+          )}
         </button>
       </div>
 
@@ -60,14 +93,17 @@ export function NewsletterForm() {
             <motion.p key="invalid" {...messageMotion} className="text-cochinilla">
               Ingresa un correo electrónico válido.
             </motion.p>
-          ) : status === "pending" ? (
-            <motion.p key="pending" {...messageMotion} className="text-taupe-600">
-              Gracias por tu interés. La suscripción al newsletter se habilitará próximamente; por ahora no hemos
-              registrado tu correo.
+          ) : status === "success" ? (
+            <motion.p key="success" {...messageMotion} className="text-emerald-800 font-medium">
+              {serverMessage}
+            </motion.p>
+          ) : status === "error" ? (
+            <motion.p key="error" {...messageMotion} className="text-cochinilla">
+              {serverMessage}
             </motion.p>
           ) : (
             <motion.p key="idle" {...messageMotion} className="text-taupe-500">
-              Novedades, lanzamientos y beneficios exclusivos. Sin spam.
+              Novedades, lanzamientos de colección y beneficios exclusivos. Sin spam.
             </motion.p>
           )}
         </AnimatePresence>

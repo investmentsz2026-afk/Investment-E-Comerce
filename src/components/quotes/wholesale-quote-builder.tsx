@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import {
   Loader2,
   ShoppingBag,
   Sparkles,
+  Building2,
 } from "lucide-react";
 import { submitWholesaleQuoteAction } from "@/server/actions/quotes";
 import { formatPEN } from "@/lib/format";
@@ -52,6 +53,64 @@ interface WholesaleQuoteBuilderProps {
   initialLines?: InitialQuoteLine[];
   defaultDeliveryCity?: string;
   preselectedProductSlug?: string;
+  isUserAuthorized?: boolean;
+  isAuthenticated?: boolean;
+  userRole?: string | null;
+}
+
+const QUOTE_DRAFT_KEY = "investments_quote_draft_v1";
+
+function getInitialDraft(
+  variantInfoMap: Map<number, unknown>,
+  initialLines: InitialQuoteLine[],
+  defaultCity: string,
+) {
+  if (initialLines.length > 0) {
+    return {
+      lines: initialLines
+        .filter((l) => variantInfoMap.has(l.variantId))
+        .map((l) => ({
+          variantId: l.variantId,
+          quantity: Math.max(1, l.quantity),
+          itemNotes: l.itemNotes ?? "",
+        })),
+      deliveryCity: defaultCity,
+      commercialNeeds: "",
+      customerNotes: "",
+    };
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem(QUOTE_DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const validLines = Array.isArray(parsed?.lines)
+          ? parsed.lines.filter((l: { variantId: number }) => variantInfoMap.has(l.variantId))
+          : [];
+        return {
+          lines: validLines,
+          deliveryCity:
+            typeof parsed?.deliveryCity === "string" && parsed.deliveryCity
+              ? parsed.deliveryCity
+              : defaultCity,
+          commercialNeeds:
+            typeof parsed?.commercialNeeds === "string" ? parsed.commercialNeeds : "",
+          customerNotes:
+            typeof parsed?.customerNotes === "string" ? parsed.customerNotes : "",
+        };
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return {
+    lines: [],
+    deliveryCity: defaultCity,
+    commercialNeeds: "",
+    customerNotes: "",
+  };
 }
 
 export function WholesaleQuoteBuilder({
@@ -59,6 +118,9 @@ export function WholesaleQuoteBuilder({
   initialLines = [],
   defaultDeliveryCity = "Lima",
   preselectedProductSlug,
+  isUserAuthorized = false,
+  isAuthenticated = false,
+  userRole = null,
 }: WholesaleQuoteBuilderProps) {
   const router = useRouter();
 
@@ -101,27 +163,45 @@ export function WholesaleQuoteBuilder({
   );
   const [addNotes, setAddNotes] = useState<string>("");
 
-  const [lines, setLines] = useState<
-    Array<{ variantId: number; quantity: number; itemNotes: string }>
-  >(() =>
-    initialLines
-      .filter((l) => variantInfoMap.has(l.variantId))
-      .map((l) => ({
-        variantId: l.variantId,
-        quantity: Math.max(1, l.quantity),
-        itemNotes: l.itemNotes ?? "",
-      })),
+  const [initialDraft] = useState(() =>
+    getInitialDraft(variantInfoMap, initialLines, defaultDeliveryCity),
   );
 
-  const [deliveryCity, setDeliveryCity] = useState(defaultDeliveryCity);
-  const [commercialNeeds, setCommercialNeeds] = useState("");
-  const [customerNotes, setCustomerNotes] = useState("");
+  const [lines, setLines] = useState<
+    Array<{ variantId: number; quantity: number; itemNotes: string }>
+  >(initialDraft.lines);
+  const [deliveryCity, setDeliveryCity] = useState(initialDraft.deliveryCity);
+  const [commercialNeeds, setCommercialNeeds] = useState(initialDraft.commercialNeeds);
+  const [customerNotes, setCustomerNotes] = useState(initialDraft.customerNotes);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAuthGate, setShowAuthGate] = useState(false);
   const [successQuote, setSuccessQuote] = useState<{
     quoteId: number;
     quoteNumber: string;
   } | null>(null);
+
+  // Persistir cambios en localStorage
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined" || successQuote) return;
+      if (lines.length === 0 && !commercialNeeds && !customerNotes) {
+        window.localStorage.removeItem(QUOTE_DRAFT_KEY);
+      } else {
+        window.localStorage.setItem(
+          QUOTE_DRAFT_KEY,
+          JSON.stringify({
+            lines,
+            commercialNeeds,
+            customerNotes,
+            deliveryCity,
+          }),
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, [lines, commercialNeeds, customerNotes, deliveryCity, successQuote]);
 
   // Cuando cambia el producto seleccionado, actualizar la primera variante y su cantidad mínima sugerida
   const handleProductChange = (prodId: number) => {
@@ -250,6 +330,11 @@ export function WholesaleQuoteBuilder({
       return;
     }
 
+    if (!isUserAuthorized) {
+      setShowAuthGate(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await submitWholesaleQuoteAction({
@@ -266,6 +351,14 @@ export function WholesaleQuoteBuilder({
       if (!res.success || !res.data) {
         setErrorMessage(res.error ?? "No se pudo registrar la cotización.");
         return;
+      }
+
+      try {
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem(QUOTE_DRAFT_KEY);
+        }
+      } catch {
+        // ignore
       }
 
       setSuccessQuote(res.data);
@@ -319,6 +412,98 @@ export function WholesaleQuoteBuilder({
 
   return (
     <form onSubmit={handleSubmitQuote} className="space-y-8">
+      {!isUserAuthorized && (
+        <div className="border border-cochinilla/20 bg-cochinilla/5 p-5 text-ink">
+          <div className="flex items-start gap-3">
+            <Sparkles className="mt-0.5 size-5 shrink-0 text-cochinilla" aria-hidden />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-ink">
+                Modo Borrador de Cotización B2B
+              </p>
+              <p className="mt-1 text-xs text-taupe-700 leading-relaxed">
+                Puedes seleccionar libremente prendas, tallas, colores y cantidades. Tu borrador se guarda automáticamente en este navegador. Para procesar la solicitud económica oficial, se requiere una cuenta empresarial con RUC activo.
+              </p>
+            </div>
+            <div className="hidden sm:flex shrink-0 items-center gap-2">
+              {!isAuthenticated ? (
+                <Link
+                  href="/iniciar-sesion?next=/mayorista/cotizaciones"
+                  className="bg-ink px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-paper hover:bg-cochinilla transition-colors"
+                >
+                  Iniciar sesión
+                </Link>
+              ) : null}
+              <Link
+                href="/mayorista/registro"
+                className="border border-ink/20 px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-ink hover:border-ink transition-colors"
+              >
+                Registrar empresa
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAuthGate && !isUserAuthorized && (
+        <div className="border-2 border-cochinilla bg-paper p-6 shadow-md" role="alert">
+          <div className="flex items-start gap-3.5">
+            <Building2 className="mt-0.5 size-6 shrink-0 text-cochinilla" aria-hidden />
+            <div className="flex-1">
+              <h4 className="font-display text-xl text-ink">
+                {isAuthenticated
+                  ? userRole === "business_pending"
+                    ? "Tu empresa está en evaluación comercial"
+                    : "Se requiere cuenta empresarial con RUC para cotizar"
+                  : "Inicia sesión o registra tu empresa para enviar esta cotización"}
+              </h4>
+              <p className="mt-2 text-xs leading-relaxed text-taupe-700">
+                {isAuthenticated
+                  ? userRole === "business_pending"
+                    ? "Hemos guardado tus prendas seleccionadas. Nuestro equipo está validando tu RUC; podrás enviar la cotización inmediatamente una vez aprobada tu cuenta."
+                    : "Tu cuenta actual es de cliente minorista. Tus prendas seleccionadas se han guardado en tu borrador. Completa el registro de tu RUC para enviar la propuesta formal."
+                  : "Tus productos, tallas y notas se han guardado en tu navegador. Para emitir una cotización con validez tributaria y precios por escala, accede con tu cuenta o registra tu empresa."}
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                {!isAuthenticated && (
+                  <Link
+                    href="/iniciar-sesion?next=/mayorista/cotizaciones"
+                    className="inline-flex h-10 items-center justify-center gap-2 bg-ink px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla transition-colors"
+                  >
+                    Iniciar sesión
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                )}
+                {(!isAuthenticated || userRole === "customer") && (
+                  <Link
+                    href="/mayorista/registro"
+                    className="inline-flex h-10 items-center justify-center gap-2 bg-cochinilla px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla-deep transition-colors"
+                  >
+                    Registrar mi empresa (RUC)
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                )}
+                {userRole === "business_pending" && (
+                  <Link
+                    href="/mayorista/solicitud"
+                    className="inline-flex h-10 items-center justify-center gap-2 bg-amber-800 px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-amber-900 transition-colors"
+                  >
+                    Consultar estado de solicitud
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowAuthGate(false)}
+                  className="text-xs text-taupe-500 hover:text-ink underline ml-2"
+                >
+                  Seguir editando borrador
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {errorMessage && (
         <div
           role="alert"
@@ -617,10 +802,15 @@ export function WholesaleQuoteBuilder({
                 <Loader2 className="size-4 animate-spin" aria-hidden />
                 Enviando solicitud...
               </>
-            ) : (
+            ) : isUserAuthorized ? (
               <>
                 <FileText className="size-4" aria-hidden />
                 Enviar solicitud de cotización B2B
+              </>
+            ) : (
+              <>
+                <Building2 className="size-4" aria-hidden />
+                Guardar borrador y enviar cotización
               </>
             )}
           </button>

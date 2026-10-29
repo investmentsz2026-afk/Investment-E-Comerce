@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { demoProducts } from "@/data/demo/products";
-import type { Audience, Product } from "@/types/catalog";
+import type { Audience, CatalogProduct, Product } from "@/types/catalog";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
@@ -20,10 +20,15 @@ const filters: readonly { id: Filter; label: string }[] = [
   { id: "hombre", label: "Hombre" },
 ];
 
-const products: readonly Product[] = demoProducts;
+interface FeaturedProductsProps {
+  products?: CatalogProduct[];
+}
 
-export function FeaturedProducts() {
+export function FeaturedProducts({ products: initialProducts }: FeaturedProductsProps = {}) {
   const [filter, setFilter] = useState<Filter>("todo");
+  const products: readonly (Product | CatalogProduct)[] =
+    initialProducts && initialProducts.length > 0 ? initialProducts : demoProducts;
+
   const visible = filter === "todo" ? products : products.filter((p) => p.audience === filter);
 
   return (
@@ -34,7 +39,7 @@ export function FeaturedProducts() {
           index="03"
           label="Selección"
           title={["Piezas", <em key="d">destacadas.</em>]}
-          description="Una primera mirada a la temporada: prendas versátiles con precio minorista y, en las seleccionadas, precio especial por volumen."
+          description="Una primera mirada a la temporada: prendas versátiles confeccionadas con materias primas nobles, con disponibilidad minorista y tarifas preferenciales por volumen."
         />
 
         <Reveal className="mt-12 flex flex-col gap-5 border-b border-ink/10 sm:flex-row sm:items-end sm:justify-between lg:mt-16">
@@ -55,13 +60,17 @@ export function FeaturedProducts() {
                 >
                   {f.label}
                   {filter === f.id ? (
-                    <motion.span layoutId="filter-indicator" className="absolute inset-x-0 -bottom-px h-0.5 bg-ink" transition={{ duration: 0.5, ease: ease.luxe }} />
+                    <motion.span
+                      layoutId="filter-indicator"
+                      className="absolute inset-x-0 -bottom-px h-0.5 bg-ink"
+                      transition={{ duration: 0.5, ease: ease.luxe }}
+                    />
                   ) : null}
                 </button>
               ))}
             </div>
           </LayoutGroup>
-          <p className="eyebrow pb-4 text-taupe-400">Vista previa · productos de demostración</p>
+          <p className="eyebrow pb-4 text-taupe-400">Selección de temporada · Compra minorista y mayorista</p>
         </Reveal>
 
         <motion.ul
@@ -81,7 +90,7 @@ export function FeaturedProducts() {
                 exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.3 } }}
                 transition={{ duration: 0.9, ease: ease.luxe, delay: (i % 4) * 0.07 }}
               >
-                <ProductCard product={product} eager={i < 2} />
+                <ProductCard product={product as Product} eager={i < 2} />
               </motion.li>
             ))}
           </AnimatePresence>
@@ -92,7 +101,7 @@ export function FeaturedProducts() {
             Ver todo el catálogo
           </Button>
           <p className="max-w-sm text-xs leading-relaxed text-taupe-500">
-            Explora nuestra colección completa con filtros por talla, color y categoría.
+            Explora nuestra colección completa con filtros por talla, color, categoría y modalidad comercial.
           </p>
         </Reveal>
       </div>

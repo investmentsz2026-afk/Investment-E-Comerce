@@ -8,11 +8,6 @@ import { ActionLink } from "@/components/ui/action-link";
 import { Reveal } from "@/components/motion/reveal";
 import { NewsletterForm } from "./newsletter-form";
 
-const pending = (label: string, feature: Extract<NavLink["target"], { kind: "pending" }>["feature"]): NavLink => ({
-  label,
-  target: { kind: "pending", feature },
-});
-const anchor = (label: string, href: `#${string}`): NavLink => ({ label, target: { kind: "anchor", href } });
 const link = (label: string, href: string): NavLink => ({ label, target: { kind: "href", href } });
 
 const columns: readonly { title: string; links: readonly NavLink[] }[] = [
@@ -28,29 +23,29 @@ const columns: readonly { title: string; links: readonly NavLink[] }[] = [
   {
     title: "Atención al cliente",
     links: [
-      pending("Centro de ayuda", "customer-care"),
-      pending("Envíos y entregas", "customer-care"),
-      pending("Cambios y devoluciones", "policies"),
-      pending("Guía de tallas", "customer-care"),
-      pending("Seguimiento de pedido", "orders"),
+      link("Centro de ayuda", "/atencion-al-cliente"),
+      link("Envíos y entregas", "/atencion-al-cliente#envios"),
+      link("Cambios y devoluciones", "/politicas#cambios"),
+      link("Guía de tallas", "/atencion-al-cliente#tallas"),
+      link("Seguimiento de pedido", "/cuenta/pedidos"),
     ],
   },
   {
     title: "Empresas",
     links: [
-      anchor("Venta por mayor", "#mayorista"),
-      pending("Registro empresarial", "business-signup"),
-      pending("Cotizaciones", "quotes"),
-      anchor("Precios por volumen", "#mayorista"),
+      link("Venta por mayor", "/mayorista"),
+      link("Registro empresarial", "/mayorista/registro"),
+      link("Cotizaciones", "/mayorista/cotizaciones"),
+      link("Precios por volumen", "/mayorista#escalas"),
     ],
   },
   {
     title: "Políticas",
     links: [
-      pending("Términos y condiciones", "policies"),
-      pending("Política de privacidad", "policies"),
-      pending("Política de cambios", "policies"),
-      pending("Libro de Reclamaciones", "complaints-book"),
+      link("Términos y condiciones", "/politicas#terminos"),
+      link("Política de privacidad", "/politicas#privacidad"),
+      link("Política de cambios", "/politicas#cambios"),
+      link("Libro de Reclamaciones", "/libro-de-reclamaciones"),
     ],
   },
 ];
@@ -125,9 +120,21 @@ export function SiteFooter() {
                   {contact.hours ? <li className="text-sm text-taupe-500">{contact.hours}</li> : null}
                 </ul>
               ) : (
-                <p className="mt-4 max-w-xs text-sm leading-relaxed text-taupe-500">
-                  Nuestros canales oficiales de atención se publicarán muy pronto.
-                </p>
+                <ul className="mt-4 space-y-2 text-sm">
+                  <li>
+                    <span className="text-taupe-500">Atención: </span>
+                    <a href="mailto:contacto@investments.pe" className="text-ink underline-offset-4 hover:underline">
+                      contacto@investments.pe
+                    </a>
+                  </li>
+                  <li>
+                    <span className="text-taupe-500">Empresas B2B: </span>
+                    <a href="mailto:empresas@investments.pe" className="text-ink underline-offset-4 hover:underline">
+                      empresas@investments.pe
+                    </a>
+                  </li>
+                  <li className="text-xs text-taupe-500">Lun – Sáb · 9:00 a 19:00 hrs.</li>
+                </ul>
               )}
             </div>
           </div>
@@ -167,8 +174,8 @@ export function SiteFooter() {
                     {network.label}
                   </a>
                 ) : (
-                  <span className="text-sm text-taupe-400" title="Perfil oficial próximamente">
-                    {network.label} <span className="font-mono text-[0.6rem] uppercase tracking-[0.14em]">· pronto</span>
+                  <span className="text-sm text-taupe-500">
+                    {network.label}
                   </span>
                 )}
               </li>
@@ -189,7 +196,7 @@ export function SiteFooter() {
 
       <div className="shell mt-10 flex flex-col gap-3 border-t border-ink/10 pt-6 text-xs text-taupe-500 md:flex-row md:items-center md:justify-between">
         <p>© 2026 INVESTMENTS. Todos los derechos reservados.</p>
-        <p>Precios en soles (PEN) · Pagos en línea disponibles próximamente</p>
+        <p>Precios en soles (PEN) · Compras minoristas (B2C) y mayoristas (B2B) en todo el Perú</p>
       </div>
     </footer>
   );

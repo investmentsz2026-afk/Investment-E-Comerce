@@ -36,7 +36,7 @@ export function MegaMenuPanel({ item, onNavigate }: MegaMenuPanelProps) {
           <p className="mt-4 font-display text-display-md text-ink">{item.label}</p>
         </div>
         <p className="max-w-[15rem] text-xs leading-relaxed text-taupe-500">
-          Vista previa de la navegación. El catálogo completo se habilitará próximamente.
+          Explora nuestras colecciones de temporada con disponibilidad en tiempo real.
         </p>
       </motion.div>
 

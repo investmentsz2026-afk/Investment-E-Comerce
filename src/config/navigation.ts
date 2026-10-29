@@ -126,7 +126,7 @@ export const mainNav: readonly MainNavItem[] = [
 
 export const wholesaleNav: NavLink = {
   label: "Venta por mayor",
-  target: { kind: "href", href: "/mayorista/registro" },
+  target: { kind: "href", href: "/mayorista" },
 };
 
 export const trendingSearches = ["Blazer sastre", "Polo esencial", "Denim", "Camisa de popelina", "Tejidos de punto", "Uniformes corporativos"] as const;

@@ -5,6 +5,7 @@ import { MotionConfig } from "motion/react";
 import { NoticeProvider } from "@/components/feedback/notice-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 
 /**
  * Proveedores globales de cliente.
@@ -15,10 +16,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <MotionConfig reducedMotion="user">
       <NoticeProvider>
-        <CartProvider>
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <FavoritesProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </FavoritesProvider>
       </NoticeProvider>
     </MotionConfig>
   );

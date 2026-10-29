@@ -8,7 +8,7 @@ import { mainNav } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/brand/logo";
 import { ActionLink } from "@/components/ui/action-link";
-import { useNotice } from "@/components/feedback/notice-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useEscapeKey, useLockBodyScroll } from "@/hooks/use-overlay";
 import { cn } from "@/lib/utils";
 import { ease } from "@/lib/motion";
@@ -30,7 +30,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
 function MobileMenuSheet({ onClose }: { onClose: () => void }) {
   const [activeId, setActiveId] = useState(menuTabs[0]?.id ?? "");
-  const { announcePending } = useNotice();
+  const { count: favoritesCount, snapshot: favSnapshot } = useFavorites();
+  const favoritesHref = favSnapshot.isAuthenticated ? "/cuenta/favoritos" : "/favoritos";
   const active = menuTabs.find((t) => t.id === activeId) ?? menuTabs[0];
   const links = active?.megaMenu?.columns.flatMap((c) => c.links) ?? [];
 
@@ -107,8 +108,8 @@ function MobileMenuSheet({ onClose }: { onClose: () => void }) {
         </motion.ul>
 
         <div className="shell mt-8 space-y-3 pb-10">
-          <a
-            href="#mayorista"
+          <Link
+            href="/mayorista"
             onClick={onClose}
             className="group/w relative flex items-center justify-between overflow-hidden bg-ink px-6 py-6 text-paper"
           >
@@ -117,7 +118,7 @@ function MobileMenuSheet({ onClose }: { onClose: () => void }) {
               <span className="mt-2 block font-display text-2xl">Venta por mayor</span>
             </span>
             <ArrowRight className="size-5 transition-transform group-active/w:translate-x-1" aria-hidden />
-          </a>
+          </Link>
           <div className="grid grid-cols-2 gap-3">
             <Link
               href="/cuenta"
@@ -126,13 +127,22 @@ function MobileMenuSheet({ onClose }: { onClose: () => void }) {
             >
               <UserRound className="size-4" aria-hidden /> Mi cuenta
             </Link>
-            <button
-              type="button"
-              onClick={() => announcePending("favorites")}
-              className="flex items-center gap-3 border border-ink/10 px-4 py-4 text-sm text-ink"
+            <Link
+              href={favoritesHref}
+              onClick={onClose}
+              className="flex items-center justify-between border border-ink/10 px-4 py-4 text-sm text-ink hover:border-ink transition-colors"
             >
-              <Heart className="size-4" aria-hidden /> Favoritos
-            </button>
+              <span className="flex items-center gap-3">
+                <Heart
+                  className={cn("size-4", favoritesCount > 0 && "fill-cochinilla text-cochinilla")}
+                  aria-hidden
+                />
+                Favoritos
+              </span>
+              <span className="rounded-full bg-cochinilla px-2 py-0.5 font-mono text-[0.65rem] font-semibold text-paper tabular-nums">
+                {favoritesCount}
+              </span>
+            </Link>
           </div>
           <p className="eyebrow pt-4 text-center text-taupe-400">{siteConfig.season}</p>
         </div>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAuth } from "@/server/auth/session";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { User, MapPin, ShieldCheck, ShoppingBag, Building2, ShieldAlert, FileText } from "lucide-react";
+import { User, MapPin, ShieldCheck, ShoppingBag, Building2, ShieldAlert, FileText, Heart } from "lucide-react";
 import { AccountNavTab } from "./account-nav-tab";
 
 export const metadata: Metadata = {
@@ -63,6 +63,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
           <aside className="lg:col-span-3">
             <nav aria-label="Navegación de cuenta" className="flex flex-row overflow-x-auto border-b border-ink/10 pb-2 lg:flex-col lg:border-b-0 lg:border-r lg:pr-6 lg:pb-0 gap-1">
               <AccountNavTab href="/cuenta" icon={<User className="size-4" />} label="Mi Perfil" />
+              <AccountNavTab href="/cuenta/favoritos" icon={<Heart className="size-4" />} label="Mis Favoritos" />
               <AccountNavTab href="/carrito" icon={<ShoppingBag className="size-4" />} label="Mi Bolsa Actual" />
               <AccountNavTab href="/cuenta/direcciones" icon={<MapPin className="size-4" />} label="Direcciones" />
               <AccountNavTab href="/cuenta/seguridad" icon={<ShieldCheck className="size-4" />} label="Seguridad" />

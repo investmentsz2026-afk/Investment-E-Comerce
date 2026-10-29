@@ -6,6 +6,10 @@ import { FeaturedCollections } from "@/components/home/featured-collections";
 import { Manifesto } from "@/components/home/manifesto";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import { WholesaleSection } from "@/components/home/wholesale-section";
+import { getFeaturedProducts } from "@/server/queries/products";
+
+/** Datos dinámicos de Neon: la ruta se renderiza en servidor por petición. */
+export const instant = false;
 
 /** Datos estructurados básicos (sin inventar datos de contacto ni identificadores fiscales). */
 const structuredData = {
@@ -27,7 +31,9 @@ const structuredData = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts(8);
+
   return (
     <>
       <script
@@ -40,7 +46,7 @@ export default function HomePage() {
       <ModalitySelector />
       <FeaturedCollections />
       <Manifesto />
-      <FeaturedProducts />
+      <FeaturedProducts products={featuredProducts} />
       <WholesaleSection />
     </>
   );

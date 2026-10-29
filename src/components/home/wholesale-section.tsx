@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 import { ArrowRight, BadgePercent, Boxes, FileText, Headset, Shirt, type LucideIcon } from "lucide-react";
 import { media } from "@/config/media";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { PendingButton } from "@/components/ui/pending-button";
+import { Button } from "@/components/ui/button";
 import { ParallaxImage } from "@/components/motion/parallax-image";
 import { Reveal } from "@/components/motion/reveal";
 import { ease } from "@/lib/motion";
@@ -61,12 +62,12 @@ export function WholesaleSection() {
                 ))}
               </ul>
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <PendingButton feature="business-signup" variant="accent" size="lg" icon={<ArrowRight className="size-4" />}>
+                <Button href="/mayorista" variant="accent" size="lg" icon={<ArrowRight className="size-4" />}>
                   Conoce nuestra venta por mayor
-                </PendingButton>
-                <PendingButton feature="quotes" variant="outline-light" size="lg">
+                </Button>
+                <Button href="/mayorista/cotizaciones" variant="outline-light" size="lg">
                   Solicitar cotización
-                </PendingButton>
+                </Button>
               </div>
             </Reveal>
           </div>
@@ -143,10 +144,15 @@ export function WholesaleSection() {
                 </li>
               ))}
             </ol>
-            <p className="mt-6 flex items-center gap-2 text-xs text-paper/45">
-              <span className="size-1.5 rounded-full bg-cochinilla-bright" aria-hidden />
-              El registro empresarial se habilitará próximamente.
-            </p>
+            <div className="mt-6">
+              <Link
+                href="/mayorista/registro"
+                className="inline-flex items-center gap-2 text-xs text-paper/80 transition-colors hover:text-cochinilla-bright underline-offset-4 hover:underline"
+              >
+                <span className="size-1.5 rounded-full bg-emerald-400" aria-hidden />
+                ¿Listo para empezar? Registra tu empresa aquí →
+              </Link>
+            </div>
           </Reveal>
         </div>
       </div>

@@ -230,6 +230,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   images: many(productImages),
   variants: many(productVariants),
   prices: many(productPrices),
+  favorites: many(userFavorites),
 }));
 
 // ──────────────────────────────────────────────────────────────
@@ -367,6 +368,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   wholesaleQuotes: many(wholesaleQuotes, { relationName: "userQuotes" }),
   reviewedQuotes: many(wholesaleQuotes, { relationName: "reviewedQuotes" }),
   orders: many(orders),
+  favorites: many(userFavorites),
 }));
 
 export const sessions = pgTable(
@@ -1148,6 +1150,55 @@ export const promotionsRelations = relations(promotions, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// ──────────────────────────────────────────────────────────────
+// Phase 7.3: User Favorites (Wishlist) & Newsletter Subscriptions
+// ──────────────────────────────────────────────────────────────
+
+export const userFavorites = pgTable(
+  "user_favorites",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    productId: integer("product_id")
+      .references(() => products.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("user_favorites_user_product_idx").on(t.userId, t.productId),
+    index("user_favorites_user_idx").on(t.userId),
+    index("user_favorites_product_idx").on(t.productId),
+  ],
+);
+
+export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
+  user: one(users, {
+    fields: [userFavorites.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [userFavorites.productId],
+    references: [products.id],
+  }),
+}));
+
+export const newsletterSubscribers = pgTable(
+  "newsletter_subscribers",
+  {
+    id: serial("id").primaryKey(),
+    email: varchar("email", { length: 255 }).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("newsletter_subscribers_email_idx").on(t.email),
+  ],
+);
+
 
 
 

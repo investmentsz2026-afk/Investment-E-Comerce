@@ -1,14 +1,16 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { Heart, House, Search, ShoppingBag, Warehouse } from "lucide-react";
-import { useNotice } from "@/components/feedback/notice-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useCart } from "@/components/cart/cart-provider";
 
 /** Barra inferior tipo app para móviles: accesos de una mano, áreas táctiles de 48px. */
 export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
-  const { announcePending } = useNotice();
+  const { count: favoritesCount, snapshot: favSnapshot } = useFavorites();
   const { cart, openDrawer } = useCart();
+  const favoritesHref = favSnapshot.isAuthenticated ? "/cuenta/favoritos" : "/favoritos";
 
   return (
     <nav
@@ -24,14 +26,18 @@ export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
         </li>
         <li>
           <TabLink
-            href="/mayorista/cotizaciones"
+            href="/mayorista"
             label="Por mayor"
             accent
             icon={<Warehouse className="size-5" aria-hidden />}
           />
         </li>
         <li>
-          <TabButton label="Favoritos" onClick={() => announcePending("favorites")} icon={<Heart className="size-5" aria-hidden />} />
+          <TabLink
+            href={favoritesHref}
+            label={`Favoritos (${favoritesCount})`}
+            icon={<Heart className="size-5" aria-hidden />}
+          />
         </li>
         <li>
           <TabButton
@@ -50,13 +56,13 @@ const itemClass =
 
 function TabLink({ href, label, icon, accent = false }: { href: string; label: string; icon: ReactNode; accent?: boolean }) {
   return (
-    <a href={href} className={itemClass}>
+    <Link href={href} className={itemClass}>
       <span className="relative">
         {icon}
         {accent ? <span className="absolute -right-1 -top-0.5 size-1.5 rounded-full bg-cochinilla" aria-hidden /> : null}
       </span>
       {label}
-    </a>
+    </Link>
   );
 }
 
