@@ -1,0 +1,21 @@
+{
+  "base": "http://localhost:3101",
+  "results": [
+    {
+      "name": "Estado de error: /catalogo con base de datos inválida muestra pantalla recuperable",
+      "ok": false,
+      "detail": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3101/catalogo"
+    },
+    {
+      "name": "Estado de error: /producto/x con DB inválida muestra pantalla recuperable",
+      "ok": false,
+      "detail": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3101/producto/polo-esencial-algodon"
+    },
+    {
+      "name": "Sitemap con DB caída: responde 200 con rutas estáticas (no rompe)",
+      "ok": false,
+      "detail": "fetch failed"
+    }
+  ],
+  "consoleIssues": []
+}

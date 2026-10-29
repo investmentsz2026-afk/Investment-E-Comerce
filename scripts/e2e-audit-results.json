@@ -1,0 +1,371 @@
+{
+  "base": "http://localhost:3100",
+  "results": [
+    {
+      "name": "Ruta / responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/sastreria responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/polos responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/blusas responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/blazers responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/casacas responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/camisas responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /catalogo/denim responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/conjunto-sastre-negro responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/polo-esencial-algodon responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/blusa-lazo-satinada responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/blazer-camel-relajado responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/casaca-utilitaria-oliva responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/camisa-popelina-blanca responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/casaca-biker-negra responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /producto/casaca-denim-indigo responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /buscar responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta /buscar?q=polo responde 200 y sin errores de consola",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta inexistente /catalogo/no-existe → pantalla amigable de no encontrado y noindex",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Producto inexistente /producto/no-existe → pantalla amigable y noindex",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ruta global inexistente /ruta-x → 404 amigable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Header legible en /catalogo con scroll en 0 (texto oscuro sobre fondo claro)",
+      "ok": true,
+      "detail": "rgb(13,12,11) opacidad fondo 1"
+    },
+    {
+      "name": "Portada mantiene el header transparente con texto claro sobre el hero (Fase 1 intacta)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Catálogo: total mostrado coincide con la base de datos y muestra una página de 3",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Catálogo: todas las imágenes de producto cargan (sin imágenes rotas)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Precios minorista en tarjetas coinciden con la base (céntimos → soles)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tarjetas con precio mayorista muestran el mayorista correcto (y los que no tienen, no lo muestran)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginación: 3 páginas, navegación siguiente/anterior y sin duplicados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Paginación: página fuera de rango (?pagina=99) se acota a la última, no queda vacía",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Orden precio-asc: respeta el precio en TODAS las páginas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Orden precio-desc: respeta el precio en TODAS las páginas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Orden desde el selector de la interfaz actualiza URL y resultados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtro Género (Mujer) desde la UI coincide con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtros combinados URL: mujer + talla M + color Negro + solo stock = oráculo SQL",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtro de talla filtra ANTES de paginar (total exacto con página de 3)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtros novedades y mayorista coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtro de color desde la UI (clic en muestra) actualiza URL y total",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "'Limpiar filtros' restablece el listado completo",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtro de precio mín/máx desde la UI: URL en soles y resultados dentro del rango (= oráculo)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Filtro de precio persiste en los campos tras recargar y se combina con orden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Precio inválido o invertido en la URL no rompe la página (min>max se intercambia)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Rango sin resultados (precio_min=9999) muestra estado vacío con salida",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Búsqueda 'polo' devuelve el producto correcto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Búsqueda insensible a tildes y mayúsculas: 'SASTRERIA' encuentra la categoría Sastrería",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Búsqueda con comodines '%' y '_' no devuelve todo el catálogo",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Búsqueda sin resultados muestra estado vacío",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Búsqueda con inyección SQL en el texto es inocua",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Buscador del header: abrir, escribir y Enter navega a /buscar?q=",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP conjunto-sastre-negro: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP polo-esencial-algodon: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP blusa-lazo-satinada: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP blazer-camel-relajado: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP casaca-utilitaria-oliva: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP camisa-popelina-blanca: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP casaca-biker-negra: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP casaca-denim-indigo: precio minorista, mayorista, SKU y stock por variante coinciden con la base",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP: cambiar de color reinicia la talla seleccionada (no queda stock de otra combinación)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP: 'Agregar a la bolsa' sin talla pide seleccionar una talla",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP: galería — imagen principal carga; miniaturas solo si hay más de una imagen",
+      "ok": true,
+      "detail": "imágenes en DB: 1; miniaturas mostradas: 0 (LIMITACIÓN: datos demo con 1 imagen, no se pudo ejercitar el cambio de imagen)"
+    },
+    {
+      "name": "PDP: productos relacionados enlazan a fichas válidas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP demo: meta robots noindex y aviso de producto de demostración",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "PDP: JSON-LD de Product con precio en soles y disponibilidad",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Sitemap: incluye /catalogo y EXCLUYE todos los productos de demostración",
+      "ok": true,
+      "detail": "productos demo excluidos: 8; productos reales incluidos: 0"
+    },
+    {
+      "name": "AGOTADO total: PDP muestra 'Agotado' y deshabilita la compra",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AGOTADO total: la tarjeta del catálogo muestra 'Agotado' y 'Solo con stock' la oculta",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "AGOTADO parcial: talla M/Negro deshabilitada, otras tallas disponibles con stock correcto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Restauración del stock original tras las pruebas de agotado",
+      "ok": true,
+      "detail": "69 variantes restauradas"
+    },
+    {
+      "name": "Móvil: header legible con scroll en 0 y sin desborde horizontal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Móvil: cajón de filtros abre, aplica talla + género y se cierra con 'Ver resultados'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Móvil: cajón de filtros se cierra con el botón X y filtro de precio funciona dentro del cajón",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Móvil: ficha de producto sin desborde y con selector de talla/color usable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Sin errores ni advertencias de consola / respuestas HTTP ≥ 400 durante toda la auditoría",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "consoleIssues": []
+}

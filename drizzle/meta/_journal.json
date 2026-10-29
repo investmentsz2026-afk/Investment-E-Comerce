@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793123275243,
+      "tag": "0000_late_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793129453129,
+      "tag": "0001_soft_retro_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793242774275,
+      "tag": "0002_supreme_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793245508343,
+      "tag": "0003_superb_eternals",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793249606224,
+      "tag": "0004_polite_jack_murdock",
+      "breakpoints": true
+    }
+  ]
+}
