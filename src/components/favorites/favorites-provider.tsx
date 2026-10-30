@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation";
 import {
   fetchFavoritesSnapshotAction,
   removeFavoriteAction,
-  syncGuestFavoritesAction,
   toggleFavoriteAction,
 } from "@/server/actions/favorites";
 import type { FavoriteProductItem, FavoritesSnapshot } from "@/server/favorites/service";

@@ -15,6 +15,7 @@ export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
   return (
     <nav
       aria-label="Accesos rápidos"
+      data-testid="mobile-tab-bar"
       className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-paper/95 backdrop-blur-sm lg:hidden"
     >
       <ul className="grid h-16 grid-cols-5">
