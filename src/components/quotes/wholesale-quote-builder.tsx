@@ -515,7 +515,7 @@ export function WholesaleQuoteBuilder({
       )}
 
       {/* Selector de productos y variantes del catálogo */}
-      <div className="border border-ink/15 bg-[#fbfaf7] p-6 sm:p-8">
+      <div className="border border-ink/15 bg-[#fbfaf7] p-4 sm:p-8">
         <div className="flex items-center justify-between border-b border-ink/10 pb-4">
           <div>
             <p className="eyebrow text-cochinilla">Paso 1 · Selección de Prendas y Variantes</p>
@@ -614,7 +614,7 @@ export function WholesaleQuoteBuilder({
       </div>
 
       {/* Tabla de líneas incluidas en la cotización */}
-      <div className="border border-ink/15 bg-paper p-6 sm:p-8">
+      <div className="border border-ink/15 bg-paper p-4 sm:p-8">
         <div className="flex items-center justify-between border-b border-ink/10 pb-4">
           <div>
             <p className="eyebrow text-taupe-500">Paso 2 · Resumen de Prendas a Cotizar</p>
@@ -692,7 +692,7 @@ export function WholesaleQuoteBuilder({
                     />
                   </div>
 
-                  <div className="min-w-28 text-right">
+                  <div className="min-w-20 sm:min-w-28 text-right">
                     <p className="font-mono text-sm font-semibold tabular-nums text-ink">
                       {formatPEN(line.subtotal)}
                     </p>
@@ -724,7 +724,7 @@ export function WholesaleQuoteBuilder({
       </div>
 
       {/* Necesidades comerciales y envío */}
-      <div className="border border-ink/15 bg-[#fbfaf7] p-6 sm:p-8">
+      <div className="border border-ink/15 bg-[#fbfaf7] p-4 sm:p-8">
         <p className="eyebrow text-cochinilla">Paso 3 · Condiciones Comerciales y Envío</p>
         <h3 className="mt-1 font-display text-2xl text-ink">
           Requerimientos del pedido corporativo

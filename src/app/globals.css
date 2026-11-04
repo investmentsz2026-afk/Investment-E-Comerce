@@ -141,12 +141,12 @@
    Utilidades de marca
    ========================================================================== */
 
-/* Contenedor principal: amplio en monitores, cómodo en móvil */
+/* Contenedor principal: amplio en monitores, cómodo y seguro en pantallas ultra compactas */
 @utility shell {
   width: 100%;
   max-width: 1680px;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  padding-inline: clamp(0.875rem, 3.5vw, 3.5rem);
 }
 
 /* Etiqueta editorial en mayúsculas */

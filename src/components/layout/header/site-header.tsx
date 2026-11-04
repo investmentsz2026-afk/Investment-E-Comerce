@@ -110,7 +110,7 @@ export function SiteHeader() {
             <div className="flex items-center">
               <button
                 type="button"
-                className="-ml-2 flex size-11 items-center justify-center lg:hidden"
+                className="flex size-10 sm:size-11 items-center justify-center lg:hidden"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Abrir menú"
                 aria-expanded={mobileOpen}
@@ -196,7 +196,7 @@ export function SiteHeader() {
               <HeaderIcon
                 label={`Bolsa de compras, ${cart.totalUnits} ${cart.totalUnits === 1 ? "producto" : "productos"}`}
                 onClick={openDrawer}
-                className="-mr-2 lg:mr-0"
+                className="mr-0"
               >
                 <span className="relative">
                   <ShoppingBag className="size-[1.15rem]" aria-hidden />
@@ -284,7 +284,7 @@ function HeaderIcon({
       title={label}
       onClick={onClick}
       className={cn(
-        "flex size-11 items-center justify-center rounded-full transition-[transform,opacity] duration-300 ease-luxe hover:opacity-70 active:scale-90",
+        "flex size-10 sm:size-11 items-center justify-center rounded-full transition-[transform,opacity] duration-300 ease-luxe hover:opacity-70 active:scale-90",
         className,
       )}
     >

@@ -44,10 +44,10 @@ export function AdminHeader({ user }: AdminHeaderProps) {
           href="/admin"
           className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
         >
-          <span className="font-sans text-lg font-bold tracking-tight text-paper">
+          <span className="font-sans text-base sm:text-lg font-bold tracking-tight text-paper">
             INVESTMENTS<span className="text-cochinilla">.</span>
           </span>
-          <span className="rounded bg-cochinilla px-2 py-0.5 font-mono text-[0.62rem] font-bold uppercase tracking-widest text-paper">
+          <span className="hidden min-[360px]:inline-block rounded bg-cochinilla px-2 py-0.5 font-mono text-[0.62rem] font-bold uppercase tracking-widest text-paper">
             ADMIN COMERCIAL
           </span>
         </Link>
@@ -82,7 +82,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
 
       {/* Barra secundaria de navegación integral (Desktop y Móvil con scroll horizontal limpio) */}
       <div className="border-t border-white/10 bg-[#14171d]">
-        <div className="shell flex items-center gap-1 overflow-x-auto py-2 font-mono text-[0.72rem] scrollbar-none">
+        <div className="shell flex items-center gap-1 overflow-x-auto py-2 font-mono text-[0.72rem] no-scrollbar">
           {ADMIN_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             return (

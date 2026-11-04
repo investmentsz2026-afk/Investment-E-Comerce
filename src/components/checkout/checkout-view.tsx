@@ -377,7 +377,7 @@ export function CheckoutView({
           {/* SECCIÓN 1: DIRECCIÓN DE ENTREGA EN PERÚ */}
           <section
             aria-labelledby="checkout-shipping-heading"
-            className="border border-ink/15 bg-paper p-6 sm:p-8"
+            className="border border-ink/15 bg-paper p-4 sm:p-8"
           >
             <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
               <MapPin className="size-5 text-cochinilla" aria-hidden />
@@ -672,7 +672,7 @@ export function CheckoutView({
           {/* SECCIÓN 2: COMPROBANTE ELECTRÓNICO (BOLETA / FACTURA PERÚ) */}
           <section
             aria-labelledby="checkout-billing-heading"
-            className="border border-ink/15 bg-paper p-6 sm:p-8"
+            className="border border-ink/15 bg-paper p-4 sm:p-8"
           >
             <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
               <FileText className="size-5 text-cochinilla" aria-hidden />
@@ -689,7 +689,7 @@ export function CheckoutView({
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 data-testid="tax-doc-boleta-btn"
@@ -818,7 +818,7 @@ export function CheckoutView({
           {/* SECCIÓN 3: MÉTODO DE PAGO DESACOPLADO */}
           <section
             aria-labelledby="checkout-payment-heading"
-            className="border border-ink/15 bg-paper p-6 sm:p-8"
+            className="border border-ink/15 bg-paper p-4 sm:p-8"
           >
             <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
               <CreditCard className="size-5 text-cochinilla" aria-hidden />

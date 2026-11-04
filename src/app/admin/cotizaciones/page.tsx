@@ -73,7 +73,7 @@ export default async function AdminCotizacionesPage({
       </div>
 
       {/* Filtros y buscador */}
-      <div className="flex flex-col justify-between gap-4 border border-ink/10 bg-paper p-5 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between gap-4 border border-ink/10 bg-paper p-4 sm:p-5 lg:flex-row lg:items-center">
         <div className="flex flex-wrap gap-1.5">
           {STATUS_TABS.map((tab) => {
             const active = activeStatus === tab.value;
@@ -96,9 +96,9 @@ export default async function AdminCotizacionesPage({
           })}
         </div>
 
-        <form action="/admin/cotizaciones" method="get" className="flex items-center gap-2">
+        <form action="/admin/cotizaciones" method="get" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
           {activeStatus && <input type="hidden" name="status" value={activeStatus} />}
-          <div className="relative">
+          <div className="relative flex-1">
             <Search
               className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-taupe-400"
               aria-hidden
@@ -108,7 +108,7 @@ export default async function AdminCotizacionesPage({
               name="q"
               defaultValue={searchQuery}
               placeholder="Buscar por COT-..., razón social o RUC..."
-              className="h-10 w-64 border border-ink/20 bg-[#fbfaf7] pl-9 pr-3 text-xs text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none sm:w-80"
+              className="h-10 w-full sm:w-80 border border-ink/20 bg-[#fbfaf7] pl-9 pr-3 text-xs text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none"
             />
           </div>
           <button

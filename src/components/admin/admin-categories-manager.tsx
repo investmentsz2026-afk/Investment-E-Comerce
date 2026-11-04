@@ -133,9 +133,9 @@ export function AdminCategoriesManager({
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-12">
       {/* Formulario de Creación / Edición */}
-      <div className="border border-ink/10 bg-paper p-6 lg:col-span-5 space-y-5 h-fit">
+      <div className="min-w-0 w-full border border-ink/10 bg-paper p-4 sm:p-6 lg:col-span-5 space-y-5 h-fit">
         <div className="flex items-center justify-between border-b border-ink/10 pb-3">
           <div>
             <p className="font-mono text-[0.65rem] uppercase tracking-widest text-cochinilla">
@@ -330,7 +330,7 @@ export function AdminCategoriesManager({
       </div>
 
       {/* Tabla de Categorías y Subcategorías */}
-      <div className="border border-ink/10 bg-paper p-6 lg:col-span-7 space-y-4">
+      <div className="min-w-0 w-full overflow-hidden border border-ink/10 bg-paper p-4 sm:p-6 lg:col-span-7 space-y-4">
         <div className="flex items-center justify-between border-b border-ink/10 pb-3">
           <div>
             <p className="font-mono text-[0.65rem] uppercase tracking-widest text-cochinilla">

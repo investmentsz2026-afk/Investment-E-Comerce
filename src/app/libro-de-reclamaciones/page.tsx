@@ -62,7 +62,7 @@ export default function ComplaintsBookPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* 1. Datos del consumidor */}
-            <div className="border border-ink/10 bg-[#fbfaf7] p-6 space-y-4">
+            <div className="border border-ink/10 bg-[#fbfaf7] p-4 sm:p-6 space-y-4">
               <h2 className="font-display text-lg text-ink border-b border-ink/10 pb-2">
                 1. Identificación del Consumidor Reclamante
               </h2>
@@ -122,7 +122,7 @@ export default function ComplaintsBookPage() {
             </div>
 
             {/* 2. Identificación del bien contratado */}
-            <div className="border border-ink/10 bg-[#fbfaf7] p-6 space-y-4">
+            <div className="border border-ink/10 bg-[#fbfaf7] p-4 sm:p-6 space-y-4">
               <h2 className="font-display text-lg text-ink border-b border-ink/10 pb-2">
                 2. Identificación del Bien Contratado
               </h2>
@@ -131,7 +131,7 @@ export default function ComplaintsBookPage() {
                   <label className="block text-[0.68rem] font-medium uppercase tracking-wider text-ink">
                     Tipo de Bien *
                   </label>
-                  <div className="mt-2 flex gap-4 text-xs">
+                  <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:gap-4 text-xs">
                     <label className="flex items-center gap-1.5">
                       <input type="radio" name="bien" defaultChecked value="producto" />
                       Producto (Prenda textil)
@@ -156,7 +156,7 @@ export default function ComplaintsBookPage() {
             </div>
 
             {/* 3. Detalle de la reclamación */}
-            <div className="border border-ink/10 bg-[#fbfaf7] p-6 space-y-4">
+            <div className="border border-ink/10 bg-[#fbfaf7] p-4 sm:p-6 space-y-4">
               <h2 className="font-display text-lg text-ink border-b border-ink/10 pb-2">
                 3. Detalle de la Reclamación y Pedido del Consumidor
               </h2>
@@ -164,7 +164,7 @@ export default function ComplaintsBookPage() {
                 <label className="block text-[0.68rem] font-medium uppercase tracking-wider text-ink">
                   Tipo *
                 </label>
-                <div className="mt-2 flex gap-6 text-xs">
+                <div className="mt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-6 text-xs">
                   <label className="flex items-center gap-1.5">
                     <input type="radio" name="tipo" defaultChecked value="reclamo" />
                     <strong>Reclamo:</strong> Disconformidad con los productos o servicios.

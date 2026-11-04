@@ -250,8 +250,8 @@ export default async function AdminInventoryPage({
       </form>
 
       {/* Matriz de Stock por Variante y Reservas Activas */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="border border-ink/10 bg-paper p-6 lg:col-span-7 space-y-4">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-12">
+        <div className="min-w-0 w-full overflow-hidden border border-ink/10 bg-paper p-4 sm:p-6 lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between border-b border-ink/10 pb-3">
             <div>
               <p className="font-mono text-[0.65rem] uppercase tracking-widest text-cochinilla">
@@ -264,7 +264,7 @@ export default async function AdminInventoryPage({
             <Boxes className="size-4 text-cochinilla" aria-hidden />
           </div>
 
-          <div className="max-h-[480px] overflow-y-auto">
+          <div className="max-h-[480px] overflow-y-auto overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-ink/10 font-mono text-[0.64rem] uppercase tracking-wider text-taupe-500">
@@ -322,7 +322,7 @@ export default async function AdminInventoryPage({
         </div>
 
         {/* Historial de Movimientos (Kardex Auditable) */}
-        <div className="border border-ink/10 bg-paper p-6 lg:col-span-5 space-y-4">
+        <div className="min-w-0 w-full border border-ink/10 bg-paper p-4 sm:p-6 lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between border-b border-ink/10 pb-3">
             <div>
               <p className="font-mono text-[0.65rem] uppercase tracking-widest text-cochinilla">

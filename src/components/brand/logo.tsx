@@ -13,7 +13,7 @@ interface LogoProps {
 export function Logo({ className, withDescriptor = false }: LogoProps) {
   return (
     <span className={cn("inline-flex flex-col items-center leading-none", className)}>
-      <span className="flex items-baseline font-sans text-[1.05rem] font-semibold tracking-[0.34em] sm:text-[1.15rem]">
+      <span className="flex items-baseline font-sans text-[0.82rem] font-semibold tracking-[0.22em] min-[360px]:text-[0.95rem] min-[360px]:tracking-[0.28em] sm:text-[1.15rem] sm:tracking-[0.34em]">
         INVESTMENTS
         <span className="ml-[-0.2em] inline-block size-[0.32em] translate-y-[-0.05em] rounded-full bg-cochinilla" aria-hidden />
       </span>

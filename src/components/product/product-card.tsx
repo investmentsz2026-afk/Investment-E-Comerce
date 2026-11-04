@@ -140,14 +140,14 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div className="min-w-0">
+      <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3">
+        <div className="min-w-0 flex-1">
           <p className="eyebrow text-[0.6rem] text-taupe-500">
             {audienceLabel[product.audience]} · {product.category}
           </p>
           <h3
             id={`${product.id}-name`}
-            className="mt-1.5 truncate text-sm font-medium text-ink sm:text-[0.95rem]"
+            className="mt-1.5 line-clamp-2 text-sm font-medium text-ink sm:text-[0.95rem]"
           >
             <Link
               href={productHref}
@@ -157,7 +157,7 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
             </Link>
           </h3>
         </div>
-        <div className="shrink-0 text-right">
+        <div className="shrink-0 text-left sm:text-right">
           <p className="text-sm font-medium tabular-nums text-ink sm:text-[0.95rem]">
             {formatPEN(product.price)}
           </p>

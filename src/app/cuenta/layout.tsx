@@ -30,9 +30,9 @@ export default async function AccountLayout({ children }: { children: ReactNode 
     <div className="bg-paper pt-[7.5rem] pb-24 lg:pt-[8.75rem]">
       <div className="shell">
         {/* Cabecera del perfil */}
-        <div className="flex flex-col gap-4 border-b border-ink/10 pb-8 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-4 border-b border-ink/10 pb-8 sm:flex-row sm:items-center sm:justify-between min-w-0">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-3 flex-wrap">
               <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] ${currentRole.badgeClass}`}>
                 {currentRole.label}
               </span>
@@ -46,22 +46,22 @@ export default async function AccountLayout({ children }: { children: ReactNode 
                 </Link>
               )}
             </div>
-            <h1 className="mt-2 font-display text-display-md text-ink">
+            <h1 className="mt-2 font-display text-display-md text-ink truncate">
               {user.firstName} {user.lastName}
             </h1>
-            <p className="mt-1 text-xs text-taupe-500 font-mono">{user.email}</p>
+            <p className="mt-1 text-xs text-taupe-500 font-mono break-all">{user.email}</p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 shrink-0">
             <LogoutButton />
           </div>
         </div>
 
         {/* Estructura con menú lateral y contenido */}
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12 min-w-0">
           {/* Navegación lateral */}
-          <aside className="lg:col-span-3">
-            <nav aria-label="Navegación de cuenta" className="flex flex-row overflow-x-auto border-b border-ink/10 pb-2 lg:flex-col lg:border-b-0 lg:border-r lg:pr-6 lg:pb-0 gap-1">
+          <aside className="min-w-0 w-full overflow-hidden lg:col-span-3">
+            <nav aria-label="Navegación de cuenta" className="no-scrollbar flex flex-row overflow-x-auto border-b border-ink/10 pb-2 lg:flex-col lg:border-b-0 lg:border-r lg:pr-6 lg:pb-0 gap-1">
               <AccountNavTab href="/cuenta" icon={<User className="size-4" />} label="Mi Perfil" />
               <AccountNavTab href="/cuenta/favoritos" icon={<Heart className="size-4" />} label="Mis Favoritos" />
               <AccountNavTab href="/carrito" icon={<ShoppingBag className="size-4" />} label="Mi Bolsa Actual" />

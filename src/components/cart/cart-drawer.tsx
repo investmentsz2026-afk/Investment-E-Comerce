@@ -76,7 +76,7 @@ export function CartDrawer() {
             className="relative z-10 flex h-full w-full max-w-md flex-col bg-paper text-ink shadow-2xl sm:max-w-lg"
           >
             {/* Cabecera */}
-            <div className="flex items-center justify-between border-b border-ink/10 px-6 py-5">
+            <div className="flex items-center justify-between border-b border-ink/10 px-4 py-4 sm:px-6 sm:py-5">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="size-5 text-ink" aria-hidden />
                 <div>
@@ -102,7 +102,7 @@ export function CartDrawer() {
 
             {/* Banner de condición B2B activa */}
             {cart.isWholesaleAuthorized && (
-              <div className="flex items-center justify-between border-b border-emerald-300/60 bg-emerald-50/90 px-6 py-2.5 text-xs text-emerald-950">
+              <div className="flex items-center justify-between border-b border-emerald-300/60 bg-emerald-50/90 px-4 py-2.5 sm:px-6 text-xs text-emerald-950">
                 <span className="flex items-center gap-1.5 font-medium">
                   <Sparkles className="size-3.5 text-emerald-700" aria-hidden />
                   Tarifa empresarial B2B activa por volumen
@@ -356,7 +356,7 @@ export function CartDrawer() {
                 </div>
 
                 {/* Pie con resumen y acciones */}
-                <div className="border-t border-ink/10 bg-[#fbfaf7] px-6 py-5">
+                <div className="border-t border-ink/10 bg-[#fbfaf7] px-4 py-4 sm:px-6 sm:py-5">
                   <div className="space-y-1.5 text-sm">
                     {cart.wholesaleSavingsAmount > 0 && (
                       <>
@@ -385,7 +385,7 @@ export function CartDrawer() {
                   </div>
 
                   <p className="mt-2 text-[0.68rem] leading-relaxed text-taupe-500">
-                    Importe preliminar calculado en servidor. El envío y la confirmación final del pedido se gestionarán en el checkout (Fase 5).
+                    Importe preliminar calculado en servidor. El envío y la confirmación final del pedido se gestionarán en el checkout.
                   </p>
 
                   <div className="mt-4 grid grid-cols-1 gap-2.5">

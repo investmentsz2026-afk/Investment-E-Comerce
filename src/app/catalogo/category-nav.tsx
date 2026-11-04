@@ -14,7 +14,7 @@ export function CategoryNav({ categories }: CategoryNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Categorías" className="no-scrollbar -mx-5 overflow-x-auto px-5 lg:mx-0 lg:px-0">
+    <nav aria-label="Categorías" className="no-scrollbar w-full max-w-full overflow-x-auto lg:mx-0 lg:px-0">
       <ul className="flex gap-1 border-b border-ink/10">
         <li>
           <Link

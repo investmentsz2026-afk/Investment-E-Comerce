@@ -74,7 +74,7 @@ export function WholesaleSection() {
 
           <Reveal className="relative lg:col-span-5 lg:col-start-8" y={50}>
             <ParallaxImage image={media.atelier} sizes="(min-width: 1024px) 40vw, 100vw" className="aspect-[4/5] bg-ink-muted" strength={9} />
-            <div className="absolute -bottom-6 left-4 right-4 bg-paper p-5 text-ink sm:left-auto sm:right-[-1rem] sm:w-72 lg:-left-16 lg:right-auto">
+            <div className="absolute -bottom-6 left-4 right-4 bg-paper p-5 text-ink sm:left-auto sm:right-0 sm:w-72 lg:-left-16 lg:right-auto">
               <p className="eyebrow text-cochinilla">Cuentas empresariales</p>
               <p className="mt-2 font-display text-2xl leading-tight">Un aliado textil para tu negocio</p>
             </div>

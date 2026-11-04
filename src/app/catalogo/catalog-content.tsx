@@ -36,7 +36,7 @@ export function CatalogContent({
       {categories.length > 0 && <CategoryNav categories={categories} />}
 
       {/* Barra de herramientas */}
-      <div className="flex items-center justify-between gap-2 border-b border-ink/10 pb-4 pt-6">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-3 border-b border-ink/10 pb-4 pt-6">
         <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Mobile filter trigger */}
           <button

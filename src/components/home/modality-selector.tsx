@@ -58,9 +58,9 @@ export function ModalitySelector() {
           description="Ya sea que busques una prenda para ti o abastecer tu negocio, INVESTMENTS adapta la experiencia a tu forma de comprar."
         />
 
-        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:mt-20 lg:gap-6 [&:has(article:hover)_article:not(:hover)]:opacity-60">
+        <div className="mt-14 grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-2 lg:mt-20 lg:gap-6 [&:has(article:hover)_article:not(:hover)]:opacity-60">
           {modalities.map((modality, i) => (
-            <Reveal key={modality.id} delay={i * 0.12} y={40}>
+            <Reveal key={modality.id} delay={i * 0.12} y={40} className="w-full min-w-0 max-w-full">
               <ModalityCard modality={modality} />
             </Reveal>
           ))}
@@ -73,7 +73,7 @@ export function ModalitySelector() {
 function ModalityCard({ modality }: { modality: Modality }) {
   const isDark = modality.tone === "dark";
   return (
-    <article className="group/card relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden bg-ink p-6 text-paper transition-opacity duration-700 ease-luxe sm:aspect-[5/6] sm:p-8 lg:aspect-[4/5] lg:p-10 xl:aspect-[5/6]">
+    <article className="group/card relative isolate flex w-full max-w-full min-h-[420px] aspect-auto flex-col justify-between overflow-hidden bg-ink p-5 text-paper transition-opacity duration-700 ease-luxe sm:aspect-[5/6] sm:p-8 lg:aspect-[4/5] lg:p-10 xl:aspect-[5/6]">
       <Image
         src={modality.image.src}
         alt={modality.image.alt}

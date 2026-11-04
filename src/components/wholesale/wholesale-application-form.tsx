@@ -82,7 +82,7 @@ export function WholesaleApplicationForm({
         </div>
       )}
 
-      <form action={formAction} className="border border-ink/10 bg-paper p-6 sm:p-10 space-y-8">
+      <form action={formAction} className="border border-ink/10 bg-paper p-4 sm:p-10 space-y-8">
       {state.error && (
         <div className="flex items-start gap-2.5 border-l-2 border-cochinilla bg-cochinilla/5 p-4 text-xs text-cochinilla" role="alert">
           <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden />

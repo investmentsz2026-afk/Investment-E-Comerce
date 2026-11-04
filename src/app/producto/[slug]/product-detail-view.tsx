@@ -426,7 +426,7 @@ export function ProductDetailView({ product, related, userRole }: ProductDetailV
 
             {/* Wholesale info */}
             {wholesalePrices.length > 0 && (
-              <div className="mt-8 border border-cochinilla/20 bg-cochinilla/5 p-5">
+              <div className="mt-8 border border-cochinilla/20 bg-cochinilla/5 p-4 sm:p-5">
                 <button
                   type="button"
                   onClick={() => setShowWholesale(!showWholesale)}

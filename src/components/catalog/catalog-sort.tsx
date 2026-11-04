@@ -54,7 +54,7 @@ export function CatalogSort({ className, total }: CatalogSortProps) {
         <select
           value={current}
           onChange={(e) => handleChange(e.target.value)}
-          className="max-w-[130px] truncate cursor-pointer appearance-none border-0 bg-transparent py-1 pr-5 text-[0.72rem] font-medium uppercase tracking-[0.12em] text-ink outline-none focus-visible:ring-2 focus-visible:ring-cochinilla-bright sm:max-w-none sm:pr-6 sm:tracking-[0.14em]"
+          className="max-w-[105px] min-[360px]:max-w-[130px] truncate cursor-pointer appearance-none border-0 bg-transparent py-1 pr-4 sm:pr-6 text-[0.72rem] font-medium uppercase tracking-[0.12em] text-ink outline-none focus-visible:ring-2 focus-visible:ring-cochinilla-bright sm:max-w-none sm:tracking-[0.14em]"
           aria-label="Ordenar productos"
         >
           {sortOptions.map((opt) => (

@@ -396,7 +396,7 @@ export function AdminOrderManagementForm({
               value={mpPaymentIdInput}
               onChange={(e) => setMpPaymentIdInput(e.target.value)}
               placeholder="ID de pago Mercado Pago (ej. 8899112233)"
-              className="h-9 w-64 border border-ink/25 bg-[#fbfaf7] px-3 font-mono text-xs text-ink"
+              className="h-9 w-full sm:w-64 border border-ink/25 bg-[#fbfaf7] px-3 font-mono text-xs text-ink"
             />
             <button
               type="button"
