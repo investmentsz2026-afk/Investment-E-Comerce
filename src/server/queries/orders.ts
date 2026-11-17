@@ -22,8 +22,10 @@ import { isUserAuthorizedForWholesale } from "@/server/pricing/engine";
 import {
   calculateServerShipping,
   getOrSeedShippingZones,
+  getActivePhysicalStores,
   type ShippingCalculationResult,
   type ShippingZoneRecord,
+  type PhysicalStoreRecord,
 } from "@/server/shipping/service";
 import { calculatePeruIgvBreakdown } from "@/server/tax/sunat-service";
 import { releaseExpiredInventoryReservations } from "@/server/inventory/service";
@@ -92,6 +94,7 @@ export interface CheckoutSessionContext {
   };
   savedAddresses: Array<typeof userAddresses.$inferSelect>;
   shippingZones: ShippingZoneRecord[];
+  activeStores: PhysicalStoreRecord[];
   approvedCompany: Awaited<ReturnType<typeof getApprovedCompanyForUser>>;
   paymentConfig: ReturnType<typeof getPaymentGatewayConfigStatus>;
   hasStockIssues: boolean;
@@ -112,7 +115,7 @@ export async function getCheckoutSessionContext(
   await releaseExpiredInventoryReservations();
 
   const db = getDb();
-  const [savedAddresses, zones, approvedCompany] = await Promise.all([
+  const [savedAddresses, zones, approvedCompany, activeStores] = await Promise.all([
     db
       .select()
       .from(userAddresses)
@@ -120,6 +123,7 @@ export async function getCheckoutSessionContext(
       .orderBy(desc(userAddresses.isDefault), desc(userAddresses.createdAt)),
     getOrSeedShippingZones(),
     getApprovedCompanyForUser(user.id),
+    getActivePhysicalStores(),
   ]);
 
   const paymentConfig = getPaymentGatewayConfigStatus();
@@ -153,6 +157,7 @@ export async function getCheckoutSessionContext(
       taxBreakdown: { taxableBaseAmount: 0, igvAmount: 0, totalAmount: 0 },
       savedAddresses,
       shippingZones: zones,
+      activeStores,
       approvedCompany,
       paymentConfig,
       hasStockIssues: false,
@@ -187,6 +192,7 @@ export async function getCheckoutSessionContext(
         taxBreakdown: { taxableBaseAmount: 0, igvAmount: 0, totalAmount: 0 },
         savedAddresses,
         shippingZones: zones,
+      activeStores,
         approvedCompany,
         paymentConfig,
         hasStockIssues: false,
@@ -222,6 +228,7 @@ export async function getCheckoutSessionContext(
         taxBreakdown: { taxableBaseAmount: 0, igvAmount: 0, totalAmount: 0 },
         savedAddresses,
         shippingZones: zones,
+      activeStores,
         approvedCompany,
         paymentConfig,
         hasStockIssues: false,
@@ -248,6 +255,7 @@ export async function getCheckoutSessionContext(
         taxBreakdown: { taxableBaseAmount: 0, igvAmount: 0, totalAmount: 0 },
         savedAddresses,
         shippingZones: zones,
+      activeStores,
         approvedCompany,
         paymentConfig,
         hasStockIssues: false,
@@ -280,6 +288,7 @@ export async function getCheckoutSessionContext(
         taxBreakdown: { taxableBaseAmount: 0, igvAmount: 0, totalAmount: 0 },
         savedAddresses,
         shippingZones: zones,
+      activeStores,
         approvedCompany,
         paymentConfig,
         hasStockIssues: false,
@@ -370,6 +379,7 @@ export async function getCheckoutSessionContext(
       taxBreakdown,
       savedAddresses,
       shippingZones: zones,
+      activeStores,
       approvedCompany,
       paymentConfig,
       hasStockIssues,
@@ -427,6 +437,7 @@ export async function getCheckoutSessionContext(
     taxBreakdown,
     savedAddresses,
     shippingZones: zones,
+    activeStores,
     approvedCompany,
     paymentConfig,
     hasStockIssues: cart.hasStockIssues,

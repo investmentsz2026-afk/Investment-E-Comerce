@@ -19,8 +19,8 @@ import {
   Lock,
   CheckCircle2,
   Calendar,
-  Sparkles,
 } from "lucide-react";
+import { FaBoxesStacked } from "react-icons/fa6";
 
 export const metadata: Metadata = {
   title: "Cotizaciones Mayoristas B2B | INVESTMENTS",
@@ -154,7 +154,7 @@ export default async function MayoristaCotizacionesPage({
                 </>
               ) : (
                 <>
-                  <Sparkles className="size-3.5 text-cochinilla" aria-hidden />
+                  <FaBoxesStacked className="size-3.5 text-cochinilla" aria-hidden />
                   <span>Canal Textil Corporativo</span>
                 </>
               )}

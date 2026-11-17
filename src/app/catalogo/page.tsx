@@ -14,11 +14,11 @@ export const instant = false;
 export const metadata: Metadata = {
   title: "Catálogo",
   description:
-    "Explora nuestra colección completa de moda premium: blazers, camisas, polos, casacas, denim y más. Venta por menor y por mayor.",
+    "Explora nuestra colección completa de Jeans, Casacas, Polos, Camisas y más en American Colt JEANS™. Venta por menor y por mayor.",
   alternates: { canonical: "/catalogo" },
   openGraph: {
     title: `Catálogo | ${siteConfig.name}`,
-    description: "Colección completa de moda premium INVESTMENTS.",
+    description: "Colección completa de moda y denim American Colt JEANS™.",
     url: "/catalogo",
   },
 };
@@ -37,20 +37,9 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   ]);
 
   return (
-    <div className="bg-paper pt-[7.5rem] lg:pt-[8.75rem]">
+    <div className="bg-paper pt-[6.5rem] lg:pt-[10.25rem]">
       <div className="shell">
         <CatalogBreadcrumbs items={[{ label: "Catálogo" }]} />
-
-        {/* Editorial header */}
-        <div className="pb-10 pt-4 lg:pb-16 lg:pt-8">
-          <h1 className="font-display text-display-lg text-ink">
-            Nuestra <em>colección.</em>
-          </h1>
-          <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed text-taupe-600">
-            Explora prendas pensadas para vestir con intención. Moda premium por menor y
-            soluciones textiles por mayor.
-          </p>
-        </div>
 
         <Suspense fallback={<CatalogSkeleton />}>
           <CatalogContent
@@ -60,6 +49,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
             totalPages={result.totalPages}
             available={available}
             categories={categories}
+            title="Shop American Colt"
           />
         </Suspense>
       </div>

@@ -4,6 +4,10 @@ import { siteConfig } from "@/config/site";
 import { AppProviders } from "@/components/providers/app-providers";
 import { SiteHeader } from "@/components/layout/header/site-header";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
+import { PromoStartupModal } from "@/components/layout/promo-startup-modal";
+import { getActivePublicPromotions } from "@/server/queries/promotions";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "@/styles/paymentfont.css";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,19 +33,20 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} — Moda premium por menor y por mayor en Perú`,
+    default: `${siteConfig.name} JEANS™ — Moda y Jeans por Menor y por Mayor en Perú`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
-    "moda Perú",
-    "ropa premium",
+    "American Colt Jeans",
+    "jeans Perú",
+    "moda peruana",
     "tienda de ropa online",
-    "venta de ropa por mayor",
+    "venta de jeans por mayor",
     "ropa al por mayor Lima",
     "prendas de vestir",
-    "uniformes corporativos",
+    "lotes mayoristas B2B",
   ],
   alternates: { canonical: "/" },
   openGraph: {
@@ -51,27 +56,29 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "INVESTMENTS — Colección 26/27" }],
+    images: [{ url: "/logo-american-colt.png", width: 1200, height: 630, alt: "American Colt JEANS™" }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
-    images: ["/og.jpg"],
+    images: ["/logo-american-colt.png"],
   },
   robots: { index: true, follow: true },
   formatDetection: { telephone: false, email: false, address: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d0c0b",
+  themeColor: "#91151b",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const activePromotions = await getActivePublicPromotions();
+
   return (
     <html
       lang={siteConfig.language}
@@ -87,9 +94,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Saltar al contenido
         </a>
         <AppProviders>
-          <SiteHeader />
+          <SiteHeader promotions={activePromotions} />
           <main id="contenido">{children}</main>
           <SiteFooter />
+          <PromoStartupModal promotions={activePromotions} />
         </AppProviders>
       </body>
     </html>

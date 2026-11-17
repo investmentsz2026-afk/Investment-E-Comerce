@@ -3,7 +3,15 @@
 import { useActionState, useState, useTransition } from "react";
 import { updateProfileAction } from "@/server/actions/account";
 import { resendVerificationEmailAction, type ActionResult } from "@/server/actions/auth";
-import { Loader2, CheckCircle2, AlertCircle, Mail, Send } from "lucide-react";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaCircleCheck,
+  FaCircleExclamation,
+  FaSpinner,
+  FaPaperPlane,
+} from "react-icons/fa6";
 
 interface ProfileFormProps {
   initialData: {
@@ -37,22 +45,22 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 text-slate-900">
       {/* Estado de verificación del correo */}
       {!initialData.emailVerifiedAt ? (
-        <div className="border border-amber-300 bg-amber-50/70 p-5 text-amber-950">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 sm:p-5 text-amber-950 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-start gap-3">
-              <Mail className="size-5 shrink-0 text-amber-700 mt-0.5" aria-hidden />
+              <FaEnvelope className="size-5 shrink-0 text-amber-600 mt-0.5" aria-hidden />
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-900">
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-900">
                   Verificación de correo pendiente
                 </p>
                 <p className="mt-1 text-xs text-amber-800 leading-relaxed">
                   Confirma tu dirección para proteger tu cuenta y recibir avisos de tus pedidos.
                 </p>
                 {resendMessage && (
-                  <p className="mt-2 text-xs font-medium text-amber-900 bg-amber-100/80 p-2 border border-amber-200">
+                  <p className="mt-2 rounded-lg border border-amber-300 bg-amber-100 p-2 text-xs font-medium text-amber-900">
                     {resendMessage}
                   </p>
                 )}
@@ -62,56 +70,69 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               type="button"
               onClick={handleResend}
               disabled={resendPending}
-              className="inline-flex shrink-0 items-center justify-center gap-2 border border-amber-900/30 bg-amber-100 px-4 py-2.5 text-[0.68rem] font-medium uppercase tracking-[0.14em] text-amber-950 transition-colors hover:bg-amber-200 disabled:opacity-50"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-amber-400 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-amber-800 transition-colors hover:bg-amber-100 disabled:opacity-50 shadow-xs"
             >
               {resendPending ? (
                 <>
-                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                  Enviando...
+                  <FaSpinner className="size-3.5 animate-spin" aria-hidden />
+                  <span>Enviando...</span>
                 </>
               ) : (
                 <>
-                  <Send className="size-3" aria-hidden />
-                  Reenviar enlace
+                  <FaPaperPlane className="size-3" aria-hidden />
+                  <span>Reenviar enlace</span>
                 </>
               )}
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 text-xs text-emerald-800 bg-emerald-50/70 border border-emerald-200 p-3">
-          <CheckCircle2 className="size-4 shrink-0 text-emerald-700" aria-hidden />
-          <span>Dirección de correo electrónico verificada</span>
+        <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-emerald-900 shadow-xs">
+          <FaCircleCheck className="size-4 shrink-0 text-emerald-600" aria-hidden />
+          <span className="font-semibold">Dirección de correo electrónico confirmada y protegida</span>
         </div>
       )}
 
       {/* Formulario de actualización de datos */}
-      <form action={formAction} className="border border-ink/10 bg-paper p-6 sm:p-8 space-y-6">
-        <div>
-          <h2 className="font-display text-xl text-ink">Información personal</h2>
-          <p className="mt-1 text-xs text-taupe-500">
-            Actualiza tu nombre y teléfono de contacto para tus futuras compras y entregas.
+      <form
+        action={formAction}
+        className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-6 shadow-sm"
+      >
+        <div className="border-b border-slate-100 pb-4">
+          <h2 className="text-lg font-black uppercase tracking-tight text-slate-900 sm:text-xl">
+            Información Personal y Contacto
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Actualiza tus nombres y celular para despachos con Olva Courier y Shalom a todo el Perú.
           </p>
         </div>
 
         {updateState.success && (
-          <div className="flex items-center gap-2 border-l-2 border-emerald-600 bg-emerald-50/60 p-3.5 text-xs text-emerald-900">
-            <CheckCircle2 className="size-4 shrink-0 text-emerald-700" aria-hidden />
-            <span>{typeof updateState.data === "string" ? updateState.data : "Datos actualizados correctamente"}</span>
+          <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-900 font-medium">
+            <FaCircleCheck className="size-4 shrink-0 text-emerald-600" aria-hidden />
+            <span>
+              {typeof updateState.data === "string"
+                ? updateState.data
+                : "Tus datos han sido actualizados correctamente"}
+            </span>
           </div>
         )}
 
         {updateState.error && (
-          <div className="flex items-start gap-2 border-l-2 border-cochinilla bg-cochinilla/5 p-3.5 text-xs text-cochinilla">
-            <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden />
+          <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 font-medium">
+            <FaCircleExclamation className="size-4 shrink-0 text-[#EF233C] mt-0.5" aria-hidden />
             <span>{updateState.error}</span>
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="pf-first-name" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Nombres
+            <label
+              htmlFor="pf-first-name"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              <FaUser className="size-3 text-[#0055FF]" aria-hidden />
+              <span>Nombres</span>
             </label>
             <input
               id="pf-first-name"
@@ -120,13 +141,17 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               required
               defaultValue={initialData.firstName}
               disabled={isUpdating}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
             />
           </div>
 
           <div>
-            <label htmlFor="pf-last-name" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Apellidos
+            <label
+              htmlFor="pf-last-name"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              <FaUser className="size-3 text-[#0055FF]" aria-hidden />
+              <span>Apellidos</span>
             </label>
             <input
               id="pf-last-name"
@@ -135,57 +160,68 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               required
               defaultValue={initialData.lastName}
               disabled={isUpdating}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="pf-email" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Correo electrónico
+            <label
+              htmlFor="pf-email"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              <FaEnvelope className="size-3 text-[#0055FF]" aria-hidden />
+              <span>Correo electrónico</span>
             </label>
             <input
               id="pf-email"
               type="email"
               disabled
               value={initialData.email}
-              className="mt-2 block w-full border border-ink/10 bg-ink/[0.03] px-3.5 py-2.5 text-sm text-taupe-700 cursor-not-allowed"
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 py-2.5 font-mono text-sm text-slate-500 cursor-not-allowed"
             />
-            <p className="mt-1 text-[0.65rem] text-taupe-400">
-              El correo no se puede modificar directamente por seguridad.
+            <p className="mt-1 text-[0.68rem] text-slate-500">
+              Para cambiar tu correo registrado, contáctanos por soporte oficial.
             </p>
           </div>
 
           <div>
-            <label htmlFor="pf-phone" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Teléfono de contacto
+            <label
+              htmlFor="pf-phone"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              <FaPhone className="size-3 text-[#0055FF]" aria-hidden />
+              <span>Teléfono móvil (Perú)</span>
             </label>
             <input
               id="pf-phone"
               name="phone"
               type="tel"
-              placeholder="987 654 321"
               defaultValue={initialData.phone ?? ""}
+              placeholder="Ej: 926922583"
               disabled={isUpdating}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 font-mono text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
             />
+            <p className="mt-1 text-[0.68rem] text-slate-500">
+              9 dígitos peruanos para notificaciones de seguimiento de paquetes.
+            </p>
           </div>
         </div>
 
-        <div className="pt-2 flex justify-end">
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
             disabled={isUpdating}
-            className="inline-flex items-center gap-2 bg-ink px-6 py-3 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-60 cursor-pointer"
           >
             {isUpdating ? (
               <>
-                <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                Guardando cambios...
+                <FaSpinner className="size-3.5 animate-spin" aria-hidden />
+                <span>Guardando cambios...</span>
               </>
             ) : (
-              "Guardar cambios"
+              <span>Guardar Información</span>
             )}
           </button>
         </div>

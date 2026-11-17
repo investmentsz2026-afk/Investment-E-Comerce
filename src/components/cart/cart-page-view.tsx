@@ -4,20 +4,21 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ShoppingBag,
   Trash2,
   Plus,
   Minus,
   ArrowRight,
   AlertCircle,
   CheckCircle2,
-  Sparkles,
   FileText,
   Loader2,
   ShieldCheck,
   Building2,
+  Pencil,
 } from "lucide-react";
+import { FaBoxesStacked } from "react-icons/fa6";
 import { useCart } from "./cart-provider";
+import { CartVariantEditor } from "./cart-variant-editor";
 import { formatPEN } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +83,7 @@ export function CartPageView() {
     errorMessage,
     clearError,
   } = useCart();
+  const [editingVariantId, setEditingVariantId] = useState<number | null>(null);
 
   if (isLoading && cart.items.length === 0) {
     return (
@@ -96,40 +98,81 @@ export function CartPageView() {
 
   if (cart.items.length === 0) {
     return (
-      <div className="border border-ink/10 bg-[#fbfaf7] px-6 py-16 text-center sm:px-12 sm:py-24">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-full border border-ink/15 bg-paper text-taupe-600">
-          <ShoppingBag className="size-7" aria-hidden />
+      <div className="rounded-3xl border border-neutral-200/80 bg-[#FAF8F5] px-6 py-16 text-center sm:px-12 sm:py-24 shadow-xs">
+        {/* Ilustración de la Bolsa con pespunte rojo */}
+        <div className="relative mx-auto flex h-44 w-48 items-center justify-center">
+          <div className="absolute bottom-1 h-4 w-36 rounded-[50%] bg-neutral-900/5 blur-[3px]" />
+          <svg
+            viewBox="0 0 160 140"
+            className="h-36 w-40 drop-shadow-xs"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M56 52 V30 C56 18 67 12 80 12 C93 12 104 18 104 30 V52"
+              stroke="#1E1E1E"
+              strokeWidth="3.2"
+              strokeLinecap="round"
+            />
+            <polygon
+              points="115,48 127,51 121,118 109,114"
+              fill="#ECE7DE"
+              stroke="#1E1E1E"
+              strokeWidth="2.8"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M127 51 L115 116"
+              stroke="#1E1E1E"
+              strokeWidth="1.8"
+              strokeDasharray="3 3"
+            />
+            <polygon
+              points="45,48 115,48 109,114 39,114"
+              fill="#FFFFFF"
+              stroke="#1E1E1E"
+              strokeWidth="2.8"
+              strokeLinejoin="round"
+            />
+            <polygon
+              points="50,54 110,54 105,108 44,108"
+              stroke="#801323"
+              strokeWidth="2"
+              strokeDasharray="4 3"
+              fill="none"
+            />
+          </svg>
         </div>
-        <p className="mt-5 eyebrow text-taupe-500">Bolsa de compras</p>
-        <h2 className="mt-2 font-display text-display-sm text-ink">
-          Tu bolsa está <em>vacía.</em>
+
+        <h2 className="mt-4 font-display font-serif text-3xl font-bold tracking-tight text-neutral-900">
+          Tu bolsa está vacía
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-taupe-600">
-          Aún no has agregado prendas a tu bolsa. Descubre nuestras piezas de sastrería contemporánea, básicos de algodón pima y colecciones por mayor.
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-neutral-600">
+          Encuentra tu próxima prenda en el catálogo. Descubre nuestros Jeans Ring Spun, Pantalones Drill y Camisas de algodón peruano.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/catalogo"
-            className="inline-flex h-12 items-center justify-center gap-2 bg-ink px-7 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-8 text-xs font-bold text-white shadow-md shadow-[#801323]/25 transition-all active:scale-95"
           >
-            Explorar catálogo
+            <span>Explorar catálogo</span>
             <ArrowRight className="size-3.5" aria-hidden />
           </Link>
           {cart.isWholesaleAuthorized ? (
             <Link
               href="/mayorista/cotizaciones"
-              className="inline-flex h-12 items-center justify-center gap-2 border border-ink/20 bg-paper px-6 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-ink transition-colors hover:border-ink"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 text-xs font-bold text-neutral-800 transition-colors hover:border-black"
             >
               <FileText className="size-3.5" aria-hidden />
-              Solicitar cotización B2B
+              <span>Solicitar cotización B2B</span>
             </Link>
           ) : (
             <Link
               href="/mayorista/registro"
-              className="inline-flex h-12 items-center justify-center gap-2 border border-ink/20 bg-paper px-6 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-ink transition-colors hover:border-ink"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 text-xs font-bold text-neutral-800 transition-colors hover:border-black"
             >
               <Building2 className="size-3.5" aria-hidden />
-              Programa Mayorista B2B
+              <span>Programa Mayorista B2B</span>
             </Link>
           )}
         </div>
@@ -143,7 +186,7 @@ export function CartPageView() {
       {cart.isWholesaleAuthorized ? (
         <div className="flex flex-col justify-between gap-4 border border-emerald-300 bg-emerald-50/80 p-5 text-emerald-950 sm:flex-row sm:items-center">
           <div className="flex items-start gap-3">
-            <Sparkles className="mt-0.5 size-5 shrink-0 text-emerald-700" aria-hidden />
+            <FaBoxesStacked className="mt-0.5 size-5 shrink-0 text-emerald-700" aria-hidden />
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-900">
                 Modalidad Empresarial B2B Activa
@@ -297,6 +340,33 @@ export function CartPageView() {
                           {item.pricing.appliedLabel}
                         </span>
                       </div>
+
+                      {/* Botón Editar Talla y Color */}
+                      <div className="mt-2.5">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingVariantId(
+                              editingVariantId === item.variantId ? null : item.variantId,
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0055FF] hover:underline transition-colors"
+                        >
+                          <Pencil className="size-3" aria-hidden />
+                          <span>Editar talla y color</span>
+                        </button>
+                      </div>
+
+                      {/* Editor Inline de Variante */}
+                      {editingVariantId === item.variantId && (
+                        <div className="mt-3 max-w-md">
+                          <CartVariantEditor
+                            item={item}
+                            onClose={() => setEditingVariantId(null)}
+                            onSaved={() => setEditingVariantId(null)}
+                          />
+                        </div>
+                      )}
 
                       {/* Escalas mayoristas si el producto tiene tramos configurados */}
                       {item.pricing.wholesaleTiers.length > 0 && (

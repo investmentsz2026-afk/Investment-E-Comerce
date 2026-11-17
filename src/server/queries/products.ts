@@ -48,6 +48,9 @@ const productRelations = {
 export function toCardProduct(row: ProductRecord): CatalogProduct {
   const variants = activeVariants(row.variants);
   const primaryImage = row.images.find((i) => i.isPrimary) ?? row.images[0];
+  const secondaryImage =
+    row.images.find((i) => i.id !== primaryImage?.id && i.url.includes("-closeup")) ??
+    row.images.find((i) => i.id !== primaryImage?.id);
   const retailPrice = row.prices.find((p) => p.type === "retail");
   const wholesalePrice = row.prices
     .filter((p) => p.type === "wholesale")
@@ -94,6 +97,12 @@ export function toCardProduct(row: ProductRecord): CatalogProduct {
       src: primaryImage?.url ?? "/placeholder.jpg",
       alt: primaryImage?.alt ?? row.name,
     },
+    hoverImage: secondaryImage
+      ? {
+          src: secondaryImage.url,
+          alt: secondaryImage.alt || `Detalle de prenda ${row.name}`,
+        }
+      : undefined,
     wholesale: wholesalePrice
       ? { minQuantity: wholesalePrice.minQuantity, unitPrice: wholesalePrice.amount }
       : undefined,

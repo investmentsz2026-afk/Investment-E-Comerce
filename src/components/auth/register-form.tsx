@@ -135,7 +135,7 @@ export function RegisterForm() {
           <span className="text-xs leading-relaxed text-taupe-600">
             Acepto los{" "}
             <span className="text-ink underline underline-offset-4">Términos y Condiciones</span> y la{" "}
-            <span className="text-ink underline underline-offset-4">Política de Privacidad</span> de INVESTMENTS, conforme a la Ley de Protección de Datos Personales del Perú.
+            <span className="text-ink underline underline-offset-4">Política de Privacidad</span> de American Colt JEANS™, conforme a la Ley de Protección de Datos Personales del Perú.
           </span>
         </label>
       </div>

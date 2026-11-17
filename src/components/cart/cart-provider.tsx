@@ -16,6 +16,7 @@ import {
   fetchCartSnapshotAction,
   addToCartAction,
   updateCartItemQuantityAction,
+  updateCartItemVariantAction,
   removeCartItemAction,
   clearCartAction,
 } from "@/server/actions/cart";
@@ -55,6 +56,10 @@ interface CartContextValue {
   updateQuantity: (params: {
     variantId: number;
     quantity: number;
+  }) => Promise<{ success: boolean; error?: string }>;
+  updateVariant: (params: {
+    currentVariantId: number;
+    newVariantId: number;
   }) => Promise<{ success: boolean; error?: string }>;
   removeItem: (variantId: number) => Promise<{ success: boolean; error?: string }>;
   clearCart: () => Promise<{ success: boolean; error?: string }>;
@@ -181,6 +186,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const updateVariant = useCallback(
+    async ({
+      currentVariantId,
+      newVariantId,
+    }: {
+      currentVariantId: number;
+      newVariantId: number;
+    }) => {
+      mutationSeqRef.current += 1;
+      setErrorMessage(null);
+      setPendingVariantId(currentVariantId);
+
+      try {
+        const res = await updateCartItemVariantAction({ currentVariantId, newVariantId });
+        if (!res.success || !res.data) {
+          const msg = res.error ?? "No se pudo actualizar la talla o color.";
+          setErrorMessage(msg);
+          notify({
+            title: "Atención al cambiar variante",
+            description: msg,
+          });
+          return { success: false, error: msg };
+        }
+
+        const updatedSnapshot = res.data;
+        startTransition(() => {
+          setCart(updatedSnapshot);
+        });
+
+        notify({
+          title: "Prenda actualizada",
+          description: "Se guardaron la talla y el color seleccionados correctamente.",
+        });
+
+        return { success: true };
+      } finally {
+        setPendingVariantId(null);
+      }
+    },
+    [notify],
+  );
+
   const removeItem = useCallback(async (variantId: number) => {
     mutationSeqRef.current += 1;
     setErrorMessage(null);
@@ -235,6 +282,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       refreshCart,
       addItem,
       updateQuantity,
+      updateVariant,
       removeItem,
       clearCart,
     }),
@@ -251,6 +299,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       refreshCart,
       addItem,
       updateQuantity,
+      updateVariant,
       removeItem,
       clearCart,
     ],

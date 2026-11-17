@@ -3,8 +3,8 @@ import { AuthCard } from "@/components/auth/auth-card";
 import { RequestResetForm } from "@/components/auth/request-reset-form";
 
 export const metadata: Metadata = {
-  title: "Recuperar contraseña | INVESTMENTS",
-  description: "Solicita un enlace para restablecer el acceso a tu cuenta en INVESTMENTS.",
+  title: "Recuperar contraseña | American Colt JEANS™",
+  description: "Solicita un enlace para restablecer el acceso a tu cuenta en American Colt JEANS™.",
   robots: { index: false, follow: false },
 };
 

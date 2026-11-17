@@ -1189,6 +1189,9 @@ export const newsletterSubscribers = pgTable(
   "newsletter_subscribers",
   {
     id: serial("id").primaryKey(),
+    firstName: varchar("first_name", { length: 120 }).default("").notNull(),
+    lastName: varchar("last_name", { length: 120 }).default("").notNull(),
+    phone: varchar("phone", { length: 30 }).default("").notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -1198,6 +1201,78 @@ export const newsletterSubscribers = pgTable(
     uniqueIndex("newsletter_subscribers_email_idx").on(t.email),
   ],
 );
+
+// ──────────────────────────────────────────────────────────────
+// Phase 7.5: Solicitudes de Cambios y Devoluciones de Prendas
+// ──────────────────────────────────────────────────────────────
+
+export const productReturns = pgTable(
+  "product_returns",
+  {
+    id: serial("id").primaryKey(),
+    ticketNumber: varchar("ticket_number", { length: 50 }).notNull(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    customerName: varchar("customer_name", { length: 150 }).notNull(),
+    customerEmail: varchar("customer_email", { length: 255 }).notNull(),
+    customerPhone: varchar("customer_phone", { length: 30 }).notNull(),
+    orderNumber: varchar("order_number", { length: 60 }).notNull(),
+    taxDocNumber: varchar("tax_doc_number", { length: 60 }).default(""),
+    requestType: varchar("request_type", { length: 50 }).default("cambio_talla").notNull(),
+    reason: varchar("reason", { length: 255 }).notNull(),
+    currentProductDetails: text("current_product_details").notNull(),
+    requestedProductDetails: text("requested_product_details").notNull(),
+    customerNotes: text("customer_notes").default(""),
+    /** Array serializado en JSON con Data URLs o URLs de las fotos de sustento */
+    images: text("images").default("[]").notNull(),
+    /** Estado del trámite: pending, in_review, approved, completed, rejected */
+    status: varchar("status", { length: 40 }).default("pending").notNull(),
+    adminNotes: text("admin_notes").default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("product_returns_ticket_idx").on(t.ticketNumber),
+    index("product_returns_user_idx").on(t.userId),
+    index("product_returns_status_idx").on(t.status),
+    index("product_returns_order_idx").on(t.orderNumber),
+    index("product_returns_created_idx").on(t.createdAt),
+  ],
+);
+
+export const productReturnsRelations = relations(productReturns, ({ one }) => ({
+  user: one(users, {
+    fields: [productReturns.userId],
+    references: [users.id],
+  }),
+}));
+
+export const physicalStores = pgTable(
+  "physical_stores",
+  {
+    id: serial("id").primaryKey(),
+    code: varchar("code", { length: 60 }).notNull(),
+    name: varchar("name", { length: 150 }).notNull(),
+    department: varchar("department", { length: 80 }).default("Lima").notNull(),
+    province: varchar("province", { length: 80 }).default("Lima").notNull(),
+    district: varchar("district", { length: 80 }).notNull(),
+    address: varchar("address", { length: 255 }).notNull(),
+    reference: varchar("reference", { length: 255 }),
+    phone: varchar("phone", { length: 30 }),
+    openingHours: varchar("opening_hours", { length: 150 }).default("Lunes a Sábado: 10:00 am - 8:00 pm").notNull(),
+    googleMapsUrl: text("google_maps_url"),
+    isActive: boolean("is_active").default(true).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("physical_stores_code_idx").on(t.code),
+    index("physical_stores_active_idx").on(t.isActive),
+    index("physical_stores_district_idx").on(t.district),
+  ],
+);
+
+
 
 
 

@@ -3,7 +3,14 @@ import { requireAuth } from "@/server/auth/session";
 import { getUserOrdersList } from "@/server/queries/orders";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/orders/order-status-badge";
 import { formatPEN } from "@/lib/format";
-import { Package, ArrowRight, FileText, Truck, Calendar } from "lucide-react";
+import {
+  FaBoxArchive,
+  FaArrowRight,
+  FaFileInvoice,
+  FaTruckFast,
+  FaCalendarDays,
+  FaBagShopping,
+} from "react-icons/fa6";
 
 export const instant = false;
 
@@ -12,41 +19,43 @@ export default async function OrdersPage() {
   const ordersList = await getUserOrdersList(user.id);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 pb-4">
+    <div className="space-y-6 text-slate-900">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-4">
         <div>
-          <h2 className="font-display text-2xl text-ink">Historial de Pedidos</h2>
-          <p className="mt-1 text-xs text-taupe-500">
-            Revisa el estado de tus compras, pagos, seguimiento de despacho y comprobantes electrónicos.
+          <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900">
+            Historial de Pedidos
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Revisa el estado de tus compras, pagos con pasarela y despacho oficial de American Colt JEANS™.
           </p>
         </div>
         <Link
           href="/catalogo"
-          className="inline-flex h-10 items-center justify-center border border-ink/20 bg-paper px-4 font-mono text-xs uppercase tracking-wider text-ink hover:border-ink"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-[#0055FF] hover:text-[#0055FF] shadow-xs transition-colors"
         >
-          Explorar catálogo
+          <FaBagShopping className="size-3.5 text-[#0055FF]" />
+          <span>Explorar Catálogo</span>
         </Link>
       </div>
 
       {ordersList.length === 0 ? (
-        <div className="border border-dashed border-ink/20 bg-paper/50 p-12 text-center sm:p-16">
-          <Package className="mx-auto size-10 text-taupe-400" aria-hidden />
-          <h3 className="mt-4 font-display text-lg text-ink">
+        <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center sm:p-16 shadow-xs">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-blue-50 text-[#0055FF] border border-blue-100 shadow-xs">
+            <FaBoxArchive className="size-8" aria-hidden />
+          </div>
+          <h3 className="mt-5 text-xl font-black uppercase tracking-tight text-slate-900">
             Aún no tienes pedidos registrados
           </h3>
-          <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-taupe-500">
-            Cuando realices una compra de nuestras colecciones minoristas o mayoristas, aquí podrás dar seguimiento a tu paquete y consultar tus comprobantes.
+          <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-slate-500">
+            Cuando realices una compra de nuestras colecciones minoristas o lotes mayoristas, aquí podrás seguir el despacho en tiempo real y consultar tus comprobantes de SUNAT.
           </p>
           <div className="mt-6">
             <Link
               href="/catalogo"
-              className="group inline-flex items-center gap-2 bg-ink px-5 py-3 text-[0.7rem] font-medium uppercase tracking-[0.16em] text-paper transition-colors hover:bg-cochinilla"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-500/20 transition-all active:scale-95"
             >
-              Explorar catálogo
-              <ArrowRight
-                className="size-3.5 transition-transform group-hover:translate-x-1"
-                aria-hidden
-              />
+              <span>Explorar Prendas Ahora</span>
+              <FaArrowRight className="size-3" aria-hidden />
             </Link>
           </div>
         </div>
@@ -56,22 +65,22 @@ export default async function OrdersPage() {
             <article
               key={ord.id}
               data-testid={`customer-order-card-${ord.orderNumber}`}
-              className="border border-ink/15 bg-[#fbfaf7] p-5 transition-colors hover:border-ink/40 sm:p-6"
+              className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-shadow hover:shadow-md space-y-4"
             >
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-ink/10 pb-4">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-sm font-bold uppercase tracking-wider text-ink">
+                    <span className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
                       {ord.orderNumber}
                     </span>
                     <OrderStatusBadge status={ord.status} />
                     <PaymentStatusBadge status={ord.paymentStatus} />
-                    <span className="border border-ink/15 bg-paper px-2 py-0.5 font-mono text-[0.6rem] uppercase text-taupe-600">
+                    <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 font-mono text-[0.62rem] font-bold uppercase tracking-wider text-[#0055FF]">
                       {ord.orderMode === "wholesale" ? "Mayorista B2B" : "Minorista B2C"}
                     </span>
                   </div>
-                  <p className="mt-1.5 flex items-center gap-2 font-mono text-xs text-taupe-500">
-                    <Calendar className="size-3.5" aria-hidden />
+                  <p className="mt-2 flex items-center gap-2 font-mono text-xs text-slate-500">
+                    <FaCalendarDays className="size-3 text-[#0055FF]" aria-hidden />
                     <span>
                       Emitido el{" "}
                       {new Date(ord.createdAt).toLocaleDateString("es-PE", {
@@ -89,29 +98,29 @@ export default async function OrdersPage() {
                 </div>
 
                 <div className="text-right">
-                  <span className="block font-mono text-[0.62rem] uppercase text-taupe-500">
+                  <span className="block font-mono text-[0.62rem] font-bold uppercase tracking-wider text-slate-400">
                     Total del Pedido
                   </span>
-                  <span className="font-display text-2xl font-bold tabular-nums text-ink">
+                  <span className="text-2xl font-black tabular-nums text-slate-900">
                     {formatPEN(ord.totalAmount)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div className="space-y-1 text-taupe-600">
-                  <p className="flex items-center gap-1.5">
-                    <Truck className="size-3.5 text-ink" aria-hidden />
+              <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
+                <div className="space-y-1.5 text-slate-600">
+                  <p className="flex items-center gap-2">
+                    <FaTruckFast className="size-3.5 text-[#0055FF]" aria-hidden />
                     <span>
-                      Entrega en: <strong className="text-ink">{ord.shippingDistrict}, {ord.shippingProvince} ({ord.shippingDepartment})</strong>
+                      Destino: <strong className="text-slate-900">{ord.shippingDistrict}, {ord.shippingProvince} ({ord.shippingDepartment})</strong>
                     </span>
                   </p>
                   {ord.taxDocument && (
-                    <p className="flex items-center gap-1.5">
-                      <FileText className="size-3.5 text-ink" aria-hidden />
+                    <p className="flex items-center gap-2">
+                      <FaFileInvoice className="size-3.5 text-emerald-600" aria-hidden />
                       <span>
-                        Comprobante:{" "}
-                        <strong className="uppercase text-ink">
+                        Comprobante SUNAT:{" "}
+                        <strong className="uppercase text-slate-900">
                           {ord.taxDocument.documentType} ({ord.billingDocType} {ord.billingDocNumber})
                         </strong>
                       </span>
@@ -122,10 +131,10 @@ export default async function OrdersPage() {
                 <Link
                   href={`/cuenta/pedidos/${ord.id}`}
                   data-testid={`view-order-detail-${ord.orderNumber}`}
-                  className="inline-flex h-10 items-center justify-center gap-2 bg-ink px-5 font-mono text-xs font-medium uppercase tracking-wider text-paper transition-colors hover:bg-cochinilla"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-5 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-colors"
                 >
-                  <span>Ver detalle y comprobante</span>
-                  <ArrowRight className="size-3.5" aria-hidden />
+                  <span>Ver Detalle y Comprobante</span>
+                  <FaArrowRight className="size-3" aria-hidden />
                 </Link>
               </div>
             </article>

@@ -48,24 +48,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   ]);
 
   return (
-    <div className="bg-paper pt-[7.5rem] lg:pt-[8.75rem]">
+    <div className="bg-paper pt-[6.5rem] lg:pt-[10.25rem]">
       <div className="shell">
+        <div className="sr-only">
+          <h1>{category.name}</h1>
+        </div>
         <CatalogBreadcrumbs
           items={[
             { label: "Catálogo", href: "/catalogo" },
             { label: category.name },
           ]}
         />
-
-        {/* Editorial header */}
-        <div className="pb-10 pt-4 lg:pb-16 lg:pt-8">
-          <h1 className="font-display text-display-lg text-ink">{category.name}</h1>
-          {category.description && (
-            <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed text-taupe-600">
-              {category.description}
-            </p>
-          )}
-        </div>
 
         <CatalogContent
           products={result.items}
@@ -74,6 +67,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           totalPages={result.totalPages}
           available={available}
           categories={categories}
+          title={`Shop ${category.name}`}
         />
       </div>
     </div>

@@ -3,7 +3,15 @@
 import { useActionState, useState, useTransition } from "react";
 import { createAddressAction, deleteAddressAction, setDefaultAddressAction } from "@/server/actions/account";
 import type { ActionResult } from "@/server/actions/auth";
-import { Plus, Trash2, MapPin, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import {
+  FaPlus,
+  FaTrashCan,
+  FaLocationDot,
+  FaCircleCheck,
+  FaCircleExclamation,
+  FaSpinner,
+  FaHouse,
+} from "react-icons/fa6";
 
 interface Address {
   id: number;
@@ -55,181 +63,203 @@ export function AddressList({ addresses }: { addresses: Address[] }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-ink/10 pb-4">
+    <div className="space-y-6 text-slate-900">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-4">
         <div>
-          <h2 className="font-display text-xl text-ink">Libreta de direcciones</h2>
-          <p className="mt-1 text-xs text-taupe-500">
-            Administra los domicilios de envío para tus compras en INVESTMENTS.
+          <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900">
+            Libreta de Direcciones
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Administra los domicilios de entrega para tus envíos por Olva Courier, Shalom o recojo comercial.
           </p>
         </div>
         {!showAddForm && (
           <button
             type="button"
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 bg-ink px-4 py-2.5 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-paper transition-colors hover:bg-cochinilla"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-colors cursor-pointer"
           >
-            <Plus className="size-3.5" aria-hidden />
-            Nueva dirección
+            <FaPlus className="size-3" aria-hidden />
+            <span>Nueva Dirección</span>
           </button>
         )}
       </div>
 
       {showAddForm && (
-        <form action={formAction} className="border border-ink/15 bg-paper p-6 sm:p-8 space-y-5">
-          <div className="flex items-center justify-between border-b border-ink/10 pb-3">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">Agregar nueva dirección</h3>
+        <form
+          action={formAction}
+          className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">
+              Registrar Nueva Dirección de Entrega
+            </h3>
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="text-xs text-taupe-500 hover:text-ink"
+              className="text-xs font-bold text-slate-400 hover:text-slate-700"
             >
               Cancelar
             </button>
           </div>
 
           {createState.error && (
-            <div className="flex items-start gap-2 border-l-2 border-cochinilla bg-cochinilla/5 p-3 text-xs text-cochinilla">
-              <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden />
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 font-medium">
+              <FaCircleExclamation className="size-4 shrink-0 text-[#EF233C] mt-0.5" aria-hidden />
               <span>{createState.error}</span>
             </div>
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                Etiqueta (ej: Casa, Oficina)
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Identificador de la dirección *
               </label>
               <input
                 name="title"
                 type="text"
-                defaultValue="Casa"
                 required
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+                placeholder="Ej: Casa, Almacén Central, Oficina"
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
               />
             </div>
+
             <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                Nombre de quien recibe
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Nombre de quien recibe *
               </label>
               <input
                 name="recipientName"
                 type="text"
                 required
-                placeholder="Nombre y Apellidos"
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+                placeholder="Nombre y Apellidos completos"
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">Teléfono de contacto</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Teléfono de contacto para el repartidor *
+              </label>
               <input
                 name="recipientPhone"
                 type="tel"
                 required
                 placeholder="987 654 321"
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50 font-mono"
               />
             </div>
+
             <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">Departamento</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Departamento *
+              </label>
               <input
                 name="department"
                 type="text"
                 required
                 defaultValue="Lima"
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">Provincia / Distrito</label>
-              <div className="grid grid-cols-2 gap-2 mt-1.5">
-                <input
-                  name="province"
-                  type="text"
-                  required
-                  defaultValue="Lima"
-                  placeholder="Provincia"
-                  className="block w-full border border-ink/20 bg-transparent px-2.5 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-                />
-                <input
-                  name="district"
-                  type="text"
-                  required
-                  placeholder="Miraflores"
-                  className="block w-full border border-ink/20 bg-transparent px-2.5 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-                />
-              </div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Provincia *
+              </label>
+              <input
+                name="province"
+                type="text"
+                required
+                defaultValue="Lima"
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Distrito *
+              </label>
+              <input
+                name="district"
+                type="text"
+                required
+                placeholder="Miraflores / La Victoria / Trujillo..."
+                disabled={isCreating}
+                className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
+              />
             </div>
           </div>
 
           <div>
-            <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Dirección de entrega (Calle, Av., Jr., Número)
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Dirección exacta (Calle, Av., N°, Dpto / Mz / Lote) *
             </label>
             <input
               name="addressLine1"
               type="text"
               required
-              placeholder="Av. José Larco 1234"
-              className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+              placeholder="Av. Larco 450, Dpto 502"
+              disabled={isCreating}
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                Dpto., Interior, Oficina (Opcional)
-              </label>
-              <input
-                name="addressLine2"
-                type="text"
-                placeholder="Dpto. 502"
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                Referencia (Opcional)
-              </label>
-              <input
-                name="reference"
-                type="text"
-                placeholder="Frente al parque o esquina"
-                className="mt-1.5 block w-full border border-ink/20 bg-transparent px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 pt-1">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Referencia de llegada (Opcional)
+            </label>
             <input
-              id="isDefault"
-              name="isDefault"
-              type="checkbox"
-              className="size-4 rounded-none border-ink/30 text-ink focus:ring-ink"
+              name="reference"
+              type="text"
+              placeholder="Frente al parque, portón blanco, timbre 2..."
+              disabled={isCreating}
+              className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#0055FF] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0055FF] disabled:opacity-50"
             />
-            <label htmlFor="isDefault" className="text-xs text-taupe-700 cursor-pointer">
-              Establecer como dirección de entrega predeterminada
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="isDefault"
+                disabled={isCreating}
+                className="size-4 rounded border-slate-300 text-[#0055FF] focus:ring-[#0055FF]"
+              />
+              <span>Establecer como dirección de entrega principal</span>
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-ink/10">
+          <div className="pt-2 flex justify-end gap-3">
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] text-taupe-600 hover:text-ink"
+              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isCreating}
-              className="inline-flex items-center gap-2 bg-ink px-5 py-2.5 text-[0.7rem] font-medium uppercase tracking-[0.16em] text-paper transition-colors hover:bg-cochinilla disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-all disabled:opacity-60 cursor-pointer"
             >
-              {isCreating ? <Loader2 className="size-3.5 animate-spin" /> : null}
-              {isCreating ? "Guardando..." : "Guardar dirección"}
+              {isCreating ? (
+                <>
+                  <FaSpinner className="size-3.5 animate-spin" />
+                  <span>Guardando...</span>
+                </>
+              ) : (
+                <span>Guardar Dirección</span>
+              )}
             </button>
           </div>
         </form>
@@ -237,76 +267,88 @@ export function AddressList({ addresses }: { addresses: Address[] }) {
 
       {/* Lista de direcciones existentes */}
       {addresses.length === 0 && !showAddForm ? (
-        <div className="border border-dashed border-ink/20 bg-paper/50 p-12 text-center">
-          <MapPin className="mx-auto size-8 text-taupe-400" aria-hidden />
-          <p className="mt-3 text-sm font-medium text-ink">Aún no tienes direcciones registradas</p>
-          <p className="mt-1 text-xs text-taupe-500">
-            Agrega tu primera dirección para agilizar tus futuras compras en INVESTMENTS.
+        <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center sm:p-16 shadow-xs">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-blue-50 border border-blue-100 text-[#0055FF]">
+            <FaLocationDot className="size-7" aria-hidden />
+          </div>
+          <h3 className="mt-4 text-xl font-black uppercase tracking-tight text-slate-900">
+            Aún no tienes direcciones registradas
+          </h3>
+          <p className="mx-auto mt-2 max-w-sm text-xs text-slate-500 leading-relaxed">
+            Agrega tu primera dirección de entrega en Lima o provincias para agilizar tus compras en American Colt JEANS™.
           </p>
-          <button
-            type="button"
-            onClick={() => setShowAddForm(true)}
-            className="mt-5 inline-flex items-center gap-2 bg-ink px-4 py-2.5 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-paper transition-colors hover:bg-cochinilla"
-          >
-            <Plus className="size-3.5" aria-hidden />
-            Registrar dirección
-          </button>
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => setShowAddForm(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+            >
+              <FaPlus className="size-3" aria-hidden />
+              <span>Registrar Primera Dirección</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {addresses.map((addr) => (
             <div
               key={addr.id}
-              className={`relative border p-5 transition-shadow bg-paper ${
-                addr.isDefault ? "border-ink shadow-sm" : "border-ink/15 hover:border-ink/40"
+              className={`relative rounded-2xl border p-5 shadow-xs transition-shadow ${
+                addr.isDefault
+                  ? "border-[#0055FF] bg-blue-50/20 shadow-sm"
+                  : "border-slate-200/80 bg-white hover:border-slate-300"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-xs uppercase tracking-[0.12em] text-ink">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <FaHouse className="size-3.5 text-[#0055FF]" aria-hidden />
+                  <span className="font-bold text-xs uppercase tracking-wider text-slate-900">
                     {addr.title}
                   </span>
                   {addr.isDefault ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 text-[0.6rem] font-semibold text-paper">
-                      <CheckCircle2 className="size-2.5" /> Predeterminada
+                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-widest text-[#0055FF]">
+                      <FaCircleCheck className="size-2.5" /> Principal
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={() => handleSetDefault(addr.id)}
                       disabled={isSettingDefault && defaultingId === addr.id}
-                      className="text-[0.65rem] font-medium uppercase tracking-wider text-taupe-500 underline underline-offset-2 hover:text-ink disabled:opacity-50"
+                      className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400 underline hover:text-[#0055FF] disabled:opacity-50"
                     >
                       {isSettingDefault && defaultingId === addr.id ? "Guardando..." : "Usar como principal"}
                     </button>
                   )}
                 </div>
+
                 <button
                   type="button"
                   onClick={() => handleDelete(addr.id)}
                   disabled={isDeleting && deletingId === addr.id}
                   aria-label={`Eliminar dirección ${addr.title}`}
-                  className="text-taupe-400 hover:text-cochinilla transition-colors p-1"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-[#EF233C]"
                 >
                   {isDeleting && deletingId === addr.id ? (
-                    <Loader2 className="size-4 animate-spin text-cochinilla" />
+                    <FaSpinner className="size-3.5 animate-spin text-red-500" />
                   ) : (
-                    <Trash2 className="size-4" />
+                    <FaTrashCan className="size-3.5" />
                   )}
                 </button>
               </div>
 
-              <div className="mt-3 space-y-1 text-xs text-taupe-700 leading-relaxed">
-                <p className="font-medium text-ink">{addr.recipientName}</p>
+              <div className="mt-3.5 space-y-1 text-xs text-slate-600 leading-relaxed">
+                <p className="font-bold text-slate-900 uppercase">{addr.recipientName}</p>
                 <p>{addr.addressLine1}</p>
-                {addr.addressLine2 && <p>{addr.addressLine2}</p>}
-                <p>
+                {addr.addressLine2 && <p className="text-slate-500">{addr.addressLine2}</p>}
+                <p className="font-medium text-slate-800">
                   {addr.district}, {addr.province}, {addr.department}
                 </p>
                 {addr.reference && (
-                  <p className="text-taupe-500 italic">Ref: {addr.reference}</p>
+                  <p className="text-slate-500 italic">Ref: {addr.reference}</p>
                 )}
-                <p className="text-taupe-500 pt-1 font-mono">Telf: {addr.recipientPhone}</p>
+                <p className="pt-2 font-mono text-[0.72rem] text-slate-700">
+                  Celular: <strong className="text-slate-900">{addr.recipientPhone}</strong>
+                </p>
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { getDb } from "@/server/db";
-import { shippingZones, auditLogs } from "@/server/db/schema";
+import { shippingZones, physicalStores, auditLogs } from "@/server/db/schema";
 
 export interface ShippingZoneRecord {
   id: number;
@@ -111,6 +111,32 @@ export const DEFAULT_SHIPPING_ZONES: Array<{
     unavailableReason:
       "Actualmente no contamos con despacho logístico directo hacia la provincia de Putumayo (Loreto). Por favor coordina una agencia de carga en Iquitos o Lima.",
     sortOrder: 5,
+  },
+  {
+    code: "AGENCIA_SHALOM",
+    name: "Agencia Shalom (Provincias - Recojo en Agencia)",
+    department: "*",
+    province: "*",
+    district: "*",
+    rateAmount: 1800, // S/ 18.00
+    freeShippingMinSubtotal: 45000,
+    estimatedDaysLabel: "24 a 72 horas hábiles",
+    isAvailable: true,
+    unavailableReason: null,
+    sortOrder: 40,
+  },
+  {
+    code: "AGENCIA_OLVA",
+    name: "Olva Courier (Nacional - Domicilio y Agencia)",
+    department: "*",
+    province: "*",
+    district: "*",
+    rateAmount: 2200, // S/ 22.00
+    freeShippingMinSubtotal: 50000,
+    estimatedDaysLabel: "48 a 96 horas hábiles",
+    isAvailable: true,
+    unavailableReason: null,
+    sortOrder: 45,
   },
   {
     code: "PERU_NACIONAL_GENERAL",
@@ -249,30 +275,181 @@ export function resolveShippingFromZones(
 
 /**
  * Obtiene todas las zonas de envío desde PostgreSQL. Si aún no existen registros,
- * inserta las tarifas iniciales configurables.
+ * inserta las tarifas iniciales configurables. Si ya existen, asegura que las zonas por defecto
+ * no registradas sean añadidas.
  */
 export async function getOrSeedShippingZones(): Promise<ShippingZoneRecord[]> {
   const db = getDb();
-  const existing = await db
-    .select()
-    .from(shippingZones)
-    .orderBy(asc(shippingZones.sortOrder), asc(shippingZones.id));
-
-  if (existing.length > 0) {
-    return existing;
-  }
 
   for (const def of DEFAULT_SHIPPING_ZONES) {
     await db
       .insert(shippingZones)
       .values(def)
-      .onConflictDoNothing();
+      .onConflictDoNothing({ target: shippingZones.code });
   }
 
   return db
     .select()
     .from(shippingZones)
     .orderBy(asc(shippingZones.sortOrder), asc(shippingZones.id));
+}
+
+/**
+ * Lista canónica oficial de distritos de Lima Metropolitana.
+ */
+export const LIMA_METROPOLITANA_DISTRICTS = [
+  "Ancón",
+  "Ate",
+  "Barranco",
+  "Breña",
+  "Carabayllo",
+  "Chaclacayo",
+  "Chorrillos",
+  "Cieneguilla",
+  "Comas",
+  "El Agustino",
+  "Independencia",
+  "Jesús María",
+  "La Molina",
+  "La Victoria",
+  "Lima (Cercado)",
+  "Lince",
+  "Los Olivos",
+  "Lurigancho-Chosica",
+  "Lurín",
+  "Magdalena del Mar",
+  "Miraflores",
+  "Pachacámac",
+  "Pucusana",
+  "Pueblo Libre",
+  "Puente Piedra",
+  "Punta Hermosa",
+  "Punta Negra",
+  "Rímac",
+  "San Bartolo",
+  "San Borja",
+  "San Isidro",
+  "San Juan de Lurigancho",
+  "San Juan de Miraflores",
+  "San Luis",
+  "San Martín de Porres",
+  "San Miguel",
+  "Santa Anita",
+  "Santa María del Mar",
+  "Santa Rosa",
+  "Santiago de Surco",
+  "Surquillo",
+  "Villa El Salvador",
+  "Villa María del Triunfo",
+] as const;
+
+export interface ProductShippingCoverageInfo {
+  /** Distritos de Lima Metropolitana actualmente habilitados según las reglas activas de shipping_zones */
+  enabledLimaDistricts: string[];
+  /** Destinos configurados para Provincias */
+  provinceDestinations: Array<{
+    code: string;
+    name: string;
+    estimatedDays: string;
+  }>;
+  /** Agencias activas según la configuración de la tienda */
+  activeAgencies: Array<{
+    code: string;
+    name: string;
+    description: string;
+    estimatedDays: string;
+  }>;
+  /** Si Shalom está habilitada activamente */
+  isShalomEnabled: boolean;
+}
+
+/**
+ * Deriva la información pública de cobertura logística y agencias para la ficha de producto,
+ * utilizando la misma fuente y motor de reglas de PostgreSQL que el checkout.
+ */
+export function getProductShippingCoverage(zones: ShippingZoneRecord[]): ProductShippingCoverageInfo {
+  // 1. Obtener todos los distritos posibles (canónicos + cualquier distrito explícito en shipping_zones)
+  const candidateDistricts = new Set<string>(LIMA_METROPOLITANA_DISTRICTS);
+  for (const z of zones) {
+    if (
+      z.department.toLowerCase() === "lima" &&
+      z.district &&
+      z.district !== "*" &&
+      z.district.trim().length > 0
+    ) {
+      candidateDistricts.add(z.district.trim());
+    }
+  }
+
+  // 2. Evaluar cada distrito con el mismo motor de resolución que utiliza el checkout
+  const enabledLimaDistricts = Array.from(candidateDistricts)
+    .filter((districtName) => {
+      const calc = resolveShippingFromZones(
+        zones,
+        { department: "Lima", province: "Lima", district: districtName },
+        10000,
+      );
+      return calc.isAvailable;
+    })
+    .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+
+  // 3. Destinos en Provincias configurados y habilitados (excluyendo Lima y Callao)
+  const provinceDestinations = zones
+    .filter(
+      (z) =>
+        z.isAvailable &&
+        z.code !== "LIMA_METRO" &&
+        z.code !== "CALLAO_METRO" &&
+        !z.code.startsWith("AGENCIA_"),
+    )
+    .map((z) => ({
+      code: z.code,
+      name: z.name,
+      estimatedDays: z.estimatedDaysLabel,
+    }));
+
+  // 4. Agencias activas: Shalom sólo si está explícitamente habilitada en shipping_zones
+  const shalomZone = zones.find(
+    (z) => z.code === "AGENCIA_SHALOM" || z.name.toLowerCase().includes("shalom"),
+  );
+  const isShalomEnabled = shalomZone ? shalomZone.isAvailable : true;
+
+  const olvaZone = zones.find(
+    (z) => z.code === "AGENCIA_OLVA" || z.name.toLowerCase().includes("olva"),
+  );
+  const isOlvaEnabled = olvaZone ? olvaZone.isAvailable : true;
+
+  const activeAgencies: Array<{
+    code: string;
+    name: string;
+    description: string;
+    estimatedDays: string;
+  }> = [];
+
+  if (isOlvaEnabled) {
+    activeAgencies.push({
+      code: "OLVA",
+      name: "Olva Courier",
+      description: "Despacho a domicilio o entrega en agencias a nivel nacional.",
+      estimatedDays: olvaZone?.estimatedDaysLabel ?? "48 a 96 horas hábiles",
+    });
+  }
+
+  if (isShalomEnabled) {
+    activeAgencies.push({
+      code: "SHALOM",
+      name: "Shalom",
+      description: "Recojo rápido en agencias Shalom autorizadas en todas las provincias del país.",
+      estimatedDays: shalomZone?.estimatedDaysLabel ?? "24 a 72 horas hábiles",
+    });
+  }
+
+  return {
+    enabledLimaDistricts,
+    provinceDestinations,
+    activeAgencies,
+    isShalomEnabled,
+  };
 }
 
 /**
@@ -329,5 +506,226 @@ export async function updateShippingZoneConfig(
     targetType: "shipping_zone",
     targetId: zoneId,
     details: `Tarifa de envío #${zoneId} actualizada: costo=${input.rateAmount} céntimos, gratis_desde=${input.freeShippingMinSubtotal ?? "N/A"}, disponible=${input.isAvailable}`,
+  });
+}
+
+export interface PhysicalStoreRecord {
+  id: number;
+  code: string;
+  name: string;
+  department: string;
+  province: string;
+  district: string;
+  address: string;
+  reference: string | null;
+  phone: string | null;
+  openingHours: string;
+  googleMapsUrl: string | null;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+/**
+ * Obtiene todas las tiendas físicas activas para el checkout (recojo en tienda).
+ */
+export async function getActivePhysicalStores(): Promise<PhysicalStoreRecord[]> {
+  const db = getDb();
+  return db
+    .select()
+    .from(physicalStores)
+    .where(eq(physicalStores.isActive, true))
+    .orderBy(asc(physicalStores.sortOrder), asc(physicalStores.id));
+}
+
+/**
+ * Obtiene todas las tiendas físicas para el panel de administración.
+ */
+export async function getAllPhysicalStores(): Promise<PhysicalStoreRecord[]> {
+  const db = getDb();
+  return db
+    .select()
+    .from(physicalStores)
+    .orderBy(asc(physicalStores.sortOrder), asc(physicalStores.id));
+}
+
+/**
+ * Crea una nueva tienda física oficial desde el panel administrativo.
+ */
+export async function createPhysicalStore(
+  adminId: number,
+  input: {
+    name: string;
+    department: string;
+    province: string;
+    district: string;
+    address: string;
+    reference?: string | null;
+    phone?: string | null;
+    openingHours?: string;
+    googleMapsUrl?: string | null;
+    isActive?: boolean;
+    sortOrder?: number;
+  },
+): Promise<PhysicalStoreRecord> {
+  const db = getDb();
+  const rawCode = `TIENDA_${input.district.toUpperCase().replace(/[^A-Z0-9]/g, "_")}_${Date.now().toString(36).toUpperCase()}`;
+  const [created] = await db
+    .insert(physicalStores)
+    .values({
+      code: rawCode.slice(0, 60),
+      name: input.name.trim().slice(0, 150),
+      department: input.department.trim().slice(0, 80),
+      province: input.province.trim().slice(0, 80),
+      district: input.district.trim().slice(0, 80),
+      address: input.address.trim().slice(0, 255),
+      reference: input.reference?.trim() ? input.reference.trim().slice(0, 255) : null,
+      phone: input.phone?.trim() ? input.phone.trim().slice(0, 30) : null,
+      openingHours: (input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm").slice(0, 150),
+      googleMapsUrl: input.googleMapsUrl?.trim() ? input.googleMapsUrl.trim() : null,
+      isActive: input.isActive ?? true,
+      sortOrder: input.sortOrder ?? 0,
+    })
+    .returning();
+
+  await db.insert(auditLogs).values({
+    actorId: adminId,
+    action: "status_change",
+    targetType: "physical_store",
+    targetId: created.id,
+    details: `Nueva tienda física creada: ${created.name} (${created.district}, ${created.department})`,
+  });
+
+  return created;
+}
+
+/**
+ * Actualiza una tienda física existente.
+ */
+export async function updatePhysicalStore(
+  adminId: number,
+  storeId: number,
+  input: {
+    name: string;
+    department: string;
+    province: string;
+    district: string;
+    address: string;
+    reference?: string | null;
+    phone?: string | null;
+    openingHours?: string;
+    googleMapsUrl?: string | null;
+    isActive?: boolean;
+    sortOrder?: number;
+  },
+): Promise<void> {
+  const db = getDb();
+  await db
+    .update(physicalStores)
+    .set({
+      name: input.name.trim().slice(0, 150),
+      department: input.department.trim().slice(0, 80),
+      province: input.province.trim().slice(0, 80),
+      district: input.district.trim().slice(0, 80),
+      address: input.address.trim().slice(0, 255),
+      reference: input.reference?.trim() ? input.reference.trim().slice(0, 255) : null,
+      phone: input.phone?.trim() ? input.phone.trim().slice(0, 30) : null,
+      openingHours: (input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm").slice(0, 150),
+      googleMapsUrl: input.googleMapsUrl?.trim() ? input.googleMapsUrl.trim() : null,
+      isActive: input.isActive ?? true,
+      sortOrder: input.sortOrder ?? 0,
+      updatedAt: new Date(),
+    })
+    .where(eq(physicalStores.id, storeId));
+
+  await db.insert(auditLogs).values({
+    actorId: adminId,
+    action: "status_change",
+    targetType: "physical_store",
+    targetId: storeId,
+    details: `Tienda física #${storeId} actualizada por admin`,
+  });
+}
+
+/**
+ * Elimina una tienda física.
+ */
+export async function deletePhysicalStore(adminId: number, storeId: number): Promise<void> {
+  const db = getDb();
+  await db.delete(physicalStores).where(eq(physicalStores.id, storeId));
+  await db.insert(auditLogs).values({
+    actorId: adminId,
+    action: "status_change",
+    targetType: "physical_store",
+    targetId: storeId,
+    details: `Tienda física #${storeId} eliminada`,
+  });
+}
+
+/**
+ * Permite al administrador crear una tarifa personalizada para un distrito o provincia.
+ */
+export async function createShippingZoneRate(
+  adminId: number,
+  input: {
+    name: string;
+    department: string;
+    province?: string | null;
+    district?: string | null;
+    rateAmount: number;
+    freeShippingMinSubtotal?: number | null;
+    estimatedDaysLabel: string;
+    isAvailable?: boolean;
+    unavailableReason?: string | null;
+  },
+): Promise<ShippingZoneRecord> {
+  const db = getDb();
+  const rawCode = `ZONE_${input.department.toUpperCase()}_${(input.province || "ALL").toUpperCase()}_${(input.district || "ALL").toUpperCase()}_${Date.now().toString(36).toUpperCase()}`
+    .replace(/[^A-Z0-9]/g, "_")
+    .slice(0, 60);
+
+  const [created] = await db
+    .insert(shippingZones)
+    .values({
+      code: rawCode,
+      name: input.name.trim().slice(0, 150),
+      department: input.department.trim().slice(0, 80),
+      province: input.province?.trim() && input.province !== "*" ? input.province.trim().slice(0, 80) : "*",
+      district: input.district?.trim() && input.district !== "*" ? input.district.trim().slice(0, 80) : "*",
+      rateAmount: Math.max(0, Math.trunc(input.rateAmount)),
+      freeShippingMinSubtotal:
+        input.freeShippingMinSubtotal !== undefined && input.freeShippingMinSubtotal !== null && input.freeShippingMinSubtotal > 0
+          ? Math.trunc(input.freeShippingMinSubtotal)
+          : null,
+      estimatedDaysLabel: (input.estimatedDaysLabel.trim() || "24 a 48 horas hábiles").slice(0, 120),
+      isAvailable: input.isAvailable ?? true,
+      unavailableReason: input.unavailableReason?.trim() ? input.unavailableReason.trim().slice(0, 255) : null,
+      sortOrder: input.district && input.district !== "*" ? 5 : input.province && input.province !== "*" ? 15 : 25,
+      updatedBy: adminId,
+    })
+    .returning();
+
+  await db.insert(auditLogs).values({
+    actorId: adminId,
+    action: "shipping_rate_updated",
+    targetType: "shipping_zone",
+    targetId: created.id,
+    details: `Nueva tarifa de envío creada: ${created.name} (${created.department} - ${created.province} - ${created.district}) -> S/ ${(created.rateAmount / 100).toFixed(2)}`,
+  });
+
+  return created;
+}
+
+/**
+ * Elimina una zona de envío personalizada.
+ */
+export async function deleteShippingZone(adminId: number, zoneId: number): Promise<void> {
+  const db = getDb();
+  await db.delete(shippingZones).where(eq(shippingZones.id, zoneId));
+  await db.insert(auditLogs).values({
+    actorId: adminId,
+    action: "shipping_rate_updated",
+    targetType: "shipping_zone",
+    targetId: zoneId,
+    details: `Tarifa de envío #${zoneId} eliminada`,
   });
 }

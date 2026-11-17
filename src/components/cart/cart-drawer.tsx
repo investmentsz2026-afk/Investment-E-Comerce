@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,12 +13,13 @@ import {
   Trash2,
   ArrowRight,
   AlertCircle,
-  Sparkles,
-  FileText,
   Loader2,
-  CheckCircle2,
+  Pencil,
+  FileText,
 } from "lucide-react";
+import { FaBoxesStacked } from "react-icons/fa6";
 import { useCart } from "./cart-provider";
+import { CartVariantEditor } from "./cart-variant-editor";
 import { useEscapeKey, useLockBodyScroll } from "@/hooks/use-overlay";
 import { formatPEN } from "@/lib/format";
 import { ease } from "@/lib/motion";
@@ -36,6 +37,7 @@ export function CartDrawer() {
     clearError,
   } = useCart();
   const pathname = usePathname();
+  const [editingVariantId, setEditingVariantId] = useState<number | null>(null);
 
   useEscapeKey(isOpen, closeDrawer);
   useLockBodyScroll(isOpen);
@@ -44,6 +46,9 @@ export function CartDrawer() {
   useEffect(() => {
     closeDrawer();
   }, [pathname, closeDrawer]);
+
+  const itemCountText =
+    cart.totalUnits === 1 ? "1 PRENDA" : `${cart.totalUnits} PRENDAS`;
 
   return (
     <AnimatePresence>
@@ -54,38 +59,42 @@ export function CartDrawer() {
           aria-modal="true"
           aria-labelledby="cart-drawer-title"
         >
-          {/* Velo de fondo */}
+          {/* Velo de fondo oscuro con desenfoque suave */}
           <motion.div
             key="cart-backdrop"
             aria-hidden
-            className="fixed inset-0 bg-ink/45 backdrop-blur-[2px]"
+            className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
+            transition={{ duration: 0.3 }}
             onClick={closeDrawer}
           />
 
-          {/* Panel deslizable */}
+          {/* Panel Lateral Deslizable — Paleta cálida marfil/crema #FAF8F5 */}
           <motion.aside
             key="cart-panel"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ duration: 0.5, ease: ease.luxe }}
-            className="relative z-10 flex h-full w-full max-w-md flex-col bg-paper text-ink shadow-2xl sm:max-w-lg"
+            transition={{ duration: 0.45, ease: ease.luxe }}
+            className="relative z-10 flex h-full w-full max-w-md flex-col bg-[#FAF8F5] text-neutral-900 shadow-2xl sm:max-w-lg"
           >
-            {/* Cabecera */}
-            <div className="flex items-center justify-between border-b border-ink/10 px-4 py-4 sm:px-6 sm:py-5">
+            {/* Cabecera Superior: Ícono bolsa + "Tu bolsa" (serif) + "X PRENDAS" + Botón circular ✕ */}
+            <div className="flex items-center justify-between border-b border-neutral-200/80 bg-[#FAF8F5] px-5 py-4 sm:px-6 sm:py-5">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="size-5 text-ink" aria-hidden />
+                <div className="flex size-9 items-center justify-center rounded-xl bg-neutral-100/80 text-neutral-800">
+                  <ShoppingBag className="size-5 stroke-[1.8]" aria-hidden />
+                </div>
                 <div>
-                  <h2 id="cart-drawer-title" className="font-display text-xl text-ink">
-                    Tu Bolsa de Compras
+                  <h2
+                    id="cart-drawer-title"
+                    className="font-display font-serif text-2xl font-bold tracking-tight text-[#1A1A1A]"
+                  >
+                    Tu bolsa
                   </h2>
-                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-taupe-500">
-                    {cart.totalUnits} {cart.totalUnits === 1 ? "prenda" : "prendas"} ·{" "}
-                    {cart.lineCount} {cart.lineCount === 1 ? "variante" : "variantes"}
+                  <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.16em] text-neutral-500">
+                    {itemCountText}
                   </p>
                 </div>
               </div>
@@ -94,97 +103,145 @@ export function CartDrawer() {
                 type="button"
                 onClick={closeDrawer}
                 aria-label="Cerrar bolsa de compras"
-                className="flex size-10 items-center justify-center rounded-full border border-ink/10 text-ink transition-colors hover:border-ink"
+                className="flex size-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 shadow-xs transition-colors hover:border-black hover:text-black"
               >
-                <X className="size-4" aria-hidden />
+                <X className="size-4 stroke-[2]" aria-hidden />
               </button>
             </div>
 
-            {/* Banner de condición B2B activa */}
+            {/* Aviso de Tarifa Mayorista B2B (si aplica) */}
             {cart.isWholesaleAuthorized && (
-              <div className="flex items-center justify-between border-b border-emerald-300/60 bg-emerald-50/90 px-4 py-2.5 sm:px-6 text-xs text-emerald-950">
+              <div className="flex items-center justify-between border-b border-emerald-200 bg-emerald-50/90 px-5 py-2.5 sm:px-6 text-xs text-emerald-950">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Sparkles className="size-3.5 text-emerald-700" aria-hidden />
-                  Tarifa empresarial B2B activa por volumen
+                  <FaBoxesStacked className="size-3.5 text-emerald-700" aria-hidden />
+                  Tarifa mayorista B2B activa
                 </span>
                 <Link
                   href="/mayorista/cotizaciones"
                   onClick={closeDrawer}
-                  className="font-mono text-[0.65rem] uppercase tracking-wider text-emerald-900 underline hover:text-emerald-950"
+                  className="font-mono text-[0.65rem] font-bold uppercase tracking-wider text-emerald-900 underline hover:text-emerald-950"
                 >
-                  Cotizar lote
+                  Ver escalas
                 </Link>
               </div>
             )}
 
-            {/* Mensaje de error si ocurre algún problema de stock/validación */}
+            {/* Alerta de Error / Stock */}
             {errorMessage && (
               <div
                 role="alert"
-                className="flex items-start justify-between gap-3 border-b border-cochinilla/20 bg-cochinilla/10 px-6 py-3 text-xs text-cochinilla"
+                className="flex items-start justify-between gap-3 border-b border-red-200 bg-red-50 px-5 py-3 text-xs text-red-800"
               >
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
+                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-600" aria-hidden />
                   <span>{errorMessage}</span>
                 </div>
                 <button
                   type="button"
                   onClick={clearError}
                   aria-label="Ocultar alerta"
-                  className="text-cochinilla/70 hover:text-cochinilla"
+                  className="text-red-500 hover:text-red-800"
                 >
                   <X className="size-3.5" aria-hidden />
                 </button>
               </div>
             )}
 
-            {/* Lista de prendas */}
+            {/* Contenido Principal: Estado Vacío vs Estado con Prendas */}
             {cart.items.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
-                <div className="flex size-16 items-center justify-center rounded-full border border-ink/10 bg-sand/30 text-taupe-500">
-                  <ShoppingBag className="size-7" aria-hidden />
+              /* ESTADO VACÍO (según diseño exacto de la referencia) */
+              <div className="flex flex-1 flex-col items-center justify-center px-8 text-center bg-[#FAF8F5]">
+                {/* Ilustración de la Bolsa con pespunte rojo */}
+                <div className="relative mx-auto flex h-48 w-52 items-center justify-center">
+                  {/* Sombra elíptica suave */}
+                  <div className="absolute bottom-2 h-4 w-40 rounded-[50%] bg-neutral-900/5 blur-[3px]" />
+
+                  {/* SVG Ilustración Bolsa con Costura Roja Pespunteada */}
+                  <svg
+                    viewBox="0 0 160 140"
+                    className="h-40 w-44 drop-shadow-xs"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Asas superiores */}
+                    <path
+                      d="M56 52 V30 C56 18 67 12 80 12 C93 12 104 18 104 30 V52"
+                      stroke="#1E1E1E"
+                      strokeWidth="3.2"
+                      strokeLinecap="round"
+                    />
+                    {/* Lateral en perspectiva */}
+                    <polygon
+                      points="115,48 127,51 121,118 109,114"
+                      fill="#ECE7DE"
+                      stroke="#1E1E1E"
+                      strokeWidth="2.8"
+                      strokeLinejoin="round"
+                    />
+                    {/* Pliegue interno lateral */}
+                    <path
+                      d="M127 51 L115 116"
+                      stroke="#1E1E1E"
+                      strokeWidth="1.8"
+                      strokeDasharray="3 3"
+                    />
+                    {/* Panel frontal de la bolsa */}
+                    <polygon
+                      points="45,48 115,48 109,114 39,114"
+                      fill="#FFFFFF"
+                      stroke="#1E1E1E"
+                      strokeWidth="2.8"
+                      strokeLinejoin="round"
+                    />
+                    {/* Pespunte rojo bordado (marca registrada) */}
+                    <polygon
+                      points="50,54 110,54 105,108 44,108"
+                      stroke="#801323"
+                      strokeWidth="2"
+                      strokeDasharray="4 3"
+                      fill="none"
+                    />
+                  </svg>
                 </div>
-                <h3 className="mt-5 font-display text-2xl text-ink">
-                  Tu bolsa está <em>vacía.</em>
+
+                <h3 className="mt-4 font-display font-serif text-2xl font-normal text-[#1A1A1A]">
+                  Tu bolsa está vacía
                 </h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-taupe-500">
-                  Explora nuestra colección de sastrería, básicos de algodón pima y prendas por menor o por mayor.
+                <p className="mt-1.5 max-w-xs text-sm text-neutral-500">
+                  Encuentra tu próxima prenda en el catálogo.
                 </p>
-                <div className="mt-7 flex flex-col gap-3 w-full max-w-xs">
+
+                <div className="mt-6">
                   <Link
                     href="/catalogo"
                     onClick={closeDrawer}
-                    className="flex h-12 items-center justify-center gap-2 bg-ink px-6 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-7 py-3.5 text-xs font-bold text-white shadow-md shadow-[#801323]/25 transition-all active:scale-95"
                   >
-                    Explorar catálogo
+                    <span>Explorar catálogo</span>
                     <ArrowRight className="size-3.5" aria-hidden />
                   </Link>
-                  {cart.isWholesaleAuthorized && (
-                    <Link
-                      href="/mayorista/cotizaciones"
-                      onClick={closeDrawer}
-                      className="flex h-11 items-center justify-center gap-2 border border-ink/20 px-6 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:border-ink"
-                    >
-                      <FileText className="size-3.5" aria-hidden />
-                      Solicitar cotización B2B
-                    </Link>
-                  )}
                 </div>
               </div>
             ) : (
+              /* ESTADO LLENO CON PRENDAS */
               <>
-                <div className="flex-1 divide-y divide-ink/10 overflow-y-auto px-6">
+                <div className="flex-1 space-y-3.5 overflow-y-auto px-5 py-4 sm:px-6">
                   {cart.items.map((item) => {
                     const isUpdating = pendingVariantId === item.variantId;
-                    const isWholesaleApplied = item.pricing.appliedMode === "wholesale";
+                    const isEditing = editingVariantId === item.variantId;
+                    const subtitle = item.shortDescription || item.categoryName;
 
                     return (
-                      <div key={item.id} className="py-5">
+                      <article
+                        key={item.id}
+                        className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs transition-shadow hover:shadow-sm"
+                      >
                         <div className="flex gap-4">
+                          {/* Miniatura vertical */}
                           <Link
                             href={`/producto/${item.productSlug}`}
                             onClick={closeDrawer}
-                            className="relative aspect-[3/4] w-20 shrink-0 overflow-hidden bg-taupe-100"
+                            className="relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-xl border border-neutral-100 bg-neutral-100"
                           >
                             <Image
                               src={item.imageUrl}
@@ -195,94 +252,69 @@ export function CartDrawer() {
                             />
                           </Link>
 
+                          {/* Detalles del Producto */}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-2">
-                              <div>
+                              <h3 className="text-sm font-bold text-[#1A1A1A] truncate">
                                 <Link
                                   href={`/producto/${item.productSlug}`}
                                   onClick={closeDrawer}
-                                  className="text-sm font-medium text-ink hover:underline"
+                                  className="hover:text-[#0055FF] transition-colors"
                                 >
                                   {item.productName}
                                 </Link>
-                                <p className="mt-0.5 font-mono text-[0.65rem] text-taupe-500">
-                                  SKU: {item.sku}
-                                  {item.isDemo && (
-                                    <span className="ml-1.5 inline-flex items-center border border-amber-400/50 bg-amber-50 px-1 py-0.2 font-mono text-[0.55rem] uppercase tracking-wider text-amber-900">
-                                      Demo
-                                    </span>
-                                  )}
-                                </p>
-                              </div>
+                              </h3>
+
+                              {/* Botón Eliminar (Tacho de basura) */}
                               <button
                                 type="button"
                                 disabled={isUpdating}
                                 onClick={() => void removeItem(item.variantId)}
                                 aria-label={`Eliminar ${item.productName} de la bolsa`}
-                                className="p-1 text-taupe-400 transition-colors hover:text-cochinilla disabled:opacity-40"
+                                className="p-1 text-neutral-400 transition-colors hover:text-[#801323] disabled:opacity-40"
                               >
-                                <Trash2 className="size-4" aria-hidden />
+                                <Trash2 className="size-4 stroke-[1.8]" aria-hidden />
                               </button>
                             </div>
 
-                            {/* Atributos de variante */}
-                            <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-taupe-600">
-                              {item.colorName && (
-                                <span className="inline-flex items-center gap-1.5">
-                                  {item.colorSwatch && (
-                                    <span
-                                      className="size-2.5 rounded-full ring-1 ring-ink/20"
-                                      style={{ backgroundColor: item.colorSwatch }}
-                                      aria-hidden
-                                    />
-                                  )}
-                                  {item.colorName}
-                                </span>
-                              )}
-                              {item.size && (
-                                <>
-                                  <span aria-hidden>·</span>
-                                  <span className="font-mono text-[0.7rem]">Talla {item.size}</span>
-                                </>
-                              )}
-                            </div>
-
-                            {/* Etiqueta de modalidad de precio */}
-                            <div className="mt-2 flex flex-wrap items-center gap-2">
-                              <span
-                                className={cn(
-                                  "inline-flex items-center px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider",
-                                  isWholesaleApplied
-                                    ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                                    : "bg-sand/60 text-taupe-700",
-                                )}
-                              >
-                                {isWholesaleApplied ? "Tarifa Mayorista B2B" : "Precio Minorista"}
-                              </span>
-                              <span className="text-xs font-medium tabular-nums text-ink">
-                                {formatPEN(item.pricing.effectiveUnitAmount)} / ud.
-                              </span>
-                              {isWholesaleApplied && item.pricing.retailUnitAmount && (
-                                <span className="text-[0.7rem] tabular-nums text-taupe-400 line-through">
-                                  {formatPEN(item.pricing.retailUnitAmount)}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Aviso de próxima escala mayorista para empresas aprobadas */}
-                            {item.pricing.nextWholesaleTier && (
-                              <p className="mt-1.5 text-[0.68rem] text-cochinilla">
-                                Agrega {item.pricing.nextWholesaleTier.missingUnits} uds. más de este modelo para activar{" "}
-                                <span className="font-semibold">
-                                  {formatPEN(item.pricing.nextWholesaleTier.unitAmount)}/ud.
-                                </span>{" "}
-                                (mín. {item.pricing.nextWholesaleTier.minQuantity} uds.).
+                            {/* Fit / Categoría */}
+                            {subtitle && (
+                              <p className="text-xs text-neutral-500 font-normal">
+                                {subtitle}
                               </p>
                             )}
 
-                            {/* Controles de cantidad y subtotal */}
-                            <div className="mt-3 flex items-center justify-between gap-3">
-                              <div className="inline-flex items-center border border-ink/20">
+                            {/* Muestra de Color y Talla */}
+                            <div className="mt-1 flex items-center gap-1.5 text-xs text-neutral-700">
+                              {item.colorSwatch && (
+                                <span
+                                  className="size-2.5 rounded-full border border-black/15 shadow-2xs"
+                                  style={{ backgroundColor: item.colorSwatch }}
+                                  aria-hidden
+                                />
+                              )}
+                              <span>
+                                {item.colorName ?? "Color estándar"} · Talla {item.size ?? "Única"}
+                              </span>
+                            </div>
+
+                            {/* Botón "✎ Editar talla y color" */}
+                            <div className="mt-1">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setEditingVariantId(isEditing ? null : item.variantId)
+                                }
+                                className="inline-flex items-center gap-1 text-xs font-semibold text-[#0055FF] hover:underline transition-colors"
+                              >
+                                <Pencil className="size-3" aria-hidden />
+                                <span>Editar talla y color</span>
+                              </button>
+                            </div>
+
+                            {/* Selector de Cantidad y Precio */}
+                            <div className="mt-3 flex items-center justify-between gap-3 pt-1">
+                              <div className="inline-flex items-center rounded-lg border border-neutral-200 bg-white">
                                 <button
                                   type="button"
                                   disabled={isUpdating || item.quantity <= 1}
@@ -293,13 +325,13 @@ export function CartDrawer() {
                                     })
                                   }
                                   aria-label={`Disminuir cantidad de ${item.productName}`}
-                                  className="flex size-8 items-center justify-center text-ink transition-colors hover:bg-ink/5 disabled:opacity-35"
+                                  className="flex size-7 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30"
                                 >
                                   <Minus className="size-3" aria-hidden />
                                 </button>
-                                <span className="flex h-8 min-w-9 items-center justify-center px-2 font-mono text-xs tabular-nums text-ink">
+                                <span className="w-8 text-center font-mono text-xs font-bold tabular-nums text-neutral-900">
                                   {isUpdating ? (
-                                    <Loader2 className="size-3.5 animate-spin text-taupe-500" />
+                                    <Loader2 className="mx-auto size-3 animate-spin text-neutral-500" />
                                   ) : (
                                     item.quantity
                                   )}
@@ -314,88 +346,81 @@ export function CartDrawer() {
                                     })
                                   }
                                   aria-label={`Aumentar cantidad de ${item.productName}`}
-                                  className="flex size-8 items-center justify-center text-ink transition-colors hover:bg-ink/5 disabled:opacity-35"
+                                  className="flex size-7 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30"
                                 >
                                   <Plus className="size-3" aria-hidden />
                                 </button>
                               </div>
 
+                              {/* Precio de la Línea */}
                               <div className="text-right">
-                                <p className="text-sm font-semibold tabular-nums text-ink">
+                                <p className="font-mono text-base font-bold tabular-nums text-[#1A1A1A]">
                                   {formatPEN(item.pricing.lineSubtotalAmount)}
                                 </p>
-                                {item.pricing.lineSavingsAmount > 0 && (
-                                  <p className="text-[0.68rem] font-medium tabular-nums text-emerald-700">
-                                    Ahorras {formatPEN(item.pricing.lineSavingsAmount)}
-                                  </p>
-                                )}
                               </div>
                             </div>
 
-                            {/* Estado de disponibilidad */}
-                            <p
-                              className={cn(
-                                "mt-2 flex items-center gap-1 text-[0.68rem]",
-                                item.availabilityStatus === "available"
-                                  ? "text-emerald-700"
-                                  : item.availabilityStatus === "low_stock"
+                            {/* Estado de Stock si hay incidencias */}
+                            {item.availabilityStatus !== "available" && (
+                              <p
+                                className={cn(
+                                  "mt-2 text-[0.68rem]",
+                                  item.availabilityStatus === "low_stock"
                                     ? "text-amber-700"
-                                    : "font-medium text-cochinilla",
-                              )}
-                            >
-                              {item.availabilityStatus === "available" && (
-                                <CheckCircle2 className="size-3 shrink-0" aria-hidden />
-                              )}
-                              <span>{item.availabilityMessage}</span>
-                            </p>
+                                    : "font-semibold text-red-600",
+                                )}
+                              >
+                                {item.availabilityMessage}
+                              </p>
+                            )}
                           </div>
                         </div>
-                      </div>
+
+                        {/* Editor de Talla y Color Inline */}
+                        {isEditing && (
+                          <CartVariantEditor
+                            item={item}
+                            onClose={() => setEditingVariantId(null)}
+                            onSaved={() => setEditingVariantId(null)}
+                          />
+                        )}
+                      </article>
                     );
                   })}
                 </div>
 
-                {/* Pie con resumen y acciones */}
-                <div className="border-t border-ink/10 bg-[#fbfaf7] px-4 py-4 sm:px-6 sm:py-5">
-                  <div className="space-y-1.5 text-sm">
-                    {cart.wholesaleSavingsAmount > 0 && (
-                      <>
-                        <div className="flex items-center justify-between text-xs text-taupe-500">
-                          <span>Valor minorista referencial</span>
-                          <span className="tabular-nums line-through">
-                            {formatPEN(cart.retailSubtotalAmount)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs font-medium text-emerald-800">
-                          <span>Descuento mayorista B2B aplicado</span>
-                          <span className="tabular-nums">
-                            −{formatPEN(cart.wholesaleSavingsAmount)}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                    <div className="flex items-baseline justify-between pt-1">
-                      <span className="text-xs font-medium uppercase tracking-[0.14em] text-taupe-600">
-                        Total estimado (PEN)
-                      </span>
-                      <span className="font-display text-2xl tabular-nums text-ink">
-                        {formatPEN(cart.estimatedTotalAmount)}
+                {/* Pie con Resumen y Acciones (Subtotal, Continuar al pago, Ver bolsa) */}
+                <div className="border-t border-neutral-200/80 bg-[#FAF8F5] p-5 space-y-3.5 sm:px-6">
+                  {cart.wholesaleSavingsAmount > 0 && (
+                    <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-3 py-1.5 text-xs text-emerald-900">
+                      <span>Descuento B2B aplicado</span>
+                      <span className="font-mono font-bold text-emerald-700">
+                        −{formatPEN(cart.wholesaleSavingsAmount)}
                       </span>
                     </div>
+                  )}
+
+                  {/* Fila de Subtotal */}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-base font-bold text-[#1A1A1A]">Subtotal</span>
+                    <span className="font-mono text-base font-bold tabular-nums text-[#1A1A1A]">
+                      {formatPEN(cart.estimatedTotalAmount)}
+                    </span>
                   </div>
 
-                  <p className="mt-2 text-[0.68rem] leading-relaxed text-taupe-500">
-                    Importe preliminar calculado en servidor. El envío y la confirmación final del pedido se gestionarán en el checkout.
+                  <p className="text-xs text-neutral-500">
+                    El envío se calcula al continuar.
                   </p>
 
-                  <div className="mt-4 grid grid-cols-1 gap-2.5">
+                  {/* Botones de Acción */}
+                  <div className="space-y-2 pt-1">
                     {!cart.hasStockIssues && (
                       <Link
                         href="/checkout"
                         onClick={closeDrawer}
-                        className="flex h-12 w-full items-center justify-center gap-2 bg-ink text-[0.7rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla"
+                        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] text-xs font-bold text-white shadow-md shadow-[#801323]/25 transition-all active:scale-[0.99]"
                       >
-                        Proceder al Checkout
+                        <span>Continuar al pago</span>
                         <ArrowRight className="size-3.5" aria-hidden />
                       </Link>
                     )}
@@ -403,19 +428,19 @@ export function CartDrawer() {
                     <Link
                       href="/carrito"
                       onClick={closeDrawer}
-                      className="flex h-11 w-full items-center justify-center gap-2 border border-ink/20 bg-paper text-[0.68rem] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:border-ink"
+                      className="flex h-11 w-full items-center justify-center rounded-xl border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-bold text-neutral-800 shadow-2xs transition-colors"
                     >
-                      Ver bolsa detallada y gestionar
+                      <span>Ver bolsa completa</span>
                     </Link>
 
                     {cart.isWholesaleAuthorized && (
                       <Link
                         href="/mayorista/cotizaciones?from=cart"
                         onClick={closeDrawer}
-                        className="flex h-11 w-full items-center justify-center gap-2 border border-emerald-800 bg-emerald-900/5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-emerald-950 transition-colors hover:bg-emerald-900 hover:text-paper"
+                        className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-emerald-800 bg-emerald-50 text-xs font-semibold text-emerald-900 transition-colors hover:bg-emerald-100"
                       >
                         <FileText className="size-3.5" aria-hidden />
-                        Convertir bolsa en cotización B2B
+                        <span>Convertir bolsa en cotización B2B</span>
                       </Link>
                     )}
                   </div>
@@ -428,4 +453,3 @@ export function CartDrawer() {
     </AnimatePresence>
   );
 }
-

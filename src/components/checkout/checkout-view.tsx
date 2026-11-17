@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   placeCheckoutOrderAction,
   quoteCheckoutShippingAction,
@@ -16,47 +15,48 @@ import { useCart } from "@/components/cart/cart-provider";
 import { formatPEN } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
-  ShieldCheck,
+  getPeruDepartments,
+  getPeruProvinces,
+  getPeruDistricts,
+} from "@/data/peru-locations";
+import {
   Truck,
-  FileText,
   CreditCard,
   AlertCircle,
-  CheckCircle2,
   Loader2,
   Lock,
-  Building2,
   MapPin,
   ArrowLeft,
+  ArrowRight,
+  Store,
+  Clock,
+  Phone,
+  Check,
+  X,
+  Zap,
+  HelpCircle,
+  Receipt,
+  Copy,
+  UploadCloud,
+  ShieldCheck,
   Sparkles,
+  Info,
 } from "lucide-react";
-
-const PERU_DEPARTMENTS = [
-  "Amazonas",
-  "Áncash",
-  "Apurímac",
-  "Arequipa",
-  "Ayacucho",
-  "Cajamarca",
-  "Callao",
-  "Cusco",
-  "Huancavelica",
-  "Huánuco",
-  "Ica",
-  "Junín",
-  "La Libertad",
-  "Lambayeque",
-  "Lima",
-  "Loreto",
-  "Madre de Dios",
-  "Moquegua",
-  "Pasco",
-  "Piura",
-  "Puno",
-  "San Martín",
-  "Tacna",
-  "Tumbes",
-  "Ucayali",
-];
+import { SiWhatsapp } from "react-icons/si";
+import {
+  CheckoutCardPreview,
+  detectCardBrand,
+  formatCardNumberInput,
+  formatExpInput,
+} from "./checkout-card-preview";
+import { CheckoutPaymentProcessing } from "./checkout-payment-processing";
+import {
+  CheckoutWhatsAppModal,
+  OFFICIAL_WHATSAPP_DISPLAY,
+  OFFICIAL_WHATSAPP_NUMBER,
+  type OrderWhatsAppDetails,
+} from "./checkout-whatsapp-modal";
+import { CheckoutSuccessView } from "./checkout-success-view";
 
 interface CheckoutViewProps {
   context: CheckoutSessionContext;
@@ -76,13 +76,29 @@ export function CheckoutView({
   user,
   initialIdempotencyKey,
 }: CheckoutViewProps) {
-  const router = useRouter();
   const { refreshCart } = useCart();
+  const [isPending, startTransition] = useTransition();
 
-  // Clave de idempotencia única por sesión de formulario para impedir pedidos duplicados
+  // Clave de idempotencia única por sesión de checkout
   const [idempotencyKey] = useState(initialIdempotencyKey);
 
-  // Selección de dirección guardada vs nueva dirección
+  // Stepper: 1: Entrega, 2: Comprobante, 3: Método de Pago
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+
+  // Modalidad de entrega:
+  // "delivery": Envío a domicilio (Lima Metropolitana y Callao / Provincias)
+  // "express": Envío Express Provincias (Agencia Shalom / Olva Courier / Despacho Nacional)
+  // "store_pickup": Recojo en Tienda Oficial American Colt (Gratis)
+  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "express" | "store_pickup">("delivery");
+
+  // Tienda física seleccionada para recojo
+  const activeStores = context.activeStores ?? [];
+  const [selectedStoreId, setSelectedStoreId] = useState<number | null>(
+    activeStores[0]?.id ?? null,
+  );
+  const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+
+  // Dirección guardada vs nueva dirección
   const defaultAddress = context.savedAddresses[0] ?? null;
   const [addressMode, setAddressMode] = useState<"saved" | "new">(
     defaultAddress ? "saved" : "new",
@@ -92,85 +108,122 @@ export function CheckoutView({
   );
   const [saveNewAddressToBook, setSaveNewAddressToBook] = useState(true);
 
+  // Campos de Entrega
   const [recipientName, setRecipientName] = useState(
-    defaultAddress?.recipientName ?? `${user.firstName} ${user.lastName}`,
+    defaultAddress?.recipientName ?? `${user.firstName} ${user.lastName}`.trim(),
   );
   const [recipientPhone, setRecipientPhone] = useState(
     defaultAddress?.recipientPhone ??
-    context.approvedCompany?.contactPhone ??
-    user.phone ??
-    "",
+      context.approvedCompany?.contactPhone ??
+      user.phone ??
+      "",
   );
-  const [department, setDepartment] = useState(
-    defaultAddress?.department ?? context.approvedCompany?.department ?? "Lima",
-  );
-  const [province, setProvince] = useState(
-    defaultAddress?.province ?? context.approvedCompany?.province ?? "Lima",
-  );
-  const [district, setDistrict] = useState(
-    defaultAddress?.district ?? context.approvedCompany?.district ?? "Miraflores",
-  );
-  const [addressLine1, setAddressLine1] = useState(
-    defaultAddress?.addressLine1 ?? context.approvedCompany?.addressLine ?? "",
-  );
-  const [addressLine2] = useState(
-    defaultAddress?.addressLine2 ?? "",
-  );
+
+  const [department, setDepartment] = useState(defaultAddress?.department ?? "Lima");
+  const [province, setProvince] = useState(defaultAddress?.province ?? "Lima");
+  const [district, setDistrict] = useState(defaultAddress?.district ?? "Miraflores");
+  const [addressLine1, setAddressLine1] = useState(defaultAddress?.addressLine1 ?? "");
   const [reference, setReference] = useState(defaultAddress?.reference ?? "");
 
-  // Datos de comprobante tributario (Boleta / Factura Perú)
-  const isB2BCompany = Boolean(context.approvedCompany);
-  const [taxDocumentType, setTaxDocumentType] = useState<TaxDocumentType>(
-    isB2BCompany ? "factura" : "boleta",
-  );
-  const [billingDocType, setBillingDocType] = useState<"DNI" | "CE" | "RUC">(
-    isB2BCompany ? "RUC" : "DNI",
-  );
-  const [billingDocNumber, setBillingDocNumber] = useState(
-    context.approvedCompany?.taxId ?? "",
-  );
-  const [billingCustomerName, setBillingCustomerName] = useState(
-    context.approvedCompany?.legalName ?? `${user.firstName} ${user.lastName}`,
-  );
-  const [billingFiscalAddress, setBillingFiscalAddress] = useState(
-    context.approvedCompany
-      ? `${context.approvedCompany.addressLine}, ${context.approvedCompany.district}, ${context.approvedCompany.department}`
-      : "",
-  );
-
-  // Método de pago
-  const [paymentProvider, setPaymentProvider] = useState<PaymentProviderName>(
-    context.paymentConfig.culqiConfigured ? "culqi" : "sandbox",
-  );
-  const [sandboxScenario, setSandboxScenario] = useState<
-    "sandbox_approve" | "sandbox_pending" | "sandbox_reject"
-  >("sandbox_approve");
-  const [maskedCardLast4, setMaskedCardLast4] = useState("4242");
-  const [customerNotes, setCustomerNotes] = useState("");
-
-  // Estado vivo de envío e impuestos calculados en el servidor
+  // Cálculos de flete e IGV en vivo desde el servidor
   const [shippingCalc, setShippingCalc] = useState<ShippingCalculationResult>(
     context.defaultShipping,
   );
-  const [taxBreakdown, setTaxBreakdown] = useState(context.taxBreakdown);
-  const [isRecalculatingShipping, setIsRecalculatingShipping] = useState(false);
+  const [isQuotingShipping, setIsQuotingShipping] = useState(false);
+  const [taxBreakdown, setTaxBreakdown] = useState({
+    taxableBaseAmount: context.taxBreakdown.taxableBaseAmount,
+    igvAmount: context.taxBreakdown.igvAmount,
+    totalAmount: context.taxBreakdown.totalAmount,
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // Campos de Comprobante Fiscal (Boleta vs Factura con RUC)
+  const isCompany = context.orderMode === "wholesale" && context.approvedCompany;
+  const [taxDocumentType, setTaxDocumentType] = useState<TaxDocumentType>(
+    isCompany ? "factura" : "boleta",
+  );
+  const [billingDocType, setBillingDocType] = useState<"DNI" | "CE" | "RUC">(
+    isCompany ? "RUC" : "DNI",
+  );
+  const [billingDocNumber, setBillingDocNumber] = useState(
+    isCompany ? (context.approvedCompany?.taxId ?? "") : "",
+  );
+  const [billingCustomerName, setBillingCustomerName] = useState(
+    isCompany
+      ? (context.approvedCompany?.legalName ?? "")
+      : `${user.firstName} ${user.lastName}`.trim(),
+  );
+  const [billingFiscalAddress, setBillingFiscalAddress] = useState(
+    isCompany ? (context.approvedCompany?.addressLine ?? "") : "",
+  );
 
-  const triggerShippingRecalculation = async (
-    nextDept: string,
-    nextProv: string,
-    nextDist: string,
+  // Método de pago: "card" (Tarjeta Crédito/Débito) | "transfer" (Transferencia / Yape / Plin)
+  const [paymentType, setPaymentType] = useState<"card" | "transfer">("card");
+
+  // Configuración de Tarjeta: Modo Simulación vs Real Mercado Pago
+  const [cardMode, setCardMode] = useState<"simulation" | "real">("simulation");
+  const [simulationScenario, setSimulationScenario] = useState<"sandbox_approve" | "sandbox_reject">("sandbox_approve");
+
+  // Formulario de Tarjeta
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardDni, setCardDni] = useState("");
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+
+  // Formulario de Transferencia / Yape / Plin
+  const [operationCode, setOperationCode] = useState("");
+  const [voucherPreviewUrl, setVoucherPreviewUrl] = useState<string | null>(null);
+  const [voucherFileName, setVoucherFileName] = useState<string | null>(null);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+
+  // Notas adicionales del cliente
+  const [customerNotes, setCustomerNotes] = useState("");
+
+  // Errores por paso
+  const [step1Error, setStep1Error] = useState<string | null>(null);
+  const [step2Error, setStep2Error] = useState<string | null>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // Animación Formal de Pago
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // Pantalla de Éxito y Pedido Confirmado
+  const [orderSuccessData, setOrderSuccessData] = useState<OrderWhatsAppDetails | null>(null);
+  const [confirmedOrderId, setConfirmedOrderId] = useState<number | null>(null);
+
+  // Modal de WhatsApp
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+
+  // Catálogos geográficos del Perú
+  const departments = getPeruDepartments();
+  const provinces = getPeruProvinces(department);
+  const districts = getPeruDistricts(department, province);
+
+  // Tienda seleccionada actual
+  const selectedStore = activeStores.find((s) => s.id === selectedStoreId) ?? activeStores[0];
+
+  // Disparar cotización de envío en el servidor
+  const triggerShippingQuote = async (
+    dept: string,
+    prov: string,
+    dist: string,
+    method: "delivery" | "express" | "store_pickup" = deliveryMethod,
+    storeId: number | null = selectedStoreId,
   ) => {
-    setIsRecalculatingShipping(true);
+    setIsQuotingShipping(true);
+    setStep1Error(null);
     try {
       const res = await quoteCheckoutShippingAction({
-        department: nextDept,
-        province: nextProv,
-        district: nextDist,
+        department: dept,
+        province: prov,
+        district: dist,
         subtotalAfterDiscountCents: context.subtotalAfterDiscountAmount,
+        deliveryMethod: method,
+        pickupStoreId: storeId,
       });
+
       if (res.success && res.data) {
         setShippingCalc(res.data.shipping);
         setTaxBreakdown({
@@ -178,901 +231,1532 @@ export function CheckoutView({
           igvAmount: res.data.igvAmount,
           totalAmount: res.data.totalAmount,
         });
+      } else {
+        setStep1Error(res.error ?? "No se pudo cotizar el envío para este destino.");
       }
+    } catch {
+      setStep1Error("Error de comunicación al calcular costo de envío.");
     } finally {
-      setIsRecalculatingShipping(false);
+      setIsQuotingShipping(false);
     }
   };
 
-  const handleSelectSavedAddress = (addrId: number) => {
-    setSelectedAddressId(addrId);
-    const found = context.savedAddresses.find((a) => a.id === addrId);
-    if (found) {
-      setDepartment(found.department);
-      setProvince(found.province);
-      setDistrict(found.district);
-      void triggerShippingRecalculation(
-        found.department,
-        found.province,
-        found.district,
+  // Manejar cambio de Departamento
+  const handleDepartmentChange = (newDept: string) => {
+    setDepartment(newDept);
+    const newProvinces = getPeruProvinces(newDept);
+    const firstProv = newProvinces[0] ?? "";
+    setProvince(firstProv);
+
+    const newDistricts = getPeruDistricts(newDept, firstProv);
+    const firstDist = newDistricts[0] ?? "";
+    setDistrict(firstDist);
+
+    void triggerShippingQuote(newDept, firstProv, firstDist);
+  };
+
+  // Manejar cambio de Provincia
+  const handleProvinceChange = (newProv: string) => {
+    setProvince(newProv);
+    const newDistricts = getPeruDistricts(department, newProv);
+    const firstDist = newDistricts[0] ?? "";
+    setDistrict(firstDist);
+
+    void triggerShippingQuote(department, newProv, firstDist);
+  };
+
+  // Manejar cambio de Distrito
+  const handleDistrictChange = (newDist: string) => {
+    setDistrict(newDist);
+    void triggerShippingQuote(department, province, newDist);
+  };
+
+  // Manejar cambio de Modalidad de Entrega
+  const handleDeliveryMethodChange = (newMethod: "delivery" | "express" | "store_pickup") => {
+    setDeliveryMethod(newMethod);
+    if (newMethod === "store_pickup") {
+      void triggerShippingQuote(
+        selectedStore?.department ?? "Lima",
+        selectedStore?.province ?? "Lima",
+        selectedStore?.district ?? "La Victoria",
+        "store_pickup",
+        selectedStoreId,
       );
+    } else {
+      void triggerShippingQuote(department, province, district, newMethod);
     }
   };
 
-  const handleTaxDocTypeChange = (type: TaxDocumentType) => {
-    setTaxDocumentType(type);
-    if (type === "factura") {
-      setBillingDocType("RUC");
-      if (context.approvedCompany) {
-        setBillingDocNumber(context.approvedCompany.taxId);
-        setBillingCustomerName(context.approvedCompany.legalName);
-        setBillingFiscalAddress(
-          `${context.approvedCompany.addressLine}, ${context.approvedCompany.district}, ${context.approvedCompany.department}`,
-        );
+  // Manejar selección de dirección guardada
+  const handleSelectSavedAddress = (id: number) => {
+    setSelectedAddressId(id);
+    const addr = context.savedAddresses.find((a) => a.id === id);
+    if (addr) {
+      setRecipientName(addr.recipientName);
+      setRecipientPhone(addr.recipientPhone);
+      setDepartment(addr.department);
+      setProvince(addr.province);
+      setDistrict(addr.district);
+      setAddressLine1(addr.addressLine1);
+      setReference(addr.reference ?? "");
+      void triggerShippingQuote(addr.department, addr.province, addr.district);
+    }
+  };
+
+  // Avanzar de Paso 1 (Entrega) a Paso 2 (Comprobante)
+  const handleProceedToStep2 = () => {
+    setStep1Error(null);
+
+    if (!recipientName.trim()) {
+      setStep1Error("Ingresa el nombre completo de la persona que recibe o retira el pedido.");
+      return;
+    }
+
+    const cleanPhone = recipientPhone.replace(/\D/g, "");
+    if (cleanPhone.length < 9) {
+      setStep1Error("Ingresa un número telefónico de contacto válido en el Perú (9 dígitos).");
+      return;
+    }
+
+    if (deliveryMethod === "store_pickup") {
+      if (!selectedStoreId) {
+        setStep1Error("Por favor selecciona en qué tienda oficial retirarás tus prendas.");
+        return;
       }
     } else {
-      setBillingDocType("DNI");
-      if (!context.approvedCompany) {
-        setBillingCustomerName(`${user.firstName} ${user.lastName}`);
+      if (!addressLine1.trim()) {
+        setStep1Error("Ingresa la dirección exacta de entrega (Avenida, Jirón, Calle, N° o Dpto).");
+        return;
+      }
+      if (!shippingCalc.isAvailable) {
+        setStep1Error(shippingCalc.unavailableReason ?? "No contamos con cobertura de entrega en este distrito.");
+        return;
       }
     }
+
+    setCurrentStep(2);
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting) return;
+  // Avanzar de Paso 2 (Comprobante) a Paso 3 (Método de Pago)
+  const handleProceedToStep3 = () => {
+    setStep2Error(null);
 
-    setErrorMessage(null);
-    setIsSubmitting(true);
+    if (taxDocumentType === "factura") {
+      const cleanRuc = billingDocNumber.replace(/\D/g, "");
+      if (cleanRuc.length !== 11 || (!cleanRuc.startsWith("10") && !cleanRuc.startsWith("20"))) {
+        setStep2Error("El RUC debe tener 11 dígitos y comenzar con 10 o 20 conforme a SUNAT.");
+        return;
+      }
+      if (!billingCustomerName.trim()) {
+        setStep2Error("Ingresa la Razón Social de la empresa tal como está registrada en SUNAT.");
+        return;
+      }
+      if (!billingFiscalAddress.trim()) {
+        setStep2Error("Ingresa el Domicilio Fiscal de la empresa en el Perú.");
+        return;
+      }
+    } else {
+      const cleanDoc = billingDocNumber.replace(/\D/g, "");
+      if (billingDocType === "DNI" && cleanDoc.length !== 8) {
+        setStep2Error("El DNI debe tener 8 dígitos numéricos.");
+        return;
+      }
+      if (billingDocType === "CE" && (cleanDoc.length < 8 || cleanDoc.length > 12)) {
+        setStep2Error("El Carné de Extranjería debe tener entre 8 y 12 caracteres.");
+        return;
+      }
+      if (!billingCustomerName.trim()) {
+        setStep2Error("Ingresa los nombres y apellidos del titular del comprobante.");
+        return;
+      }
+    }
 
-    try {
+    setCurrentStep(3);
+  };
+
+  // Llenar tarjeta de prueba en 1 clic
+  const handleFillTestCard = (outcome: "approve" | "reject" = "approve") => {
+    setCardNumber("4557 8421 9012 3456");
+    setCardHolder((recipientName || "JHOSEP COLCHADO").toUpperCase());
+    setCardExp("12/28");
+    setCardCvv("789");
+    setCardDni(billingDocType === "DNI" && billingDocNumber ? billingDocNumber : "12345678");
+    setCardMode("simulation");
+    setSimulationScenario(outcome === "approve" ? "sandbox_approve" : "sandbox_reject");
+    setCardError(null);
+  };
+
+  // Subir imagen de voucher / constancia
+  const handleVoucherFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setGeneralError("Por favor selecciona un archivo de imagen válido (JPG, PNG o WEBP).");
+      return;
+    }
+    setVoucherFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setVoucherPreviewUrl(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Copiar cuenta bancaria
+  const handleCopyAccount = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedAccount(label);
+      setTimeout(() => setCopiedAccount(null), 2000);
+    });
+  };
+
+  // Confirmar y pagar pedido
+  const handleConfirmOrder = async () => {
+    setGeneralError(null);
+    setCardError(null);
+
+    // Validación según método
+    if (paymentType === "card") {
+      const cleanNum = cardNumber.replace(/\D/g, "");
+      if (cleanNum.length < 15) {
+        setCardError("Ingresa un número de tarjeta válido (15 o 16 dígitos).");
+        return;
+      }
+      if (!cardHolder.trim() || cardHolder.trim().length < 3) {
+        setCardError("Ingresa el nombre del titular tal como figura en la tarjeta.");
+        return;
+      }
+      const expClean = cardExp.replace(/\D/g, "");
+      if (expClean.length !== 4) {
+        setCardError("Ingresa la fecha de vencimiento completa en formato MM/AA.");
+        return;
+      }
+      const month = parseInt(expClean.slice(0, 2), 10);
+      if (month < 1 || month > 12) {
+        setCardError("El mes de vencimiento debe estar entre 01 y 12.");
+        return;
+      }
+      if (cardCvv.trim().length < 3) {
+        setCardError("Ingresa el código CVV de seguridad (3 o 4 dígitos al reverso).");
+        return;
+      }
+      if (cardDni.trim().length < 8) {
+        setCardError("Ingresa el DNI del titular de la tarjeta (8 dígitos).");
+        return;
+      }
+    }
+
+    if (paymentType === "transfer") {
+      if (!operationCode.trim() || operationCode.trim().length < 4) {
+        setGeneralError("Por favor ingresa el número o código de operación de tu transferencia o Yape.");
+        return;
+      }
+    }
+
+    // Activar animación formal bancaria
+    setIsProcessingPayment(true);
+
+    const detectedBrand = detectCardBrand(cardNumber);
+    const brandLabel =
+      detectedBrand === "visa"
+        ? "Visa Débito / Crédito"
+        : detectedBrand === "mastercard"
+        ? "Mastercard Débito / Crédito"
+        : detectedBrand === "amex"
+        ? "American Express"
+        : "Tarjeta Bancaria";
+
+    const resolvedProvider: PaymentProviderName =
+      paymentType === "transfer"
+        ? "bank_transfer"
+        : cardMode === "real" && context.paymentConfig.mercadopagoConfigured
+        ? "mercadopago"
+        : "sandbox";
+
+    const tokenPayload =
+      paymentType === "card"
+        ? cardMode === "simulation"
+          ? simulationScenario
+          : "real_card_token"
+        : undefined;
+
+    startTransition(async () => {
       const res = await placeCheckoutOrderAction({
         idempotencyKey,
         source: context.source,
         quoteId: context.quoteId,
-        savedAddressId: addressMode === "saved" ? selectedAddressId : null,
-        saveNewAddressToBook: addressMode === "new" ? saveNewAddressToBook : false,
+        deliveryMethod,
+        pickupStoreId: deliveryMethod === "store_pickup" ? selectedStoreId : null,
+        savedAddressId: addressMode === "saved" && deliveryMethod !== "store_pickup" ? selectedAddressId : null,
+        saveNewAddressToBook: addressMode === "new" && deliveryMethod !== "store_pickup" ? saveNewAddressToBook : false,
         shippingRecipientName: recipientName,
         shippingRecipientPhone: recipientPhone,
-        shippingDepartment: department,
-        shippingProvince: province,
-        shippingDistrict: district,
-        shippingAddressLine1: addressLine1,
-        shippingAddressLine2: addressLine2,
-        shippingReference: reference,
+        shippingDepartment: deliveryMethod === "store_pickup" ? (selectedStore?.department ?? "Lima") : department,
+        shippingProvince: deliveryMethod === "store_pickup" ? (selectedStore?.province ?? "Lima") : province,
+        shippingDistrict: deliveryMethod === "store_pickup" ? (selectedStore?.district ?? "La Victoria") : district,
+        shippingAddressLine1: deliveryMethod === "store_pickup" ? (selectedStore?.address ?? "Tienda Oficial") : addressLine1,
+        shippingAddressLine2: "",
+        shippingReference: deliveryMethod === "store_pickup" ? (selectedStore?.reference ?? "") : reference,
         taxDocumentType,
         billingDocType,
         billingDocNumber,
         billingCustomerName,
         billingFiscalAddress,
-        paymentProvider,
-        paymentToken:
-          paymentProvider === "sandbox" ? sandboxScenario : undefined,
-        maskedCardLast4,
+        paymentProvider: resolvedProvider,
+        paymentToken: tokenPayload,
+        paymentMethodBrand: paymentType === "card" ? brandLabel : "Transferencia / Yape Oficial",
+        maskedCardLast4: paymentType === "card" ? cardNumber.replace(/\D/g, "").slice(-4) : undefined,
+        paymentOperationCode: paymentType === "transfer" ? operationCode.trim() : undefined,
+        voucherImageUrl: voucherPreviewUrl ?? undefined,
         customerNotes,
       });
 
-      if (!res.success || !res.data) {
-        setErrorMessage(
-          res.error ?? "No se pudo procesar tu pedido. Verifica los datos ingresados.",
-        );
-        setIsSubmitting(false);
-        return;
-      }
+      if (res.success && res.data) {
+        const orderData = res.data;
+        await refreshCart();
 
-      await refreshCart();
-      router.push(`/cuenta/pedidos/${res.data.orderId}?created=1`);
-    } catch {
-      setErrorMessage(
-        "Ocurrió un problema de conexión al confirmar tu pedido. Intenta nuevamente.",
-      );
-      setIsSubmitting(false);
-    }
+        // Breve pausa para completar la animación bancaria con elegancia
+        setTimeout(() => {
+          setIsProcessingPayment(false);
+          setConfirmedOrderId(orderData.orderId);
+          setOrderSuccessData({
+            orderNumber: orderData.orderNumber,
+            orderStatus: orderData.orderStatus,
+            paymentStatus: orderData.paymentStatus,
+            paymentMethodLabel:
+              orderData.paymentMethodLabel ||
+              (paymentType === "card" ? brandLabel : "Transferencia Bancaria / Yape"),
+            totalAmount: orderData.totalAmount ?? taxBreakdown.totalAmount,
+            deliveryMethod,
+            shippingRecipientName: orderData.shippingRecipientName || recipientName,
+            shippingDepartment: orderData.shippingDepartment || department,
+            shippingProvince: orderData.shippingProvince || province,
+            shippingDistrict: orderData.shippingDistrict || district,
+            shippingAddressLine1: orderData.shippingAddressLine1 || addressLine1,
+            taxDocumentType: orderData.taxDocumentType || taxDocumentType,
+            billingDocNumber: orderData.billingDocNumber || billingDocNumber,
+            pickupStoreName: selectedStore?.name,
+            pickupStoreAddress: selectedStore?.address,
+            paymentOperationCode: operationCode || undefined,
+            items: context.lines.map((l) => ({
+              title: l.productName,
+              size: l.size,
+              color: l.colorName,
+              quantity: l.quantity,
+              priceCents: l.effectiveUnitAmount,
+            })),
+          });
+          setIsWhatsAppModalOpen(true);
+        }, 1200);
+      } else {
+        setIsProcessingPayment(false);
+        setGeneralError(res.error ?? "No se pudo procesar tu pedido. Verifica la información ingresada.");
+      }
+    });
   };
 
-  // Si la cuenta está bloqueada (ej. business_pending, suspendida o cotización ya convertida)
-  if (context.isBlockedRole) {
+  // ═════════════════════════════════════════════════════════════════════════
+  // VISTA FINAL: PANTALLA DE ÉXITO DE COMPRA (DENTRO DEL CHECKOUT)
+  // ═════════════════════════════════════════════════════════════════════════
+  if (orderSuccessData && confirmedOrderId) {
     return (
-      <div
-        data-testid="checkout-blocked-banner"
-        className="border border-amber-400 bg-amber-50/90 p-8 text-amber-950 sm:p-12"
-      >
-        <div className="flex items-start gap-4">
-          <AlertCircle className="mt-1 size-6 shrink-0 text-amber-800" aria-hidden />
-          <div className="space-y-4">
-            <div>
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-amber-900">
-                Validación Comercial de Checkout
-              </p>
-              <h2 className="mt-1 font-display text-2xl text-ink">
-                No es posible iniciar esta operación
-              </h2>
-            </div>
-            <p className="text-sm leading-relaxed text-amber-900">
-              {context.blockedReason}
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              {context.alreadyConvertedOrderId ? (
-                <Link
-                  href={`/cuenta/pedidos/${context.alreadyConvertedOrderId}`}
-                  data-testid="checkout-already-converted-link"
-                  className="inline-flex h-11 items-center justify-center gap-2 bg-ink px-6 text-xs font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla"
-                >
-                  Ver Pedido Generado
-                </Link>
-              ) : null}
-              <Link
-                href="/cuenta"
-                className="inline-flex h-11 items-center justify-center gap-2 border border-ink/25 bg-paper px-6 text-xs font-medium uppercase tracking-[0.16em] text-ink hover:border-ink"
-              >
-                Ir a Mi Cuenta
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (context.lines.length === 0) {
-    return (
-      <div className="border border-ink/15 bg-[#fbfaf7] p-12 text-center">
-        <h2 className="font-display text-2xl text-ink">
-          No hay prendas seleccionadas para el checkout
-        </h2>
-        <p className="mt-2 text-sm text-taupe-600">
-          Agrega prendas desde nuestro catálogo antes de proceder a la confirmación del pedido.
-        </p>
-        <div className="mt-6">
-          <Link
-            href="/catalogo"
-            className="inline-flex h-11 items-center justify-center bg-ink px-6 text-xs font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla"
-          >
-            Explorar Catálogo
+      <div className="text-neutral-900 animate-in fade-in duration-300">
+        <div className="flex items-center justify-between border-b border-neutral-200/90 pb-4 mb-6">
+          <Link href="/" className="text-lg font-black tracking-tighter text-neutral-900">
+            AMERICAN COLT<span className="text-[#801323]">.</span>
           </Link>
+          <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5 text-emerald-600" />
+            Compra Protegida
+          </span>
         </div>
+
+        <CheckoutSuccessView
+          order={orderSuccessData}
+          orderId={confirmedOrderId}
+          userRole={user.role}
+          voucherPreviewUrl={voucherPreviewUrl}
+          onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
+        />
+
+        <CheckoutWhatsAppModal
+          isOpen={isWhatsAppModalOpen}
+          onClose={() => setIsWhatsAppModalOpen(false)}
+          order={orderSuccessData}
+        />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmitOrder} className="space-y-8">
-      {/* Banner si se está convirtiendo una cotización B2B aceptada */}
-      {context.source === "quote" && context.quoteNumber && (
-        <div
-          data-testid="checkout-quote-conversion-banner"
-          className="border border-emerald-400 bg-emerald-50/90 p-5 text-emerald-950"
-        >
-          <div className="flex items-start gap-3">
-            <Sparkles className="mt-0.5 size-5 shrink-0 text-emerald-800" aria-hidden />
-            <div>
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-emerald-900">
-                Conversión Oficial de Cotización Aceptada: {context.quoteNumber}
-              </p>
-              <p className="mt-1 text-xs leading-relaxed text-emerald-800">
-                Las cantidades aprobadas y los precios unitarios especiales están congelados e inmutables conforme al expediente autorizado.
-                {context.quotePaymentTerms
-                  ? ` Condición comercial aprobada: ${context.quotePaymentTerms}.`
-                  : ""}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div
-          role="alert"
-          data-testid="checkout-error-alert"
-          className="flex items-start gap-3 border-l-2 border-cochinilla bg-cochinilla/10 p-4 text-xs text-cochinilla"
-        >
-          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
-          <span>{errorMessage}</span>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-        {/* Columna Izquierda: Dirección, Comprobante SUNAT y Pago */}
-        <div className="space-y-8 lg:col-span-7">
-          {/* SECCIÓN 1: DIRECCIÓN DE ENTREGA EN PERÚ */}
-          <section
-            aria-labelledby="checkout-shipping-heading"
-            className="border border-ink/15 bg-paper p-4 sm:p-8"
+    <div className="text-neutral-900">
+      {/* ─── Encabezado de Navegación Rápida y Marca ─── */}
+      <div className="flex items-center justify-between border-b border-neutral-200/90 pb-4 mb-8">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="text-base sm:text-lg font-black tracking-tighter text-neutral-900 transition-opacity hover:opacity-80"
           >
-            <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
-              <MapPin className="size-5 text-cochinilla" aria-hidden />
-              <div>
-                <h2
-                  id="checkout-shipping-heading"
-                  className="font-display text-2xl text-ink"
-                >
-                  1. Dirección de Entrega (Perú)
-                </h2>
-                <p className="text-xs text-taupe-500">
-                  El costo de envío se calcula en el servidor según el departamento, provincia y distrito.
-                </p>
-              </div>
-            </div>
+            AMERICAN COLT<span className="text-[#801323]">.</span>
+          </Link>
+          <span className="hidden sm:inline-block rounded-full bg-neutral-100 px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-neutral-600">
+            JEANS™ PERÚ
+          </span>
+        </div>
 
-            {context.savedAddresses.length > 0 && (
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAddressMode("saved");
-                    if (selectedAddressId) handleSelectSavedAddress(selectedAddressId);
-                  }}
-                  className={cn(
-                    "px-4 py-2 font-mono text-xs uppercase tracking-wider border transition-colors",
-                    addressMode === "saved"
-                      ? "border-ink bg-ink text-paper"
-                      : "border-ink/20 bg-[#fbfaf7] text-ink hover:border-ink",
-                  )}
-                >
-                  Usar dirección guardada ({context.savedAddresses.length})
-                </button>
-                <button
-                  type="button"
-                  data-testid="checkout-new-address-tab"
-                  onClick={() => setAddressMode("new")}
-                  className={cn(
-                    "px-4 py-2 font-mono text-xs uppercase tracking-wider border transition-colors",
-                    addressMode === "new"
-                      ? "border-ink bg-ink text-paper"
-                      : "border-ink/20 bg-[#fbfaf7] text-ink hover:border-ink",
-                  )}
-                >
-                  + Registrar nueva dirección
-                </button>
-              </div>
-            )}
+        <div className="flex items-center gap-4 text-xs">
+          <span className="inline-flex items-center gap-1.5 font-bold text-neutral-700">
+            <Lock className="size-3.5 text-emerald-600" />
+            <span className="hidden min-[400px]:inline">Checkout seguro</span>
+          </span>
+          <Link
+            href="/catalogo"
+            className="inline-flex items-center gap-1 font-semibold text-[#0055FF] hover:underline"
+          >
+            <ArrowLeft className="size-3.5" />
+            <span>Volver a la bolsa</span>
+          </Link>
+        </div>
+      </div>
 
-            {addressMode === "saved" && context.savedAddresses.length > 0 ? (
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {context.savedAddresses.map((addr) => {
-                  const isSelected = selectedAddressId === addr.id;
-                  return (
-                    <label
-                      key={addr.id}
+      {/* Título Principal */}
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900">
+          Finaliza tu compra
+        </h1>
+        <p className="mt-1 text-xs text-neutral-500">
+          Revisa tus prendas, selecciona tu dirección en el Perú y elige tu comprobante electrónico.
+        </p>
+      </div>
+
+      {/* Grid de 2 Columnas (Izquierda: Pasos, Derecha: Resumen de Pedido) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        {/* ═══════════════════════════════════════════════════════════════════
+            COLUMNA IZQUIERDA: STEPPER DE 3 PASOS (ENTREGA, COMPROBANTE, PAGO)
+            ═══════════════════════════════════════════════════════════════════ */}
+        <div className="lg:col-span-7 space-y-5">
+          {/* ────────────────────────────────────────────────────────────────
+              PASO 1: ENTREGA Y MODALIDAD
+              ──────────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+            {currentStep === 1 ? (
+              <div className="space-y-5">
+                <div className="border-b border-neutral-100 pb-3">
+                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
+                    <MapPin className="size-5 text-[#801323]" />
+                    <span>1. Entrega</span>
+                  </h2>
+                  <p className="mt-0.5 text-xs text-neutral-500">
+                    El costo de envío se calcula en el servidor según el departamento, provincia y distrito.
+                  </p>
+                </div>
+
+                {step1Error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
+                    <AlertCircle className="size-4 shrink-0 text-red-600" />
+                    <span>{step1Error}</span>
+                  </div>
+                )}
+
+                {/* Modalidad de entrega: 3 opciones con tarjetas */}
+                <div>
+                  <label className="block text-xs font-bold text-neutral-800 mb-2">
+                    Modalidad de Entrega *
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {/* Opción 1: Domicilio */}
+                    <button
+                      type="button"
+                      onClick={() => handleDeliveryMethodChange("delivery")}
                       className={cn(
-                        "cursor-pointer border p-4 transition-colors",
-                        isSelected
-                          ? "border-ink bg-[#fbfaf7] ring-1 ring-ink"
-                          : "border-ink/15 bg-paper hover:border-ink/40",
+                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        deliveryMethod === "delivery"
+                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-semibold uppercase text-ink">
-                          {addr.title}
-                        </span>
-                        <input
-                          type="radio"
-                          name="savedAddress"
-                          checked={isSelected}
-                          onChange={() => handleSelectSavedAddress(addr.id)}
-                          className="accent-ink"
-                        />
+                      <div className="flex items-center justify-between mb-1">
+                        <Truck className={cn("size-4", deliveryMethod === "delivery" ? "text-[#801323]" : "text-neutral-500")} />
+                        {deliveryMethod === "delivery" && <Check className="size-3.5 text-[#801323]" />}
                       </div>
-                      <p className="mt-2 text-xs font-medium text-ink">
-                        {addr.recipientName} · {addr.recipientPhone}
-                      </p>
-                      <p className="mt-1 text-xs text-taupe-600">
-                        {addr.addressLine1}
-                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ""}
-                      </p>
-                      <p className="mt-1 font-mono text-[0.68rem] uppercase text-taupe-500">
-                        {addr.district}, {addr.province} — {addr.department}
-                      </p>
-                    </label>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="mt-5 space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="shippingRecipientName"
-                      className="block font-mono text-xs uppercase tracking-wider text-ink"
+                      <span className="font-bold text-xs text-neutral-900 block">Envío a Domicilio</span>
+                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Lima Metropolitana y Provincias</span>
+                    </button>
+
+                    {/* Opción 2: Express / Provincias */}
+                    <button
+                      type="button"
+                      onClick={() => handleDeliveryMethodChange("express")}
+                      className={cn(
+                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        deliveryMethod === "express"
+                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          : "border-neutral-200 hover:border-neutral-400 bg-white",
+                      )}
                     >
-                      Persona que recibe *
+                      <div className="flex items-center justify-between mb-1">
+                        <Zap className={cn("size-4", deliveryMethod === "express" ? "text-[#801323]" : "text-neutral-500")} />
+                        {deliveryMethod === "express" && <Check className="size-3.5 text-[#801323]" />}
+                      </div>
+                      <span className="font-bold text-xs text-neutral-900 block">Envío Express</span>
+                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Agencia Shalom / Olva a todo el Perú</span>
+                    </button>
+
+                    {/* Opción 3: Recojo en Tienda */}
+                    <button
+                      type="button"
+                      onClick={() => handleDeliveryMethodChange("store_pickup")}
+                      className={cn(
+                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        deliveryMethod === "store_pickup"
+                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          : "border-neutral-200 hover:border-neutral-400 bg-white",
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <Store className={cn("size-4", deliveryMethod === "store_pickup" ? "text-[#801323]" : "text-neutral-500")} />
+                        <span className="rounded bg-emerald-100 px-1 py-0.2 text-[0.6rem] font-bold text-emerald-800">
+                          Gratis
+                        </span>
+                      </div>
+                      <span className="font-bold text-xs text-neutral-900 block">Recojo en Tienda</span>
+                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Tiendas oficiales American Colt</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sub-formulario Persona que Recibe y Teléfono */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      Persona que recibe / recoge *
                     </label>
                     <input
-                      id="shippingRecipientName"
-                      name="shippingRecipientName"
                       type="text"
                       required
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
-                      className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
+                      placeholder="Ej: Jhosep Colchado"
+                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
                     />
                   </div>
+
                   <div>
-                    <label
-                      htmlFor="shippingRecipientPhone"
-                      className="block font-mono text-xs uppercase tracking-wider text-ink"
-                    >
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
                       Teléfono de contacto (Perú) *
                     </label>
                     <input
-                      id="shippingRecipientPhone"
-                      name="shippingRecipientPhone"
                       type="tel"
                       required
-                      placeholder="987 654 321"
                       value={recipientPhone}
                       onChange={(e) => setRecipientPhone(e.target.value)}
-                      className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
+                      placeholder="987 654 321"
+                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <div>
-                    <label
-                      htmlFor="shippingDepartment"
-                      className="block font-mono text-xs uppercase tracking-wider text-ink"
-                    >
-                      Departamento *
-                    </label>
-                    <select
-                      id="shippingDepartment"
-                      name="shippingDepartment"
-                      value={department}
-                      onChange={(e) => {
-                        const nextDept = e.target.value;
-                        setDepartment(nextDept);
-                        void triggerShippingRecalculation(nextDept, province, district);
-                      }}
-                      className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                    >
-                      {PERU_DEPARTMENTS.map((dept) => (
-                        <option key={dept} value={dept}>
-                          {dept}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="shippingProvince"
-                      className="block font-mono text-xs uppercase tracking-wider text-ink"
-                    >
-                      Provincia *
-                    </label>
-                    <input
-                      id="shippingProvince"
-                      name="shippingProvince"
-                      type="text"
-                      required
-                      value={province}
-                      onChange={(e) => setProvince(e.target.value)}
-                      onBlur={() =>
-                        void triggerShippingRecalculation(department, province, district)
-                      }
-                      className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="shippingDistrict"
-                      className="block font-mono text-xs uppercase tracking-wider text-ink"
-                    >
-                      Distrito *
-                    </label>
-                    <input
-                      id="shippingDistrict"
-                      name="shippingDistrict"
-                      type="text"
-                      required
-                      value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
-                      onBlur={() =>
-                        void triggerShippingRecalculation(department, province, district)
-                      }
-                      className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="shippingAddressLine1"
-                    className="block font-mono text-xs uppercase tracking-wider text-ink"
-                  >
-                    Dirección exacta (Av. / Calle / Jr. / N° / Dpto.) *
-                  </label>
-                  <input
-                    id="shippingAddressLine1"
-                    name="shippingAddressLine1"
-                    type="text"
-                    required
-                    placeholder="Ej: Av. Conquistadores 450, Dpto. 302"
-                    value={addressLine1}
-                    onChange={(e) => setAddressLine1(e.target.value)}
-                    className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="shippingReference"
-                    className="block font-mono text-xs uppercase tracking-wider text-ink"
-                  >
-                    Referencia para el courier (opcional)
-                  </label>
-                  <input
-                    id="shippingReference"
-                    name="shippingReference"
-                    type="text"
-                    placeholder="Ej: Frente al parque, edificio de ladrillo visto, recepción 24h"
-                    value={reference}
-                    onChange={(e) => setReference(e.target.value)}
-                    className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                  />
-                </div>
-
-                <label className="flex items-center gap-2 text-xs text-taupe-700">
-                  <input
-                    type="checkbox"
-                    checked={saveNewAddressToBook}
-                    onChange={(e) => setSaveNewAddressToBook(e.target.checked)}
-                    className="accent-ink"
-                  />
-                  <span>Guardar esta dirección en mi libreta para futuras compras</span>
-                </label>
-              </div>
-            )}
-
-            {/* Resultado vivo de tarifa de envío calculada en el servidor */}
-            <div
-              data-testid="checkout-shipping-status-box"
-              className={cn(
-                "mt-5 border p-4 text-xs",
-                shippingCalc.isAvailable
-                  ? "border-ink/15 bg-[#fbfaf7] text-ink"
-                  : "border-cochinilla bg-cochinilla/10 text-cochinilla",
-              )}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 font-mono font-semibold uppercase">
-                  <Truck className="size-4 shrink-0" aria-hidden />
-                  {isRecalculatingShipping
-                    ? "Calculando cobertura en servidor..."
-                    : shippingCalc.zoneName}
-                </span>
-                {shippingCalc.isAvailable && (
-                  <span
-                    data-testid="checkout-shipping-cost"
-                    className="font-mono text-sm font-bold tabular-nums"
-                  >
-                    {shippingCalc.shippingAmount === 0
-                      ? "GRATIS"
-                      : formatPEN(shippingCalc.shippingAmount)}
-                  </span>
-                )}
-              </div>
-              {shippingCalc.isAvailable ? (
-                <p className="mt-1 text-taupe-600">
-                  Tiempo estimado de entrega: <strong>{shippingCalc.estimatedDaysLabel}</strong>.
-                  {shippingCalc.isFreeShippingApplied
-                    ? " ¡Beneficio de envío gratuito aplicado por superar el monto mínimo!"
-                    : shippingCalc.freeShippingMinSubtotal
-                      ? ` (Envío gratis en esta zona desde ${formatPEN(shippingCalc.freeShippingMinSubtotal)})`
-                      : ""}
-                </p>
-              ) : (
-                <p className="mt-1 font-medium">{shippingCalc.unavailableReason}</p>
-              )}
-            </div>
-          </section>
-
-          {/* SECCIÓN 2: COMPROBANTE ELECTRÓNICO (BOLETA / FACTURA PERÚ) */}
-          <section
-            aria-labelledby="checkout-billing-heading"
-            className="border border-ink/15 bg-paper p-4 sm:p-8"
-          >
-            <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
-              <FileText className="size-5 text-cochinilla" aria-hidden />
-              <div>
-                <h2
-                  id="checkout-billing-heading"
-                  className="font-display text-2xl text-ink"
-                >
-                  2. Comprobante Tributario (Perú)
-                </h2>
-                <p className="text-xs text-taupe-500">
-                  Selecciona Boleta de Venta (DNI / CE) o Factura Electrónica Comercial (RUC 11 dígitos).
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                data-testid="tax-doc-boleta-btn"
-                onClick={() => handleTaxDocTypeChange("boleta")}
-                className={cn(
-                  "flex items-center justify-center gap-2 border py-3 font-mono text-xs font-semibold uppercase tracking-wider transition-colors",
-                  taxDocumentType === "boleta"
-                    ? "border-ink bg-ink text-paper"
-                    : "border-ink/20 bg-[#fbfaf7] text-ink hover:border-ink",
-                )}
-              >
-                Boleta de Venta
-              </button>
-              <button
-                type="button"
-                data-testid="tax-doc-factura-btn"
-                onClick={() => handleTaxDocTypeChange("factura")}
-                className={cn(
-                  "flex items-center justify-center gap-2 border py-3 font-mono text-xs font-semibold uppercase tracking-wider transition-colors",
-                  taxDocumentType === "factura"
-                    ? "border-ink bg-ink text-paper"
-                    : "border-ink/20 bg-[#fbfaf7] text-ink hover:border-ink",
-                )}
-              >
-                <Building2 className="size-3.5" aria-hidden />
-                Factura Electrónica (RUC)
-              </button>
-            </div>
-
-            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div>
-                <label
-                  htmlFor="billingDocType"
-                  className="block font-mono text-xs uppercase tracking-wider text-ink"
-                >
-                  Documento *
-                </label>
-                <select
-                  id="billingDocType"
-                  name="billingDocType"
-                  disabled={taxDocumentType === "factura"}
-                  value={billingDocType}
-                  onChange={(e) =>
-                    setBillingDocType(e.target.value as "DNI" | "CE" | "RUC")
-                  }
-                  className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 font-mono text-xs text-ink disabled:opacity-60"
-                >
-                  {taxDocumentType === "factura" ? (
-                    <option value="RUC">RUC (11 dígitos)</option>
-                  ) : (
-                    <>
-                      <option value="DNI">DNI (8 dígitos)</option>
-                      <option value="CE">Carnet de Extranjería</option>
-                      <option value="RUC">RUC Personal (10...)</option>
-                    </>
-                  )}
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="billingDocNumber"
-                  className="block font-mono text-xs uppercase tracking-wider text-ink"
-                >
-                  {taxDocumentType === "factura"
-                    ? "Número de RUC (11 dígitos) *"
-                    : `Número de ${billingDocType} *`}
-                </label>
-                <input
-                  id="billingDocNumber"
-                  name="billingDocNumber"
-                  type="text"
-                  required
-                  placeholder={
-                    taxDocumentType === "factura" ? "20XXXXXXXXX" : "8 dígitos numéricos"
-                  }
-                  value={billingDocNumber}
-                  onChange={(e) => setBillingDocNumber(e.target.value)}
-                  className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 font-mono text-sm text-ink focus:border-ink focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label
-                htmlFor="billingCustomerName"
-                className="block font-mono text-xs uppercase tracking-wider text-ink"
-              >
-                {taxDocumentType === "factura"
-                  ? "Razón Social Completa *"
-                  : "Nombres y Apellidos del Titular *"}
-              </label>
-              <input
-                id="billingCustomerName"
-                name="billingCustomerName"
-                type="text"
-                required
-                value={billingCustomerName}
-                onChange={(e) => setBillingCustomerName(e.target.value)}
-                className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-              />
-            </div>
-
-            {taxDocumentType === "factura" && (
-              <div className="mt-4">
-                <label
-                  htmlFor="billingFiscalAddress"
-                  className="block font-mono text-xs uppercase tracking-wider text-ink"
-                >
-                  Domicilio Fiscal Registrado *
-                </label>
-                <input
-                  id="billingFiscalAddress"
-                  name="billingFiscalAddress"
-                  type="text"
-                  required
-                  placeholder="Dirección fiscal completa para el comprobante"
-                  value={billingFiscalAddress}
-                  onChange={(e) => setBillingFiscalAddress(e.target.value)}
-                  className="mt-1.5 block h-11 w-full border border-ink/25 bg-[#fbfaf7] px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                />
-              </div>
-            )}
-          </section>
-
-          {/* SECCIÓN 3: MÉTODO DE PAGO DESACOPLADO */}
-          <section
-            aria-labelledby="checkout-payment-heading"
-            className="border border-ink/15 bg-paper p-4 sm:p-8"
-          >
-            <div className="flex items-center gap-2.5 border-b border-ink/10 pb-4">
-              <CreditCard className="size-5 text-cochinilla" aria-hidden />
-              <div>
-                <h2
-                  id="checkout-payment-heading"
-                  className="font-display text-2xl text-ink"
-                >
-                  3. Método de Pago Seguro
-                </h2>
-                <p className="text-xs text-taupe-500">
-                  Las operaciones se verifican en el servidor. Nunca almacenamos números completos de tarjeta ni códigos CVV.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {/* Opción 1: Pasarela Sandbox de Pruebas (Verificada) */}
-              {context.paymentConfig.sandboxEnabled && (
-                <label
-                  className={cn(
-                    "block cursor-pointer border p-4 transition-colors",
-                    paymentProvider === "sandbox"
-                      ? "border-ink bg-[#fbfaf7] ring-1 ring-ink"
-                      : "border-ink/15 bg-paper hover:border-ink/40",
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <input
-                        type="radio"
-                        name="paymentProvider"
-                        value="sandbox"
-                        checked={paymentProvider === "sandbox"}
-                        onChange={() => setPaymentProvider("sandbox")}
-                        className="accent-ink"
-                      />
-                      <span className="font-mono text-xs font-semibold uppercase text-ink">
-                        Pasarela de Pruebas Interactiva (Sandbox Oficial de Desarrollo)
+                {/* Contenido condicional según Modalidad */}
+                {deliveryMethod === "store_pickup" ? (
+                  /* Modo: Recojo en Tienda */
+                  <div className="rounded-xl border border-neutral-200 bg-[#FAF8F5] p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
+                        <Store className="size-4 text-[#801323]" />
+                        Tienda seleccionada para retiro gratuito
                       </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsStoreModalOpen(true)}
+                        className="text-xs font-bold text-[#0055FF] hover:underline"
+                      >
+                        Cambiar tienda
+                      </button>
                     </div>
-                    <span className="border border-emerald-400 bg-emerald-50 px-2 py-0.5 font-mono text-[0.6rem] uppercase text-emerald-900">
-                      Activo en Entorno
-                    </span>
-                  </div>
 
-                  {paymentProvider === "sandbox" && (
-                    <div className="mt-4 space-y-3 border-t border-ink/10 pt-3 text-xs">
-                      <p className="text-taupe-600">
-                        Selecciona el resultado de pago que deseas simular en el servidor (sin cargos reales):
-                      </p>
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                        <button
-                          type="button"
-                          data-testid="sandbox-scenario-approve"
-                          onClick={() => setSandboxScenario("sandbox_approve")}
-                          className={cn(
-                            "border px-3 py-2 text-left font-mono text-[0.68rem]",
-                            sandboxScenario === "sandbox_approve"
-                              ? "border-emerald-700 bg-emerald-50 font-semibold text-emerald-950"
-                              : "border-ink/15 bg-paper text-taupe-700",
-                          )}
-                        >
-                          ✓ Aprobar Pago Inmediato
-                        </button>
-                        <button
-                          type="button"
-                          data-testid="sandbox-scenario-pending"
-                          onClick={() => setSandboxScenario("sandbox_pending")}
-                          className={cn(
-                            "border px-3 py-2 text-left font-mono text-[0.68rem]",
-                            sandboxScenario === "sandbox_pending"
-                              ? "border-sky-700 bg-sky-50 font-semibold text-sky-950"
-                              : "border-ink/15 bg-paper text-taupe-700",
-                          )}
-                        >
-                          ⏳ Dejar en Proceso (Webhook)
-                        </button>
-                        <button
-                          type="button"
-                          data-testid="sandbox-scenario-reject"
-                          onClick={() => setSandboxScenario("sandbox_reject")}
-                          className={cn(
-                            "border px-3 py-2 text-left font-mono text-[0.68rem]",
-                            sandboxScenario === "sandbox_reject"
-                              ? "border-rose-700 bg-rose-50 font-semibold text-rose-950"
-                              : "border-ink/15 bg-paper text-taupe-700",
-                          )}
-                        >
-                          ✕ Simular Tarjeta Denegada
-                        </button>
+                    {selectedStore ? (
+                      <div className="rounded-xl border border-neutral-200/80 bg-white p-3.5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <strong className="text-xs font-extrabold text-neutral-900">
+                            {selectedStore.name}
+                          </strong>
+                          <span className="rounded bg-emerald-50 px-2 py-0.5 text-[0.62rem] font-bold text-emerald-800 border border-emerald-200">
+                            Costo: S/ 0.00
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-700 flex items-start gap-1.5">
+                          <MapPin className="size-3.5 text-[#801323] shrink-0 mt-0.5" />
+                          <span>{selectedStore.address} — {selectedStore.district}, {selectedStore.department}</span>
+                        </p>
+                        {selectedStore.reference && (
+                          <p className="text-[0.7rem] text-neutral-500 pl-5">
+                            Ref: {selectedStore.reference}
+                          </p>
+                        )}
+                        <p className="text-[0.7rem] text-neutral-600 flex items-center gap-1.5 pt-0.5 pl-5">
+                          <Clock className="size-3 text-neutral-400 shrink-0" />
+                          <span>{selectedStore.openingHours}</span>
+                        </p>
                       </div>
-                      <div className="flex items-center gap-3 pt-1">
-                        <label
-                          htmlFor="maskedCardLast4"
-                          className="font-mono text-[0.68rem] uppercase text-taupe-600"
+                    ) : (
+                      <p className="text-xs text-neutral-500">
+                        No hay tiendas disponibles actualmente.
+                      </p>
+                    )}
+
+                    <p className="text-[0.7rem] text-neutral-500">
+                      ℹ️ Podrás retirar tus prendas presentando tu DNI y el código de pedido una vez confirmado.
+                    </p>
+                  </div>
+                ) : (
+                  /* Modo: Domicilio o Express */
+                  <div className="space-y-4 pt-1">
+                    {/* Selector de direcciones guardadas si el usuario tiene alguna */}
+                    {context.savedAddresses.length > 0 && (
+                      <div className="flex items-center gap-4 text-xs pb-1">
+                        <label className="inline-flex items-center gap-1.5 cursor-pointer font-bold text-neutral-800">
+                          <input
+                            type="radio"
+                            name="addressMode"
+                            checked={addressMode === "saved"}
+                            onChange={() => {
+                              setAddressMode("saved");
+                              if (defaultAddress) handleSelectSavedAddress(defaultAddress.id);
+                            }}
+                            className="accent-[#801323]"
+                          />
+                          <span>Usar dirección guardada</span>
+                        </label>
+                        <label className="inline-flex items-center gap-1.5 cursor-pointer font-bold text-neutral-800">
+                          <input
+                            type="radio"
+                            name="addressMode"
+                            checked={addressMode === "new"}
+                            onChange={() => setAddressMode("new")}
+                            className="accent-[#801323]"
+                          />
+                          <span>Nueva dirección</span>
+                        </label>
+                      </div>
+                    )}
+
+                    {addressMode === "saved" && context.savedAddresses.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {context.savedAddresses.map((addr) => {
+                          const isSelected = selectedAddressId === addr.id;
+                          return (
+                            <div
+                              key={addr.id}
+                              onClick={() => handleSelectSavedAddress(addr.id)}
+                              className={cn(
+                                "rounded-xl border p-3 cursor-pointer transition-all text-xs",
+                                isSelected
+                                  ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                                  : "border-neutral-200 bg-white hover:border-neutral-300",
+                              )}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-extrabold text-neutral-900">{addr.title}</span>
+                                {isSelected && <Check className="size-3.5 text-[#801323]" />}
+                              </div>
+                              <p className="text-neutral-600 line-clamp-1">{addr.addressLine1}</p>
+                              <p className="text-[0.68rem] text-neutral-400">
+                                {addr.district}, {addr.province} ({addr.department})
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* Formulario de Nueva Dirección Completa de Perú */
+                      <div className="space-y-3.5">
+                        {/* Selectores de 3 niveles: Departamento -> Provincia -> Distrito */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                          <div>
+                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                              Departamento *
+                            </label>
+                            <select
+                              value={department}
+                              onChange={(e) => handleDepartmentChange(e.target.value)}
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            >
+                              {departments.map((d) => (
+                                <option key={d} value={d}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                              Provincia *
+                            </label>
+                            <select
+                              value={province}
+                              onChange={(e) => handleProvinceChange(e.target.value)}
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            >
+                              {provinces.map((p) => (
+                                <option key={p} value={p}>
+                                  {p}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                              Distrito *
+                            </label>
+                            <select
+                              value={district}
+                              onChange={(e) => handleDistrictChange(e.target.value)}
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            >
+                              {districts.map((dst) => (
+                                <option key={dst} value={dst}>
+                                  {dst}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Dirección Exacta */}
+                        <div>
+                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                            Dirección exacta (Av. / Calle / Jr. / N° / Dpto.) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={addressLine1}
+                            onChange={(e) => setAddressLine1(e.target.value)}
+                            placeholder="Ej: Av. Conquistadores 450, Dpto. 302"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          />
+                        </div>
+
+                        {/* Referencia */}
+                        <div>
+                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                            Referencia para el courier (opcional)
+                          </label>
+                          <input
+                            type="text"
+                            value={reference}
+                            onChange={(e) => setReference(e.target.value)}
+                            placeholder="Ej: Frente al parque, edificio de ladrillo visto, recepción 24h"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          />
+                        </div>
+
+                        {/* Guardar en libreta */}
+                        <label className="flex items-center gap-2 cursor-pointer pt-1">
+                          <input
+                            type="checkbox"
+                            checked={saveNewAddressToBook}
+                            onChange={(e) => setSaveNewAddressToBook(e.target.checked)}
+                            className="rounded border-neutral-300 text-[#801323] focus:ring-[#801323]"
+                          />
+                          <span className="text-xs text-neutral-700 font-medium">
+                            Guardar esta dirección en mi libreta para futuras compras
+                          </span>
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Resumen de flete en vivo */}
+                    <div className="rounded-xl border border-neutral-200 bg-[#FAF8F5] p-3 text-xs">
+                      {isQuotingShipping ? (
+                        <div className="flex items-center gap-2 text-neutral-500">
+                          <Loader2 className="size-3.5 animate-spin" />
+                          <span>Calculando costo de flete exacto...</span>
+                        </div>
+                      ) : shippingCalc.isAvailable ? (
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1.5 text-neutral-800 font-semibold">
+                            <Truck className="size-4 text-[#801323]" />
+                            {shippingCalc.isFreeShippingApplied ? "Envío gratis aplicado" : shippingCalc.zoneName}
+                          </span>
+                          <span className="font-extrabold text-neutral-900">
+                            {shippingCalc.isFreeShippingApplied ? "Gratis" : formatPEN(shippingCalc.shippingAmount)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-red-700 font-medium">
+                          ⚠️ {shippingCalc.unavailableReason ?? "Destino sin cobertura directa."}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Botón de Continuar a Paso 2 */}
+                <div className="pt-3 border-t border-neutral-100 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleProceedToStep2}
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#801323]/20 hover:bg-[#6b0f1c] active:scale-[0.99] transition-all"
+                  >
+                    <span>Continuar al comprobante</span>
+                    <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Paso 1 Contraído (Resumen con botón Editar) */
+              <div className="flex items-center justify-between">
+                <div className="flex items-start gap-3 text-xs">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                    <Check className="size-4 stroke-[3]" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold uppercase tracking-wider text-neutral-900 text-[0.72rem]">
+                      1. Entrega
+                    </h3>
+                    <p className="text-neutral-700 font-medium">
+                      {deliveryMethod === "store_pickup"
+                        ? `Recojo en Tienda Oficial: ${selectedStore?.name ?? "American Colt"} (${selectedStore?.district ?? ""})`
+                        : `${department}, ${province}, ${district} — ${addressLine1}`}
+                    </p>
+                    <p className="text-[0.68rem] text-neutral-500">
+                      Destinatario: {recipientName} ({recipientPhone})
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-neutral-50 transition-colors"
+                >
+                  Editar
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ────────────────────────────────────────────────────────────────
+              PASO 2: COMPROBANTE TRIBUTARIO (BOLETA O FACTURA)
+              ──────────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+            {currentStep === 2 ? (
+              <div className="space-y-5">
+                <div className="border-b border-neutral-100 pb-3">
+                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
+                    <Receipt className="size-5 text-[#801323]" />
+                    <span>2. Comprobante</span>
+                  </h2>
+                  <p className="mt-0.5 text-xs text-neutral-500">
+                    Selecciona Boleta de Venta (DNI / CE) o Factura Electrónica Comercial (RUC 11 dígitos).
+                  </p>
+                </div>
+
+                {step2Error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
+                    <AlertCircle className="size-4 shrink-0 text-red-600" />
+                    <span>{step2Error}</span>
+                  </div>
+                )}
+
+                {/* Tabs Boleta vs Factura */}
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-neutral-100 p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTaxDocumentType("boleta");
+                      setBillingDocType("DNI");
+                    }}
+                    className={cn(
+                      "rounded-lg py-2 text-xs font-bold transition-all",
+                      taxDocumentType === "boleta"
+                        ? "bg-neutral-900 text-white shadow-xs"
+                        : "text-neutral-600 hover:text-neutral-900",
+                    )}
+                  >
+                    Boleta de venta
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTaxDocumentType("factura");
+                      setBillingDocType("RUC");
+                    }}
+                    className={cn(
+                      "rounded-lg py-2 text-xs font-bold transition-all",
+                      taxDocumentType === "factura"
+                        ? "bg-neutral-900 text-white shadow-xs"
+                        : "text-neutral-600 hover:text-neutral-900",
+                    )}
+                  >
+                    Factura electrónica (RUC)
+                  </button>
+                </div>
+
+                {taxDocumentType === "boleta" ? (
+                  /* Formulario de Boleta */
+                  <div className="space-y-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Documento *
+                        </label>
+                        <select
+                          value={billingDocType}
+                          onChange={(e) => setBillingDocType(e.target.value as "DNI" | "CE")}
+                          className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
                         >
-                          Últimos 4 dígitos referenciales:
+                          <option value="DNI">DNI (8 dígitos)</option>
+                          <option value="CE">Carné de Extranjería</option>
+                        </select>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Número de {billingDocType} *
                         </label>
                         <input
-                          id="maskedCardLast4"
                           type="text"
-                          maxLength={4}
-                          value={maskedCardLast4}
-                          onChange={(e) => setMaskedCardLast4(e.target.value)}
-                          className="h-8 w-20 border border-ink/20 bg-paper px-2 font-mono text-xs text-ink"
+                          required
+                          value={billingDocNumber}
+                          onChange={(e) => setBillingDocNumber(e.target.value)}
+                          placeholder="Ej: 12345678"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
                         />
                       </div>
                     </div>
-                  )}
-                </label>
-              )}
 
-              {/* Opción 2: Transferencia Bancaria / CCI Corporativo */}
-              <label
-                className={cn(
-                  "block cursor-pointer border p-4 transition-colors",
-                  paymentProvider === "bank_transfer"
-                    ? "border-ink bg-[#fbfaf7] ring-1 ring-ink"
-                    : "border-ink/15 bg-paper hover:border-ink/40",
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <input
-                      type="radio"
-                      name="paymentProvider"
-                      value="bank_transfer"
-                      checked={paymentProvider === "bank_transfer"}
-                      onChange={() => setPaymentProvider("bank_transfer")}
-                      className="accent-ink"
-                    />
-                    <span className="font-mono text-xs font-semibold uppercase text-ink">
-                      Transferencia Bancaria / CCI en Soles (B2C y B2B)
-                    </span>
-                  </div>
-                  <span className="border border-ink/20 bg-paper px-2 py-0.5 font-mono text-[0.6rem] uppercase text-taupe-700">
-                    Reserva 30 min
-                  </span>
-                </div>
-                {paymentProvider === "bank_transfer" && (
-                  <div className="mt-3 border-t border-ink/10 pt-3 text-xs text-taupe-700 space-y-1">
-                    <p>
-                      Tu inventario quedará reservado por 30 minutos mientras realizas la transferencia a nombre de{" "}
-                      <strong>{context.paymentConfig.bankTransferInstructions.accountHolder}</strong>:
-                    </p>
-                    <p className="font-mono text-[0.7rem]">
-                      Banco: {context.paymentConfig.bankTransferInstructions.bankName}
-                    </p>
-                  </div>
-                )}
-              </label>
-
-              {/* Opción 3: Mercado Pago Perú (Tarjetas, Yape, PagoEfectivo) */}
-              <div className="border border-ink/15 bg-[#fbfaf7] p-4 opacity-95">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    {context.paymentConfig.mercadopagoConfigured ? (
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                        Nombres y apellidos del titular *
+                      </label>
                       <input
-                        type="radio"
-                        name="paymentProvider"
-                        value="mercadopago"
-                        checked={paymentProvider === "mercadopago"}
-                        onChange={() => setPaymentProvider("mercadopago")}
-                        className="accent-ink"
+                        type="text"
+                        required
+                        value={billingCustomerName}
+                        onChange={(e) => setBillingCustomerName(e.target.value)}
+                        placeholder="Ej: Jhosep Colchado"
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
                       />
-                    ) : null}
-                    <span className="font-mono text-xs font-semibold uppercase text-ink">
-                      Mercado Pago Perú (Tarjetas Visa / Mastercard / Yape / PagoEfectivo)
-                    </span>
+                    </div>
                   </div>
-                  <span className="border border-amber-400 bg-amber-50 px-2 py-0.5 font-mono text-[0.6rem] uppercase text-amber-900">
-                    {context.paymentConfig.mercadopagoConfigured
-                      ? `Configurado (${context.paymentConfig.mercadopagoEnvironment})`
-                      : "Pendiente de credenciales"}
-                  </span>
-                </div>
-                {!context.paymentConfig.mercadopagoConfigured && (
-                  <p className="mt-1.5 text-[0.7rem] text-taupe-600">
-                    El adaptador oficial para <code>api.mercadopago.com</code> y verificación HMAC <code>x-signature</code> está implementado. Para habilitar cobros en vivo, configura <code>NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY</code>, <code>MERCADOPAGO_ACCESS_TOKEN</code> y <code>MERCADOPAGO_WEBHOOK_SECRET</code> en el servidor.
-                  </p>
-                )}
-              </div>
+                ) : (
+                  /* Formulario de Factura */
+                  <div className="space-y-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Tipo Documento
+                        </label>
+                        <input
+                          type="text"
+                          disabled
+                          value="RUC (11 dígitos)"
+                          className="w-full rounded-xl border border-neutral-200 bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-600"
+                        />
+                      </div>
 
-              {/* Opción 4: Culqi Perú (muestra estado real de configuración) */}
-              <div className="border border-ink/15 bg-[#fbfaf7] p-4 opacity-90">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold uppercase text-ink">
-                    Culqi Perú (Tarjetas Visa / Mastercard / Yape)
-                  </span>
-                  <span className="border border-amber-400 bg-amber-50 px-2 py-0.5 font-mono text-[0.6rem] uppercase text-amber-900">
-                    {context.paymentConfig.culqiConfigured
-                      ? "Configurado"
-                      : "Pendiente de claves API"}
-                  </span>
-                </div>
-                {!context.paymentConfig.culqiConfigured && (
-                  <p className="mt-1.5 text-[0.7rem] text-taupe-600">
-                    El adaptador de servidor para <code>api.culqi.com/v2/charges</code> está implementado. Para habilitar cobros en vivo con Culqi, configura <code>NEXT_PUBLIC_CULQI_PUBLIC_KEY</code> y <code>CULQI_SECRET_KEY</code> en <code>.env.local</code>.
-                  </p>
-                )}
-              </div>
-            </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Número de RUC (Inicia en 10 o 20) *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={billingDocNumber}
+                          onChange={(e) => setBillingDocNumber(e.target.value)}
+                          placeholder="Ej: 20601234567"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        />
+                      </div>
+                    </div>
 
-            <div className="mt-5">
-              <label
-                htmlFor="customerNotes"
-                className="block font-mono text-xs uppercase tracking-wider text-ink"
-              >
-                Notas o instrucciones adicionales del pedido (opcional)
-              </label>
-              <textarea
-                id="customerNotes"
-                rows={2}
-                value={customerNotes}
-                onChange={(e) => setCustomerNotes(e.target.value)}
-                placeholder="Indicaciones especiales de horario o empaque..."
-                className="mt-1.5 block w-full border border-ink/25 bg-[#fbfaf7] p-3 text-xs text-ink focus:border-ink focus:outline-none"
-              />
-            </div>
-          </section>
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                        Razón Social registrada en SUNAT *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={billingCustomerName}
+                        onChange={(e) => setBillingCustomerName(e.target.value)}
+                        placeholder="Ej: TEXTILES Y MODA DEL PERU S.A.C."
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs uppercase text-neutral-900 focus:border-[#801323] focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                        Domicilio Fiscal en el Perú *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={billingFiscalAddress}
+                        onChange={(e) => setBillingFiscalAddress(e.target.value)}
+                        placeholder="Ej: Av. Gamarra 1043, La Victoria, Lima"
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Botones de Navegación del Paso 2 */}
+                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    <ArrowLeft className="size-4" />
+                    <span>Volver a Entrega</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleProceedToStep3}
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#801323]/20 hover:bg-[#6b0f1c] active:scale-[0.99] transition-all"
+                  >
+                    <span>Continuar al método de pago</span>
+                    <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ) : currentStep === 3 ? (
+              /* Paso 2 Contraído cuando estamos en el Paso 3 */
+              <div className="flex items-center justify-between">
+                <div className="flex items-start gap-3 text-xs">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                    <Check className="size-4 stroke-[3]" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold uppercase tracking-wider text-neutral-900 text-[0.72rem]">
+                      2. Comprobante
+                    </h3>
+                    <p className="text-neutral-700 font-medium">
+                      {taxDocumentType === "factura" ? "Factura electrónica" : "Boleta de venta"} —{" "}
+                      {billingDocType}: {billingDocNumber} — {billingCustomerName}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-neutral-50 transition-colors"
+                >
+                  Editar
+                </button>
+              </div>
+            ) : (
+              /* Paso 2 Inactivo (esperando paso 1) */
+              <div className="flex items-center gap-3 opacity-60">
+                <div className="flex size-7 items-center justify-center rounded-full border border-neutral-300 text-xs font-bold text-neutral-500">
+                  2
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-neutral-700">Comprobante</h3>
+                  <p className="text-[0.68rem] text-neutral-400">Boleta de venta o Factura electrónica con RUC</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ────────────────────────────────────────────────────────────────
+              PASO 3: MÉTODO DE PAGO, TARJETA INTERACTIVA Y CONFIRMACIÓN
+              ──────────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+            {currentStep === 3 ? (
+              <div className="space-y-6">
+                <div className="border-b border-neutral-100 pb-3">
+                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
+                    <CreditCard className="size-5 text-[#801323]" />
+                    <span>3. Método de pago</span>
+                  </h2>
+                  <p className="mt-0.5 text-xs text-neutral-500">
+                    Las operaciones se procesan de forma segura con verificación bancaria SSL 256-Bit.
+                  </p>
+                </div>
+
+                {generalError && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs font-semibold text-red-800 flex items-center gap-2">
+                    <AlertCircle className="size-4 shrink-0 text-red-600" />
+                    <span>{generalError}</span>
+                  </div>
+                )}
+
+                {/* Selector de Método de Pago Principal */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Opción 1: Tarjeta Crédito o Débito */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentType("card")}
+                    className={cn(
+                      "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
+                      paymentType === "card"
+                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        : "border-neutral-200 bg-white hover:border-neutral-300",
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <CreditCard className={cn("size-5", paymentType === "card" ? "text-[#801323]" : "text-neutral-500")} />
+                      <span className="rounded bg-blue-50 px-2 py-0.5 text-[0.6rem] font-bold text-[#0055FF]">
+                        Visa, Mastercard, Amex
+                      </span>
+                    </div>
+                    <strong className="text-xs font-extrabold text-neutral-900 block">
+                      Tarjeta de Crédito o Débito
+                    </strong>
+                    <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">
+                      Aprobación instantánea con pasarela segura
+                    </span>
+                  </button>
+
+                  {/* Opción 2: Transferencia Bancaria / Yape / Plin */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentType("transfer")}
+                    className={cn(
+                      "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
+                      paymentType === "transfer"
+                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        : "border-neutral-200 bg-white hover:border-neutral-300",
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="size-5 rounded-full bg-[#25D366] text-white flex items-center justify-center">
+                        <SiWhatsapp className="size-3" />
+                      </div>
+                      <span className="rounded bg-emerald-50 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-700">
+                        Cero comisiones
+                      </span>
+                    </div>
+                    <strong className="text-xs font-extrabold text-neutral-900 block">
+                      Transferencia bancaria / Yape / Plin
+                    </strong>
+                    <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">
+                      BCP, BBVA, Interbank y WhatsApp oficial
+                    </span>
+                  </button>
+                </div>
+
+                {/* ══════════════════════════════════════════════════════════════
+                    PAGO CON TARJETA (CON TARJETA 3D INTERACTIVA Y SIMULADOR)
+                    ══════════════════════════════════════════════════════════════ */}
+                {paymentType === "card" && (
+                  <div className="rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-4 sm:p-5 space-y-5">
+                    {/* Switch de Modo: Simulación vs Mercado Pago Real */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200/80 pb-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-neutral-800">Modo de Pasarela:</span>
+                        <div className="inline-flex rounded-lg bg-neutral-200 p-0.5 text-[0.68rem] font-bold">
+                          <button
+                            type="button"
+                            onClick={() => setCardMode("simulation")}
+                            className={cn(
+                              "rounded-md px-2.5 py-1 transition-all",
+                              cardMode === "simulation"
+                                ? "bg-white text-neutral-900 shadow-xs"
+                                : "text-neutral-600 hover:text-black",
+                            )}
+                          >
+                            🧪 Simulación Bancaria
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCardMode("real")}
+                            className={cn(
+                              "rounded-md px-2.5 py-1 transition-all",
+                              cardMode === "real"
+                                ? "bg-white text-neutral-900 shadow-xs"
+                                : "text-neutral-600 hover:text-black",
+                            )}
+                          >
+                            💳 Mercado Pago (Real)
+                          </button>
+                        </div>
+                      </div>
+
+                      {cardMode === "simulation" && (
+                        <button
+                          type="button"
+                          onClick={() => handleFillTestCard("approve")}
+                          className="inline-flex items-center gap-1 text-[0.68rem] font-bold text-[#801323] bg-white border border-[#801323]/30 px-2.5 py-1 rounded-lg hover:bg-[#801323]/5 transition-colors"
+                        >
+                          <Sparkles className="size-3 text-amber-500" />
+                          <span>Llenar tarjeta Visa de prueba</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {cardMode === "real" && !context.paymentConfig.mercadopagoConfigured && (
+                      <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 text-xs text-blue-950 flex items-start gap-2">
+                        <Info className="size-4 text-[#0055FF] shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="block">Listo para Producción con Mercado Pago Perú</strong>
+                          <span>
+                            Solo debes ingresar tus credenciales oficiales (<code className="font-mono text-[0.68rem] bg-white px-1 py-0.5 rounded border border-blue-200">MERCADOPAGO_ACCESS_TOKEN</code> y <code className="font-mono text-[0.68rem] bg-white px-1 py-0.5 rounded border border-blue-200">NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY</code>) en tu archivo de entorno. Puedes utilizar el Modo Simulación mientras tanto.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {cardError && (
+                      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
+                        <AlertCircle className="size-4 shrink-0 text-red-600" />
+                        <span>{cardError}</span>
+                      </div>
+                    )}
+
+                    {/* Previsualización 3D de la Tarjeta */}
+                    <div className="py-1">
+                      <CheckoutCardPreview
+                        cardNumber={cardNumber}
+                        cardHolder={cardHolder}
+                        cardExp={cardExp}
+                        cardCvv={cardCvv}
+                        isFlipped={isCardFlipped}
+                      />
+                    </div>
+
+                    {/* Formulario de Datos de Tarjeta */}
+                    <div className="space-y-3.5 bg-white p-4 rounded-xl border border-neutral-200">
+                      {/* Número de Tarjeta */}
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Número de Tarjeta *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            required
+                            maxLength={19}
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(formatCardNumberInput(e.target.value))}
+                            onFocus={() => setIsCardFlipped(false)}
+                            placeholder="4557 •••• •••• ••••"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 tracking-wider focus:border-[#801323] focus:outline-none pl-10"
+                          />
+                          <CreditCard className="size-4 text-neutral-400 absolute left-3.5 top-3" />
+                        </div>
+                      </div>
+
+                      {/* Nombre del Titular */}
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Nombre del Titular (tal como figura en la tarjeta) *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={cardHolder}
+                          onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
+                          onFocus={() => setIsCardFlipped(false)}
+                          placeholder="JHOSEP COLCHADO"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs uppercase text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Fila: Expiración + CVV + DNI */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                            Vencimiento (MM/AA) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={5}
+                            value={cardExp}
+                            onChange={(e) => setCardExp(formatExpInput(e.target.value))}
+                            onFocus={() => setIsCardFlipped(false)}
+                            placeholder="12/28"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-neutral-700 mb-1 flex items-center justify-between">
+                            <span>Código CVV *</span>
+                            <span className="text-[0.62rem] text-neutral-400 font-normal">3 dígitos</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="password"
+                              required
+                              maxLength={4}
+                              value={cardCvv}
+                              onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ""))}
+                              onFocus={() => setIsCardFlipped(true)}
+                              onBlur={() => setIsCardFlipped(false)}
+                              placeholder="123"
+                              className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            />
+                            <Lock className="size-3 text-neutral-400 absolute right-3 top-3.5" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                            DNI del Titular *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={8}
+                            value={cardDni}
+                            onChange={(e) => setCardDni(e.target.value.replace(/\D/g, ""))}
+                            onFocus={() => setIsCardFlipped(false)}
+                            placeholder="12345678"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ══════════════════════════════════════════════════════════════
+                    PAGO POR TRANSFERENCIA BANCARIA / YAPE / PLIN
+                    ══════════════════════════════════════════════════════════════ */}
+                {paymentType === "transfer" && (
+                  <div className="rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-4 sm:p-5 space-y-4">
+                    <div className="border-b border-neutral-200 pb-2">
+                      <span className="font-extrabold text-xs text-neutral-900 block">
+                        Cuentas Oficiales de American Colt JEANS S.A.C.
+                      </span>
+                      <p className="text-[0.68rem] text-neutral-500">
+                        Transfiere el monto exacto de {formatPEN(taxBreakdown.totalAmount)} y registra tu número de operación.
+                      </p>
+                    </div>
+
+                    {/* Cuentas en Rejilla */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                      {/* Yape / Plin */}
+                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <strong className="text-emerald-950 font-extrabold">Yape / Plin Oficial</strong>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount(OFFICIAL_WHATSAPP_DISPLAY, "yape")}
+                            className="text-[0.65rem] font-bold text-emerald-800 hover:underline flex items-center gap-1"
+                          >
+                            {copiedAccount === "yape" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                            <span>{copiedAccount === "yape" ? "Copiado" : "Copiar"}</span>
+                          </button>
+                        </div>
+                        <p className="font-mono font-black text-sm text-emerald-900">{OFFICIAL_WHATSAPP_DISPLAY}</p>
+                        <p className="text-[0.65rem] text-emerald-800">Titular: American Colt JEANS S.A.C.</p>
+                      </div>
+
+                      {/* BCP */}
+                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <strong className="text-neutral-900 font-extrabold">Banco de Crédito (BCP)</strong>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount("191-94829104-0-32", "bcp")}
+                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                          >
+                            {copiedAccount === "bcp" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                            <span>{copiedAccount === "bcp" ? "Copiado" : "Copiar Cta"}</span>
+                          </button>
+                        </div>
+                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 191-94829104-0-32</p>
+                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 002-191009482910403254</p>
+                      </div>
+
+                      {/* BBVA */}
+                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <strong className="text-neutral-900 font-extrabold">BBVA Perú</strong>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount("0011-0175-0100049281", "bbva")}
+                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                          >
+                            {copiedAccount === "bbva" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                            <span>{copiedAccount === "bbva" ? "Copiado" : "Copiar"}</span>
+                          </button>
+                        </div>
+                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 0011-0175-0100049281</p>
+                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 011-17500010004928173</p>
+                      </div>
+
+                      {/* Interbank */}
+                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <strong className="text-neutral-900 font-extrabold">Interbank</strong>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount("200-3001849201", "interbank")}
+                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                          >
+                            {copiedAccount === "interbank" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                            <span>{copiedAccount === "interbank" ? "Copiado" : "Copiar"}</span>
+                          </button>
+                        </div>
+                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 200-3001849201</p>
+                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 003-20000300184920188</p>
+                      </div>
+                    </div>
+
+                    {/* Inputs de Operación y Voucher */}
+                    <div className="space-y-3 pt-2 bg-white p-4 rounded-xl border border-neutral-200">
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Número o Código de Operación del Voucher *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={operationCode}
+                          onChange={(e) => setOperationCode(e.target.value)}
+                          placeholder="Ej: 849201 ó OP-948291"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Adjuntar Foto del Comprobante / Voucher */}
+                      <div>
+                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          Foto del Comprobante o Voucher (Opcional para agilizar despacho)
+                        </label>
+                        <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 p-4 text-center cursor-pointer hover:border-[#801323] bg-neutral-50 transition-colors">
+                          <UploadCloud className="size-6 text-neutral-400 mb-1" />
+                          <span className="text-xs font-bold text-neutral-700">
+                            {voucherFileName ?? "Haz clic para subir foto del voucher"}
+                          </span>
+                          <span className="text-[0.65rem] text-neutral-400 mt-0.5">
+                            Formatos soportados: JPG, PNG o WEBP
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleVoucherFileChange}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {voucherPreviewUrl && (
+                          <div className="mt-2 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-xs">
+                            <span className="text-emerald-800 font-bold flex items-center gap-1.5">
+                              <Check className="size-3.5 text-emerald-600" />
+                              Voucher adjunto listo para enviar
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setVoucherPreviewUrl(null);
+                                setVoucherFileName(null);
+                              }}
+                              className="text-[0.68rem] text-red-600 hover:underline"
+                            >
+                              Quitar
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notas o Instrucciones Adicionales */}
+                <div>
+                  <label className="block text-xs font-bold text-neutral-700 mb-1">
+                    Notas o instrucciones adicionales del pedido (opcional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={customerNotes}
+                    onChange={(e) => setCustomerNotes(e.target.value)}
+                    placeholder="Indicaciones especiales de horario, empaque o referencia adicional..."
+                    className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                  />
+                </div>
+
+                {/* Botones de Navegación del Paso 3 */}
+                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(2)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    <ArrowLeft className="size-4" />
+                    <span>Volver a Comprobante</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleConfirmOrder}
+                    disabled={isPending || isProcessingPayment}
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-8 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-[#801323]/25 hover:bg-[#6b0f1c] active:scale-[0.99] disabled:opacity-50 transition-all"
+                  >
+                    {isPending || isProcessingPayment ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        <span>Procesando pago seguro...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="size-4" />
+                        <span>
+                          {paymentType === "card"
+                            ? `Pagar con Tarjeta (${formatPEN(taxBreakdown.totalAmount)})`
+                            : `Confirmar Pedido (${formatPEN(taxBreakdown.totalAmount)})`}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Paso 3 Inactivo */
+              <div className="flex items-center gap-3 opacity-60">
+                <div className="flex size-7 items-center justify-center rounded-full border border-neutral-300 text-xs font-bold text-neutral-500">
+                  3
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-neutral-700">Método de pago</h3>
+                  <p className="text-[0.68rem] text-neutral-400">Tarjeta de crédito / débito o transferencia bancaria / Yape</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Columna Derecha: Resumen Final de Prendas, Envío, IGV y Confirmación */}
-        <aside className="lg:col-span-5">
-          <div className="sticky top-28 border border-ink/15 bg-[#fbfaf7] p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+        {/* ═══════════════════════════════════════════════════════════════════
+            COLUMNA DERECHA: RESUMEN DEL PEDIDO CON PRENDAS Y CÁLCULOS
+            ═══════════════════════════════════════════════════════════════════ */}
+        <div className="lg:col-span-5 sticky top-20">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
               <div>
-                <h2 className="font-display text-2xl text-ink">
-                  Resumen del Pedido
+                <h2 className="text-sm font-extrabold text-neutral-900">
+                  Resumen del pedido
                 </h2>
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-taupe-500">
-                  Modalidad:{" "}
-                  {context.orderMode === "wholesale"
-                    ? "Mayorista B2B Autorizado"
-                    : "Minorista B2C"}
-                </p>
+                <span className="font-mono text-[0.62rem] font-bold uppercase tracking-wider text-neutral-500">
+                  {context.orderMode === "wholesale" ? "MODALIDAD: MAYORISTA B2B" : "MODALIDAD: MINORISTA B2C"}
+                </span>
               </div>
-              {context.source === "cart" && (
-                <Link
-                  href="/carrito"
-                  className="inline-flex items-center gap-1 font-mono text-xs underline text-taupe-600 hover:text-ink"
-                >
-                  <ArrowLeft className="size-3" aria-hidden />
-                  Editar bolsa
-                </Link>
-              )}
+
+              <Link
+                href="/catalogo"
+                className="text-xs font-bold text-[#0055FF] hover:underline"
+              >
+                ✏️ Editar bolsa
+              </Link>
             </div>
 
-            {/* Lista de prendas */}
-            <div className="max-h-80 divide-y divide-ink/10 overflow-y-auto pr-1">
+            {/* Lista de Prendas en el Checkout */}
+            <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 pr-1 no-scrollbar">
               {context.lines.map((line) => (
-                <div key={line.variantId} className="flex gap-3.5 py-3.5">
-                  <div className="relative aspect-[3/4] w-14 shrink-0 overflow-hidden bg-taupe-100">
+                <div key={line.variantId} className="flex gap-3 py-3 items-center">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
                     <Image
                       src={line.imageUrl}
                       alt={line.productName}
@@ -1081,136 +1765,207 @@ export function CheckoutView({
                       className="object-cover"
                     />
                   </div>
-                  <div className="min-w-0 flex-1 text-xs">
-                    <p className="font-medium text-ink">{line.productName}</p>
-                    <p className="font-mono text-[0.65rem] text-taupe-500">
-                      SKU: {line.sku} · {line.colorName ?? "Único"} · Talla{" "}
-                      {line.size ?? "Única"}
-                    </p>
-                    <div className="mt-1 flex items-center justify-between">
-                      <span className="font-mono text-taupe-700">
-                        {line.quantity} × {formatPEN(line.effectiveUnitAmount)}
-                      </span>
-                      <span className="font-mono font-semibold tabular-nums text-ink">
-                        {formatPEN(line.lineSubtotalAmount)}
-                      </span>
+
+                  <div className="flex-1 min-w-0">
+                    <strong className="text-xs font-bold text-neutral-900 line-clamp-1">
+                      {line.productName}
+                    </strong>
+                    <div className="font-mono text-[0.65rem] text-neutral-500 line-clamp-1">
+                      SKU: {line.sku} {line.colorName ? `· ${line.colorName}` : ""} {line.size ? `· Talla ${line.size}` : ""}
                     </div>
+                    <div className="text-[0.72rem] text-neutral-700 font-semibold mt-0.5">
+                      {line.quantity} × {formatPEN(line.effectiveUnitAmount)}
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0 font-mono text-xs font-extrabold text-neutral-900">
+                    {formatPEN(line.lineSubtotalAmount)}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Desglose financiero en servidor */}
-            <dl className="space-y-2.5 border-t border-ink/15 pt-4 text-xs">
-              <div className="flex justify-between text-taupe-600">
-                <dt>Subtotal a precio minorista ({context.totalUnits} uds.)</dt>
-                <dd className="font-mono tabular-nums text-ink">
-                  {formatPEN(context.retailSubtotalAmount)}
-                </dd>
+            {/* Desglose de Totales */}
+            <div className="border-t border-neutral-100 pt-3 space-y-2 text-xs">
+              <div className="flex justify-between text-neutral-600">
+                <span>Subtotal de prendas ({context.totalUnits} {context.totalUnits === 1 ? "ud." : "uds."})</span>
+                <span className="font-mono font-bold text-neutral-900">
+                  {formatPEN(context.subtotalAfterDiscountAmount)}
+                </span>
               </div>
 
               {context.discountAmount > 0 && (
-                <div className="flex justify-between font-medium text-emerald-800">
-                  <dt>Descuento comercial B2B autorizado</dt>
-                  <dd className="font-mono tabular-nums">
-                    −{formatPEN(context.discountAmount)}
-                  </dd>
+                <div className="flex justify-between text-emerald-700 font-bold">
+                  <span>Descuento aplicado</span>
+                  <span className="font-mono">-{formatPEN(context.discountAmount)}</span>
                 </div>
               )}
 
-              <div className="flex justify-between text-taupe-700">
-                <dt>Subtotal de prendas</dt>
-                <dd className="font-mono font-medium tabular-nums text-ink">
-                  {formatPEN(context.subtotalAfterDiscountAmount)}
-                </dd>
+              <div className="flex justify-between text-neutral-600">
+                <span>
+                  Costo de envío ({deliveryMethod === "store_pickup" ? "Recojo en Tienda Oficial" : shippingCalc.zoneName})
+                </span>
+                <span className="font-mono font-bold text-neutral-900">
+                  {shippingCalc.isFreeShippingApplied ? (
+                    <span className="text-emerald-700 font-extrabold">Gratis</span>
+                  ) : (
+                    formatPEN(shippingCalc.shippingAmount)
+                  )}
+                </span>
               </div>
 
-              <div className="flex justify-between text-taupe-700">
-                <dt>Costo de envío ({shippingCalc.zoneName})</dt>
-                <dd className="font-mono font-medium tabular-nums text-ink">
-                  {!shippingCalc.isAvailable
-                    ? "No disponible"
-                    : shippingCalc.shippingAmount === 0
-                      ? "S/ 0.00 (Gratis)"
-                      : formatPEN(shippingCalc.shippingAmount)}
-                </dd>
-              </div>
-
-              <div className="border-t border-ink/10 pt-2.5 text-[0.7rem] text-taupe-500 space-y-1">
-                <div className="flex justify-between">
-                  <dt>Operación Gravada (Base Imponible sin IGV)</dt>
-                  <dd
-                    data-testid="checkout-taxable-base"
-                    className="font-mono tabular-nums"
-                  >
-                    {formatPEN(taxBreakdown.taxableBaseAmount)}
-                  </dd>
+              <div className="border-t border-neutral-200/80 pt-3 flex items-baseline justify-between">
+                <div>
+                  <span className="text-sm font-extrabold text-neutral-900 block">
+                    Total a pagar (PEN)
+                  </span>
+                  <span className="text-[0.68rem] text-neutral-400 block">
+                    Incluye IGV (18%): {formatPEN(taxBreakdown.igvAmount)}
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <dt>IGV (18% incluido según ley peruana)</dt>
-                  <dd
-                    data-testid="checkout-igv-amount"
-                    className="font-mono tabular-nums"
-                  >
-                    {formatPEN(taxBreakdown.igvAmount)}
-                  </dd>
+
+                <div className="text-right">
+                  <span className="text-xl sm:text-2xl font-black text-neutral-900 font-mono">
+                    {formatPEN(taxBreakdown.totalAmount)}
+                  </span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-baseline justify-between border-t border-ink/20 pt-3">
-                <dt className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-ink">
-                  Total a Pagar (PEN)
-                </dt>
-                <dd
-                  data-testid="checkout-grand-total"
-                  className="font-display text-3xl font-bold tabular-nums text-ink"
-                >
-                  {formatPEN(taxBreakdown.totalAmount)}
-                </dd>
-              </div>
-            </dl>
-
-            <button
-              type="submit"
-              data-testid="checkout-confirm-order-btn"
-              disabled={
-                isSubmitting ||
-                !shippingCalc.isAvailable ||
-                context.hasStockIssues
-              }
-              className="flex h-13 w-full items-center justify-center gap-2 bg-ink px-6 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                  Procesando y reservando stock...
-                </>
-              ) : (
-                <>
-                  <Lock className="size-4" aria-hidden />
-                  Confirmar Pedido ({formatPEN(taxBreakdown.totalAmount)})
-                </>
-              )}
-            </button>
-
-            <div className="space-y-2 border-t border-ink/10 pt-4 text-[0.68rem] text-taupe-600">
-              <p className="flex items-center gap-2">
-                <ShieldCheck className="size-4 shrink-0 text-emerald-800" aria-hidden />
-                <span>
-                  Protección anti-duplicados activa (Idempotency Key:{" "}
-                  <code className="font-mono">{idempotencyKey.slice(0, 12)}...</code>)
-                </span>
-              </p>
-              <p className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 shrink-0 text-ink" aria-hidden />
-                <span>
-                  Reserva atómica de inventario por variante (talla y color) en Neon PostgreSQL.
-                </span>
-              </p>
+            {/* Footer de Ayuda y Soporte con WhatsApp Oficial Actualizado */}
+            <div className="border-t border-neutral-100 pt-3 text-center">
+              <a
+                href={`https://wa.me/${OFFICIAL_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                  "Hola American Colt JEANS™, tengo una consulta con mi compra.",
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-black transition-colors"
+              >
+                <HelpCircle className="size-3.5 text-[#0055FF]" />
+                <span>¿Necesitas ayuda? Escríbenos por WhatsApp ({OFFICIAL_WHATSAPP_DISPLAY})</span>
+              </a>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
-    </form>
+
+      {/* ─── MODAL DE SELECCIÓN DE TIENDAS OFICIALES ─── */}
+      {isStoreModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Store className="size-5 text-[#801323]" />
+                <h3 className="text-base font-extrabold text-neutral-900">
+                  Selecciona la Tienda Oficial de Recojo
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsStoreModalOpen(false)}
+                className="size-8 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-600 hover:text-black"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-neutral-500">
+              Elige en cuál de nuestras tiendas oficiales en el Perú deseas retirar tus prendas de forma gratuita.
+            </p>
+
+            <div className="overflow-y-auto space-y-2.5 flex-1 pr-1">
+              {activeStores.map((st) => {
+                const isSelected = selectedStoreId === st.id;
+                return (
+                  <div
+                    key={st.id}
+                    onClick={() => {
+                      setSelectedStoreId(st.id);
+                      setIsStoreModalOpen(false);
+                      void triggerShippingQuote(
+                        st.department,
+                        st.province,
+                        st.district,
+                        "store_pickup",
+                        st.id,
+                      );
+                    }}
+                    className={cn(
+                      "rounded-2xl border p-4 cursor-pointer transition-all hover:border-[#801323]",
+                      isSelected
+                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        : "border-neutral-200 bg-white",
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <strong className="text-xs font-extrabold text-neutral-900">
+                        {st.name}
+                      </strong>
+                      {isSelected ? (
+                        <span className="inline-flex items-center gap-1 text-[0.65rem] font-bold text-[#801323]">
+                          <Check className="size-3.5" />
+                          Seleccionada
+                        </span>
+                      ) : (
+                        <span className="rounded bg-neutral-100 px-2 py-0.5 text-[0.62rem] font-semibold text-neutral-600">
+                          {st.district}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-neutral-700 flex items-start gap-1.5">
+                      <MapPin className="size-3.5 text-[#801323] shrink-0 mt-0.5" />
+                      <span>{st.address} ({st.district}, {st.department})</span>
+                    </p>
+
+                    {st.reference && (
+                      <p className="text-[0.68rem] text-neutral-500 pl-5 mt-0.5 italic">
+                        Ref: {st.reference}
+                      </p>
+                    )}
+
+                    <div className="flex items-center gap-4 text-[0.68rem] text-neutral-500 pl-5 mt-1.5">
+                      <span className="flex items-center gap-1">
+                        <Clock className="size-3 text-neutral-400" />
+                        {st.openingHours}
+                      </span>
+                      {st.phone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="size-3 text-neutral-400" />
+                          {st.phone}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="border-t border-neutral-100 pt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsStoreModalOpen(false)}
+                className="rounded-xl border border-neutral-300 bg-neutral-900 px-5 py-2 text-xs font-bold text-white hover:bg-neutral-800"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── ANIMACIÓN FORMAL DE PROCESAMIENTO DE PAGO ─── */}
+      <CheckoutPaymentProcessing
+        isOpen={isProcessingPayment}
+        paymentMethod={paymentType}
+        cardBrand={detectCardBrand(cardNumber).toUpperCase()}
+        maskedLast4={cardNumber.replace(/\D/g, "").slice(-4) || "4557"}
+      />
+    </div>
   );
 }

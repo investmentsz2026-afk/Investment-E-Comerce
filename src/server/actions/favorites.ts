@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/server/db";
 import { newsletterSubscribers, products, userFavorites } from "@/server/db/schema";
-import { getCurrentSession } from "@/server/auth/session";
+import { getCurrentSession, requireAdmin } from "@/server/auth/session";
 import { normalizeEmail, validateEmail } from "@/server/auth/validators";
 import {
   getFavoritesSnapshot,
@@ -216,10 +216,14 @@ export async function syncGuestFavoritesAction(input: {
 }
 
 /**
- * Registra un correo electrónico en la tabla `newsletter_subscribers` de PostgreSQL.
+ * Registra un suscriptor (Nombre, Apellido, Celular y Correo Electrónico)
+ * en la tabla `newsletter_subscribers` de PostgreSQL.
  */
 export async function subscribeNewsletterAction(input: {
   email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
 }): Promise<ActionResult<{ email: string }>> {
   const emailVal = validateEmail(input.email ?? "");
   if (!emailVal.valid) {
@@ -230,14 +234,35 @@ export async function subscribeNewsletterAction(input: {
   }
 
   const email = normalizeEmail(input.email);
+  const firstName = String(input.firstName ?? "").trim().slice(0, 120);
+  const lastName = String(input.lastName ?? "").trim().slice(0, 120);
+  const phone = String(input.phone ?? "").trim().slice(0, 30);
 
   try {
     const db = getDb();
     const now = new Date();
 
+    const updateFields: {
+      isActive: boolean;
+      updatedAt: Date;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+    } = {
+      isActive: true,
+      updatedAt: now,
+    };
+
+    if (firstName) updateFields.firstName = firstName;
+    if (lastName) updateFields.lastName = lastName;
+    if (phone) updateFields.phone = phone;
+
     await db
       .insert(newsletterSubscribers)
       .values({
+        firstName,
+        lastName,
+        phone,
         email,
         isActive: true,
         createdAt: now,
@@ -245,11 +270,11 @@ export async function subscribeNewsletterAction(input: {
       })
       .onConflictDoUpdate({
         target: [newsletterSubscribers.email],
-        set: {
-          isActive: true,
-          updatedAt: now,
-        },
+        set: updateFields,
       });
+
+    revalidatePath("/admin/suscripciones");
+    revalidatePath("/admin");
 
     return {
       success: true,
@@ -260,6 +285,79 @@ export async function subscribeNewsletterAction(input: {
     return {
       success: false,
       error: "No pudimos procesar tu suscripción en este momento.",
+    };
+  }
+}
+
+/**
+ * Permite al administrador activar o dar de baja una suscripción en `/admin/suscripciones`.
+ */
+export async function toggleNewsletterSubscriberStatusAction(input: {
+  id: number;
+  isActive: boolean;
+}): Promise<ActionResult<{ id: number; isActive: boolean }>> {
+  await requireAdmin();
+  const id = Number(input.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return { success: false, error: "Identificador de suscripción inválido." };
+  }
+
+  try {
+    const db = getDb();
+    await db
+      .update(newsletterSubscribers)
+      .set({
+        isActive: Boolean(input.isActive),
+        updatedAt: new Date(),
+      })
+      .where(eq(newsletterSubscribers.id, id));
+
+    revalidatePath("/admin/suscripciones");
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      data: { id, isActive: Boolean(input.isActive) },
+    };
+  } catch (e) {
+    console.error("[Newsletter] Error al cambiar estado de suscripción:", e);
+    return {
+      success: false,
+      error: "No se pudo actualizar el estado del suscriptor.",
+    };
+  }
+}
+
+/**
+ * Permite al administrador eliminar un registro de suscripción en `/admin/suscripciones`.
+ */
+export async function deleteNewsletterSubscriberAction(input: {
+  id: number;
+}): Promise<ActionResult<{ id: number }>> {
+  await requireAdmin();
+  const id = Number(input.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return { success: false, error: "Identificador de suscripción inválido." };
+  }
+
+  try {
+    const db = getDb();
+    await db
+      .delete(newsletterSubscribers)
+      .where(eq(newsletterSubscribers.id, id));
+
+    revalidatePath("/admin/suscripciones");
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      data: { id },
+    };
+  } catch (e) {
+    console.error("[Newsletter] Error al eliminar suscriptor:", e);
+    return {
+      success: false,
+      error: "No se pudo eliminar el suscriptor.",
     };
   }
 }

@@ -91,7 +91,7 @@ export async function registerCustomerAction(
   }
 
   const email = normalizeEmail(rawEmail);
-  const { ipAddress, userAgent, baseUrl } = await getClientContext();
+  const { ipAddress, baseUrl } = await getClientContext();
 
   const rateKey = `register:${ipAddress ?? "local"}`;
   const rateCheck = checkRateLimit(rateKey, 10, 60 * 60 * 1000);
@@ -149,10 +149,6 @@ export async function registerCustomerAction(
   sendVerificationEmail(email, newUser.firstName, verifToken, baseUrl).catch((e) =>
     console.error("[Auth] Error al despachar verificación:", e),
   );
-
-  // Iniciar sesión automáticamente y fusionar carrito temporal si existiera
-  await createSession(newUser.id, { userAgent, ipAddress });
-  await mergeGuestCartWithUserCart(newUser.id);
 
   return {
     success: true,
@@ -212,7 +208,7 @@ export async function loginAction(
   if (!user.isActive) {
     return {
       success: false,
-      error: "Esta cuenta se encuentra inactiva. Comunícate con atención al cliente de INVESTMENTS.",
+      error: "Esta cuenta se encuentra inactiva. Comunícate con atención al cliente de American Colt JEANS™.",
     };
   }
 
@@ -302,7 +298,7 @@ export async function requestPasswordResetAction(
 
   return {
     success: true,
-    data: "Si el correo está registrado en INVESTMENTS, te hemos enviado un enlace para restablecer tu contraseña.",
+    data: "Si el correo está registrado en American Colt JEANS™, te hemos enviado un enlace para restablecer tu contraseña.",
   };
 }
 

@@ -12,6 +12,10 @@ import {
   ShieldCheck,
   ExternalLink,
   Database,
+  Mail,
+  RefreshCw,
+  Truck,
+  Store,
 } from "lucide-react";
 
 interface AdminHeaderProps {
@@ -28,6 +32,10 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/productos", label: "Productos", icon: ShoppingBag },
   { href: "/admin/categorias", label: "Categorías", icon: FolderTree },
   { href: "/admin/promociones", label: "Promociones", icon: Percent },
+  { href: "/admin/envios", label: "Tarifas de Envío", icon: Truck },
+  { href: "/admin/tiendas", label: "Tiendas y Recojo", icon: Store },
+  { href: "/admin/cambios", label: "Cambios y Tallas", icon: RefreshCw },
+  { href: "/admin/suscripciones", label: "Suscripciones", icon: Mail },
   { href: "/admin/inventario", label: "Inventario", icon: Boxes },
   { href: "/admin/pedidos", label: "Pedidos", icon: Package },
   { href: "/admin/cotizaciones", label: "Cotizaciones B2B", icon: FileSpreadsheet },
@@ -45,7 +53,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
           className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
         >
           <span className="font-sans text-base sm:text-lg font-bold tracking-tight text-paper">
-            INVESTMENTS<span className="text-cochinilla">.</span>
+            AMERICAN COLT<span className="text-cochinilla">.</span>
           </span>
           <span className="hidden min-[360px]:inline-block rounded bg-cochinilla px-2 py-0.5 font-mono text-[0.62rem] font-bold uppercase tracking-widest text-paper">
             ADMIN COMERCIAL

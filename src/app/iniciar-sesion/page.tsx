@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getCurrentSession } from "@/server/auth/session";
-import { AuthCard } from "@/components/auth/auth-card";
-import { LoginForm } from "@/components/auth/login-form";
+import { Auth3DExperience } from "@/components/auth/auth-3d-experience";
 
 export const metadata: Metadata = {
-  title: "Iniciar sesión | INVESTMENTS",
-  description: "Accede a tu cuenta de cliente o empresa mayorista en INVESTMENTS.",
+  title: "Iniciar sesión | American Colt JEANS™",
+  description: "Accede a tu cuenta de cliente minorista o empresa mayorista en American Colt JEANS™.",
   robots: { index: false, follow: false },
 };
 
@@ -26,28 +24,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   return (
-    <AuthCard
-      eyebrow="Acceso a la plataforma"
-      title="Iniciar sesión"
-      subtitle="Accede a tu cuenta de cliente minorista o empresa mayorista"
-      footer={
-        <div className="space-y-2 text-xs">
-          <p>
-            ¿Aún no tienes cuenta personal?{" "}
-            <Link href="/registro" className="font-medium text-ink underline underline-offset-4 hover:text-cochinilla">
-              Crear cuenta de cliente
-            </Link>
-          </p>
-          <p className="text-taupe-500">
-            ¿Representas a una tienda o distribuidor?{" "}
-            <Link href="/mayorista/registro" className="font-semibold text-cochinilla underline underline-offset-4 hover:text-ink">
-              Registrar empresa mayorista
-            </Link>
-          </p>
-        </div>
-      }
-    >
-      <LoginForm />
-    </AuthCard>
+    <Auth3DExperience
+      initialMode="login"
+      nextParam={sp.next}
+      verifiedParam={Boolean(sp.verificado)}
+      resetParam={Boolean(sp.restablecida)}
+    />
   );
 }

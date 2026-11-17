@@ -16,22 +16,22 @@ export interface SocialLink {
 }
 
 export const siteConfig = {
-  name: "INVESTMENTS",
-  shortName: "Investments",
-  tagline: "Viste con intención",
+  name: "American Colt",
+  shortName: "American Colt",
+  tagline: "Jeans & Moda Peruana — Venta por Menor y Mayor",
   description:
-    "INVESTMENTS es moda premium para el Perú: colecciones atemporales para clientes individuales y soluciones textiles por mayor para negocios, empresas y distribuidores.",
+    "American Colt JEANS™ es moda denim y casual para el Perú: colecciones de temporada para clientes individuales (B2C) y lotes mayoristas con precios escalonados para tiendas, boutiques y distribuidores (B2B).",
   url: optional(process.env.NEXT_PUBLIC_SITE_URL) ?? "http://localhost:3000",
   locale: "es_PE",
   language: "es-PE",
   currency: "PEN",
-  season: "Temporada 26/27",
+  season: "Colección 2026",
   contact: {
-    email: optional(process.env.NEXT_PUBLIC_CONTACT_EMAIL),
-    phone: optional(process.env.NEXT_PUBLIC_CONTACT_PHONE),
-    whatsapp: optional(process.env.NEXT_PUBLIC_CONTACT_WHATSAPP),
-    businessEmail: optional(process.env.NEXT_PUBLIC_BUSINESS_EMAIL),
-    hours: optional(process.env.NEXT_PUBLIC_CONTACT_HOURS),
+    email: optional(process.env.NEXT_PUBLIC_CONTACT_EMAIL) ?? "ventas@americancolt.pe",
+    phone: optional(process.env.NEXT_PUBLIC_CONTACT_PHONE) ?? "+51 926 922 583",
+    whatsapp: optional(process.env.NEXT_PUBLIC_CONTACT_WHATSAPP) ?? "51926922583",
+    businessEmail: optional(process.env.NEXT_PUBLIC_BUSINESS_EMAIL) ?? "mayoristas@americancolt.pe",
+    hours: optional(process.env.NEXT_PUBLIC_CONTACT_HOURS) ?? "Lun – Sáb · 9:00 a 20:00 hrs.",
   },
   social: [
     { id: "instagram", label: "Instagram", href: optional(process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM) },

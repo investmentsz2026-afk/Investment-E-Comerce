@@ -1,24 +1,49 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
   /** Muestra el descriptor bajo el logotipo. */
   withDescriptor?: boolean;
+  /** Tamaño del logo visual */
+  size?: "sm" | "md" | "lg";
 }
 
 /**
- * Logotipo tipográfico INVESTMENTS.
- * Sans de peso medio con tracking amplio y un punto en color cochinilla como firma.
+ * Logotipo oficial American Colt JEANS™.
+ * Utiliza la imagen oficial subida por la marca (`/logo-american-colt.png`)
+ * con respaldo accesible para lectores de pantalla.
  */
-export function Logo({ className, withDescriptor = false }: LogoProps) {
+export function Logo({ className, withDescriptor = false, size = "md" }: LogoProps) {
+  const dimensions =
+    size === "sm"
+      ? "h-9 w-[124px] sm:h-10 sm:w-[138px]"
+      : size === "lg"
+        ? "h-12 w-[168px] sm:h-14 sm:w-[196px]"
+        : "h-10 w-[136px] sm:h-12 sm:w-[164px]";
+
   return (
-    <span className={cn("inline-flex flex-col items-center leading-none", className)}>
-      <span className="flex items-baseline font-sans text-[0.82rem] font-semibold tracking-[0.22em] min-[360px]:text-[0.95rem] min-[360px]:tracking-[0.28em] sm:text-[1.15rem] sm:tracking-[0.34em]">
-        INVESTMENTS
-        <span className="ml-[-0.2em] inline-block size-[0.32em] translate-y-[-0.05em] rounded-full bg-cochinilla" aria-hidden />
+    <span className={cn("inline-flex flex-col items-center leading-none select-none", className)}>
+      <span
+        className={cn(
+          "relative inline-block overflow-hidden rounded-sm bg-[#91151B] shadow-xs",
+          dimensions,
+        )}
+      >
+        <Image
+          src="/logo-american-colt.png"
+          alt="American Colt JEANS™"
+          fill
+          sizes="200px"
+          priority
+          className="object-contain"
+        />
+        <span className="sr-only">American Colt JEANS</span>
       </span>
       {withDescriptor ? (
-        <span className="eyebrow mt-2 text-[0.55rem] tracking-[0.42em] opacity-60">Lima — Perú</span>
+        <span className="eyebrow mt-2 text-[0.55rem] tracking-[0.36em] opacity-75">
+          Jeans &amp; Moda · Lima — Perú
+        </span>
       ) : null}
     </span>
   );

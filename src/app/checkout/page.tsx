@@ -80,18 +80,8 @@ export default async function CheckoutPage({
   const initialIdempotencyKey = `chk_${user.id}_${randomBytes(12).toString("hex")}`;
 
   return (
-    <div className="bg-paper pt-[7.5rem] pb-24 lg:pt-[8.75rem]">
-      <div className="shell space-y-8">
-        <header className="border-b border-ink/10 pb-6">
-          <p className="eyebrow text-cochinilla">Confirmación Comercial y Despacho</p>
-          <h1 className="mt-2 font-display text-display-md text-ink">
-            Finalizar Compra
-          </h1>
-          <p className="mt-1 text-xs text-taupe-600">
-            Revisa tus prendas, selecciona tu dirección en el Perú y elige tu comprobante electrónico.
-          </p>
-        </header>
-
+    <div className="min-h-screen bg-[#FAF8F5] pt-24 sm:pt-28 pb-20">
+      <div className="shell max-w-6xl">
         <CheckoutView
           context={context}
           user={{

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -8,7 +8,23 @@ import {
   registerWholesaleCompanyAction,
 } from "@/server/actions/wholesale";
 import type { ActionResult } from "@/server/actions/auth";
-import { Building2, ArrowRight, Loader2, AlertCircle, Lock, UserCheck } from "lucide-react";
+import { PasswordRequirementsGuide } from "@/components/auth/password-requirements-guide";
+import {
+  FaBuilding,
+  FaFileInvoice,
+  FaUserTie,
+  FaEnvelope,
+  FaPhone,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaLocationDot,
+  FaBoxesStacked,
+  FaArrowRight,
+  FaCircleExclamation,
+  FaSpinner,
+  FaUserCheck,
+} from "react-icons/fa6";
 
 interface WholesaleFormProps {
   isAuthenticated?: boolean;
@@ -19,7 +35,7 @@ interface WholesaleFormProps {
 
 const BUSINESS_TYPES = [
   "Boutique o tienda de moda retail",
-  "Distribuidor mayorista textil",
+  "Distribuidor mayorista textil regional",
   "Cadena de tiendas comerciales",
   "Confeccionista o taller de confección",
   "Corporativo / Dotación y uniformes",
@@ -41,14 +57,21 @@ export function WholesaleApplicationForm({
   defaultPhone = "",
 }: WholesaleFormProps) {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Estados de contraseña para validación interactiva en vivo
+  const [wholesalePassword, setWholesalePassword] = useState("");
+  const [wholesaleConfirmPassword, setWholesaleConfirmPassword] = useState("");
+
   const formHandler = isAuthenticated
     ? submitWholesaleApplicationAction
     : registerWholesaleCompanyAction;
 
-  const [state, formAction, isPending] = useActionState<ActionResult<{ applicationId: number }>, FormData>(
-    formHandler,
-    { success: false },
-  );
+  const [state, formAction, isPending] = useActionState<
+    ActionResult<{ applicationId: number }>,
+    FormData
+  >(formHandler, { success: false });
 
   useEffect(() => {
     if (state.success) {
@@ -58,388 +81,480 @@ export function WholesaleApplicationForm({
   }, [state, router]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-white">
+      {/* Aviso si ya posee cuenta de usuario */}
       {!isAuthenticated && (
-        <div className="border border-ink/10 bg-bone/70 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-blue-500/30 bg-blue-950/40 p-4 backdrop-blur-md">
           <div className="flex items-start gap-3">
-            <UserCheck className="size-5 text-taupe-500 shrink-0 mt-0.5" aria-hidden />
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-[#0055FF] mt-0.5">
+              <FaUserCheck className="size-4" aria-hidden />
+            </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
-                ¿Ya posees una cuenta de usuario en INVESTMENTS?
+              <p className="text-xs font-bold uppercase tracking-wider text-white">
+                ¿Ya tienes cuenta de cliente en American Colt JEANS™?
               </p>
-              <p className="mt-0.5 text-xs text-taupe-600">
-                Inicia sesión para autocompletar tus datos y vincular tu empresa a tu cuenta existente.
+              <p className="mt-0.5 text-xs text-slate-300">
+                Inicia sesión para autocompletar tus datos y asociar tu empresa a tu cuenta actual.
               </p>
             </div>
           </div>
           <Link
             href="/iniciar-sesion?next=/mayorista/registro"
-            className="shrink-0 inline-flex items-center gap-1.5 border border-ink/20 bg-paper px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:border-ink hover:text-cochinilla"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-blue-400/40 bg-blue-600/20 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-blue-300 transition-colors hover:bg-blue-600/30 hover:text-white"
           >
-            Iniciar sesión
-            <ArrowRight className="size-3" aria-hidden />
+            <span>Iniciar sesión</span>
+            <FaArrowRight className="size-3" aria-hidden />
           </Link>
         </div>
       )}
 
-      <form action={formAction} className="border border-ink/10 bg-paper p-4 sm:p-10 space-y-8">
-      {state.error && (
-        <div className="flex items-start gap-2.5 border-l-2 border-cochinilla bg-cochinilla/5 p-4 text-xs text-cochinilla" role="alert">
-          <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden />
-          <span>{state.error}</span>
-        </div>
-      )}
+      <form action={formAction} className="space-y-6">
+        {state.error && (
+          <div
+            className="flex items-start gap-3 rounded-xl border border-red-500/50 bg-red-950/70 p-4 text-xs text-red-200 backdrop-blur-md"
+            role="alert"
+          >
+            <FaCircleExclamation className="size-4 shrink-0 text-red-400 mt-0.5" aria-hidden />
+            <span>{state.error}</span>
+          </div>
+        )}
 
-      {/* Sección 1: Datos de la Empresa */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
-          <Building2 className="size-4 text-taupe-500" aria-hidden />
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-            1. Información comercial y tributaria
-          </h2>
+        {/* SECCIÓN 1: DATOS DE LA EMPRESA Y RUC */}
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4 sm:p-5 backdrop-blur-md space-y-4">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2.5">
+            <FaBuilding className="size-4 text-[#EF233C]" aria-hidden />
+            <h3 className="text-xs font-black uppercase tracking-wider text-white">
+              1. Información comercial y tributaria (SUNAT)
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="legalName"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Razón Social *
+              </label>
+              <input
+                id="legalName"
+                name="legalName"
+                type="text"
+                required
+                placeholder="Ej: TEXTILES ANDINOS S.A.C."
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="tradeName"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Nombre Comercial *
+              </label>
+              <input
+                id="tradeName"
+                name="tradeName"
+                type="text"
+                required
+                placeholder="Ej: Andinos Moda Jeans"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="taxId"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                <FaFileInvoice className="size-3 text-[#0055FF]" aria-hidden />
+                <span>RUC (11 dígitos) *</span>
+              </label>
+              <input
+                id="taxId"
+                name="taxId"
+                type="text"
+                required
+                maxLength={11}
+                placeholder="20123456789"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 font-mono text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+              <p className="mt-1 text-[0.68rem] text-slate-400">
+                Formato de 11 dígitos (RUC 20 o 10 con negocio activo).
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor="businessType"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Tipo de negocio o actividad *
+              </label>
+              <select
+                id="businessType"
+                name="businessType"
+                required
+                disabled={isPending}
+                defaultValue=""
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A] px-3.5 py-3 text-sm text-white focus:border-[#0055FF] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              >
+                <option value="" disabled className="bg-slate-900 text-slate-400">
+                  Seleccionar tipo de actividad...
+                </option>
+                {BUSINESS_TYPES.map((bt) => (
+                  <option key={bt} value={bt} className="bg-slate-900 text-white">
+                    {bt}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="legalName" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Razón Social *
-            </label>
-            <input
-              id="legalName"
-              name="legalName"
-              type="text"
-              required
-              placeholder="Ej: TEXTILES ANDINOS S.A.C."
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
+        {/* SECCIÓN 2: REPRESENTANTE COMERCIAL Y CREDENCIALES */}
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4 sm:p-5 backdrop-blur-md space-y-4">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2.5">
+            <FaUserTie className="size-4 text-[#0055FF]" aria-hidden />
+            <h3 className="text-xs font-black uppercase tracking-wider text-white">
+              2. Representante comercial &amp; Acceso
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label
+                htmlFor="contactName"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Nombre y Apellidos *
+              </label>
+              <input
+                id="contactName"
+                name="contactName"
+                type="text"
+                required
+                defaultValue={defaultContactName}
+                placeholder="Carlos Mendoza"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="contactEmail"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                <FaEnvelope className="size-3 text-[#0055FF]" aria-hidden />
+                <span>Correo empresarial *</span>
+              </label>
+              <input
+                id="contactEmail"
+                name="contactEmail"
+                type="email"
+                required
+                defaultValue={defaultContactEmail}
+                placeholder="ventas@empresa.com"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="contactPhone"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                <FaPhone className="size-3 text-emerald-400" aria-hidden />
+                <span>Celular WhatsApp *</span>
+              </label>
+              <input
+                id="contactPhone"
+                name="contactPhone"
+                type="tel"
+                required
+                defaultValue={defaultPhone ?? ""}
+                placeholder="987 654 321"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+          </div>
+
+          {!isAuthenticated && (
+            <div className="border-t border-white/10 pt-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <FaLock className="size-3.5 text-[#EF233C]" aria-hidden />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                  Contraseña de acceso para el portal mayorista
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+                  >
+                    Crear Contraseña *
+                  </label>
+                  <div className="relative mt-1.5">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      autoComplete="new-password"
+                      disabled={isPending}
+                      value={wholesalePassword}
+                      onChange={(e) => setWholesalePassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 pl-3.5 pr-10 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    >
+                      {showPassword ? <FaEyeSlash className="size-3.5" /> : <FaEye className="size-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+                  >
+                    Confirmar Contraseña *
+                  </label>
+                  <div className="relative mt-1.5">
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      required
+                      autoComplete="new-password"
+                      disabled={isPending}
+                      value={wholesaleConfirmPassword}
+                      onChange={(e) => setWholesaleConfirmPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 pl-3.5 pr-10 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    >
+                      {showConfirmPassword ? <FaEyeSlash className="size-3.5" /> : <FaEye className="size-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Guía en vivo e interactiva con checks dinámicos de contraseña */}
+                <div className="sm:col-span-2 pt-1">
+                  <PasswordRequirementsGuide
+                    password={wholesalePassword}
+                    confirmPassword={wholesaleConfirmPassword}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SECCIÓN 3: DOMICILIO FISCAL / COMERCIAL */}
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4 sm:p-5 backdrop-blur-md space-y-4">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2.5">
+            <FaLocationDot className="size-4 text-emerald-400" aria-hidden />
+            <h3 className="text-xs font-black uppercase tracking-wider text-white">
+              3. Domicilio fiscal o tienda física
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label
+                htmlFor="department"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Departamento *
+              </label>
+              <input
+                id="department"
+                name="department"
+                type="text"
+                required
+                defaultValue="Lima"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="province"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Provincia *
+              </label>
+              <input
+                id="province"
+                name="province"
+                type="text"
+                required
+                defaultValue="Lima"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="district"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+              >
+                Distrito *
+              </label>
+              <input
+                id="district"
+                name="district"
+                type="text"
+                required
+                placeholder="La Victoria / Gamarra"
+                disabled={isPending}
+                className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
+              />
+            </div>
           </div>
 
           <div>
-            <label htmlFor="tradeName" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Nombre Comercial *
+            <label
+              htmlFor="addressLine"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+            >
+              Dirección exacta de tienda o almacén *
             </label>
             <input
-              id="tradeName"
-              name="tradeName"
+              id="addressLine"
+              name="addressLine"
               type="text"
               required
-              placeholder="Ej: Andinos Moda"
+              placeholder="Jr. Gamarra 1050, Galería Central Tienda 204"
               disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
             />
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="taxId" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              RUC (11 dígitos) *
-            </label>
-            <input
-              id="taxId"
-              name="taxId"
-              type="text"
-              required
-              maxLength={11}
-              placeholder="20123456789"
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm font-mono text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
-            <p className="mt-1 text-[0.65rem] text-taupe-500 leading-relaxed">
-              Validamos el formato de 11 dígitos (prefijo 20 o 10). La condición de contribuyente activo/habido ante SUNAT será verificada por nuestro equipo comercial durante la evaluación.
-            </p>
+        {/* SECCIÓN 4: ESTIMACIÓN DE COMPRA */}
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4 sm:p-5 backdrop-blur-md space-y-4">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2.5">
+            <FaBoxesStacked className="size-4 text-amber-400" aria-hidden />
+            <h3 className="text-xs font-black uppercase tracking-wider text-white">
+              4. Proyección de volumen y notas
+            </h3>
           </div>
 
           <div>
-            <label htmlFor="businessType" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Tipo de negocio o actividad *
+            <label
+              htmlFor="estimatedVolume"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+            >
+              Volumen mensual de compra estimado *
             </label>
             <select
-              id="businessType"
-              name="businessType"
+              id="estimatedVolume"
+              name="estimatedVolume"
               required
               disabled={isPending}
               defaultValue=""
-              className="mt-2 block w-full border border-ink/20 bg-paper px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A] px-3.5 py-3 text-sm text-white focus:border-[#0055FF] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50"
             >
-              <option value="" disabled>
-                Seleccionar tipo de negocio...
+              <option value="" disabled className="bg-slate-900 text-slate-400">
+                Seleccionar rango aproximado...
               </option>
-              {BUSINESS_TYPES.map((bt) => (
-                <option key={bt} value={bt}>
-                  {bt}
+              {ESTIMATED_VOLUMES.map((ev) => (
+                <option key={ev} value={ev} className="bg-slate-900 text-white">
+                  {ev}
                 </option>
               ))}
             </select>
           </div>
-        </div>
-      </div>
-
-      {/* Sección 2: Contacto del Representante */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-            2. Representante comercial
-          </h2>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <div>
-            <label htmlFor="contactName" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Nombre y Apellidos *
-            </label>
-            <input
-              id="contactName"
-              name="contactName"
-              type="text"
-              required
-              defaultValue={defaultContactName}
-              placeholder="Carlos Mendoza"
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
-          </div>
 
           <div>
-            <label htmlFor="contactEmail" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Correo empresarial *
+            <label
+              htmlFor="additionalNotes"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-300"
+            >
+              Notas adicionales sobre tu negocio o marcas (Opcional)
             </label>
-            <input
-              id="contactEmail"
-              name="contactEmail"
-              type="email"
-              required
-              defaultValue={defaultContactEmail}
-              placeholder="compras@andinosmoda.pe"
+            <textarea
+              id="additionalNotes"
+              name="additionalNotes"
+              rows={2}
+              placeholder="Detalla si requieres despacho urgente a provincia (Olva / Shalom), líneas prioritarias de Jeans o Drill..."
               disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="contactPhone" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Teléfono de contacto *
-            </label>
-            <input
-              id="contactPhone"
-              name="contactPhone"
-              type="tel"
-              required
-              defaultValue={defaultPhone ?? ""}
-              placeholder="987 654 321"
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-1.5 block w-full rounded-xl border border-slate-700 bg-[#0F172A]/90 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#0055FF] focus:bg-[#0B1325] focus:outline-none focus:ring-2 focus:ring-[#0055FF]/40 disabled:opacity-50 resize-y"
             />
           </div>
         </div>
 
-        {!isAuthenticated && (
-          <div className="mt-6 pt-5 border-t border-ink/10">
-            <div className="flex items-center gap-2 mb-3">
-              <Lock className="size-4 text-taupe-500" aria-hidden />
-              <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
-                Credenciales de acceso para tu cuenta empresarial
-              </h3>
-            </div>
-            <p className="text-xs text-taupe-600 mb-4">
-              Crea una contraseña segura para administrar tu cuenta de empresa y dar seguimiento a tus pedidos mayoristas.
-            </p>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <div>
-                <label htmlFor="password" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                  Contraseña de acceso *
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  disabled={isPending}
-                  placeholder="••••••••"
-                  className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-                />
-                <p className="mt-1 text-[0.65rem] text-taupe-500">
-                  Mínimo 8 caracteres, al menos una mayúscula, una minúscula y un número.
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-                  Confirmar contraseña *
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  disabled={isPending}
-                  placeholder="••••••••"
-                  className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Sección 3: Domicilio Comercial */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-            3. Domicilio fiscal o comercial
-          </h2>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <div>
-            <label htmlFor="department" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Departamento *
-            </label>
+        {/* Declaración y Términos */}
+        <div className="pt-2">
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
             <input
-              id="department"
-              name="department"
-              type="text"
+              type="checkbox"
+              name="termsAccepted"
               required
-              defaultValue="Lima"
               disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+              className="mt-0.5 size-4 rounded border-slate-700 bg-slate-900 text-[#EF233C] focus:ring-[#EF233C]"
             />
-          </div>
-
-          <div>
-            <label htmlFor="province" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Provincia *
-            </label>
-            <input
-              id="province"
-              name="province"
-              type="text"
-              required
-              defaultValue="Lima"
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="district" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-              Distrito *
-            </label>
-            <input
-              id="district"
-              name="district"
-              type="text"
-              required
-              placeholder="La Victoria / Gamarra"
-              disabled={isPending}
-              className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label htmlFor="addressLine" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-            Dirección comercial o tienda *
+            <span className="text-xs leading-relaxed text-slate-300">
+              Declaro que los datos ingresados representan legítimamente a la empresa postulante. Acepto los{" "}
+              <span className="text-blue-400 underline">Términos Comerciales Mayoristas</span> y la{" "}
+              <span className="text-blue-400 underline">Política de Privacidad</span> de American Colt JEANS™, conforme a la Ley N° 29733.
+            </span>
           </label>
-          <input
-            id="addressLine"
-            name="addressLine"
-            type="text"
-            required
-            placeholder="Jr. Gamarra 1050, Galería Central Tda. 204"
-            disabled={isPending}
-            className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
-          />
-        </div>
-      </div>
-
-      {/* Sección 4: Estimación Comercial */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-            4. Estimación de compra
-          </h2>
         </div>
 
-        <div className="mt-4">
-          <label htmlFor="estimatedVolume" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-            Volumen mensual de compra estimado *
-          </label>
-          <select
-            id="estimatedVolume"
-            name="estimatedVolume"
-            required
+        {/* Botón de Envío Radiante */}
+        <div className="pt-2">
+          <button
+            type="submit"
             disabled={isPending}
-            defaultValue=""
-            className="mt-2 block w-full border border-ink/20 bg-paper px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+            className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#B91C24] px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-600/30 transition-all duration-300 hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
           >
-            <option value="" disabled>
-              Seleccionar rango aproximado...
-            </option>
-            {ESTIMATED_VOLUMES.map((ev) => (
-              <option key={ev} value={ev}>
-                {ev}
-              </option>
-            ))}
-          </select>
+            {isPending ? (
+              <>
+                <FaSpinner className="size-4 animate-spin" aria-hidden />
+                <span>
+                  {isAuthenticated
+                    ? "Enviando solicitud comercial..."
+                    : "Creando cuenta y registrando empresa..."}
+                </span>
+              </>
+            ) : (
+              <>
+                <span>
+                  {isAuthenticated
+                    ? "Enviar Solicitud Comercial B2B"
+                    : "Registrar Empresa y Solicitar Aprobación RUC"}
+                </span>
+                <FaArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden />
+              </>
+            )}
+          </button>
         </div>
-
-        <div className="mt-4">
-          <label htmlFor="additionalNotes" className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink">
-            Información comercial adicional (Opcional)
-          </label>
-          <textarea
-            id="additionalNotes"
-            name="additionalNotes"
-            rows={3}
-            placeholder="Cuéntanos brevemente sobre tu red de distribución, marcas que comercializas o requerimientos de volumen..."
-            disabled={isPending}
-            className="mt-2 block w-full border border-ink/20 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50 resize-y"
-          />
-        </div>
-      </div>
-
-      {/* Términos y condiciones */}
-      <div className="pt-2 border-t border-ink/10">
-        <label className="flex items-start gap-3 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            name="termsAccepted"
-            required
-            disabled={isPending}
-            className="mt-1 size-4 rounded-none border-ink/30 text-ink focus:ring-ink"
-          />
-          <span className="text-xs leading-relaxed text-taupe-700">
-            Declaro que la información proporcionada es fidedigna y representa formalmente a la empresa solicitante. Acepto los{" "}
-            <span className="text-ink underline underline-offset-4">Términos Comerciales Mayoristas</span> y la{" "}
-            <span className="text-ink underline underline-offset-4">Política de Privacidad</span> de INVESTMENTS.
-          </span>
-        </label>
-      </div>
-
-      <div className="pt-2 flex justify-end">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="group inline-flex items-center gap-2 bg-ink px-8 py-3.5 text-[0.72rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla disabled:opacity-60"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              {isAuthenticated ? "Enviando solicitud..." : "Creando cuenta y registrando empresa..."}
-            </>
-          ) : (
-            <>
-              {isAuthenticated ? "Enviar solicitud comercial" : "Registrar Empresa y Enviar a Administración"}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
-            </>
-          )}
-        </button>
-      </div>
-    </form>
+      </form>
     </div>
   );
 }

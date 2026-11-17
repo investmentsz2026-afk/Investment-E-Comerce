@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/server/actions/auth";
-import { LogOut, Loader2 } from "lucide-react";
+import { FaRightFromBracket, FaSpinner } from "react-icons/fa6";
 import { cn } from "@/lib/utils";
 
 interface LogoutButtonProps {
@@ -31,14 +31,14 @@ export function LogoutButton({ className, showIcon = true, label = "Cerrar sesiÃ
       disabled={isPending}
       aria-label="Cerrar sesiÃ³n"
       className={cn(
-        "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-taupe-600 transition-colors hover:text-cochinilla disabled:opacity-60",
+        "inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white hover:bg-red-50 text-red-600 px-4 py-2 text-xs font-bold transition-all disabled:opacity-60 shadow-xs cursor-pointer",
         className,
       )}
     >
       {isPending ? (
-        <Loader2 className="size-3.5 animate-spin" aria-hidden />
+        <FaSpinner className="size-3.5 animate-spin text-red-500" aria-hidden />
       ) : showIcon ? (
-        <LogOut className="size-3.5" aria-hidden />
+        <FaRightFromBracket className="size-3.5 text-red-500" aria-hidden />
       ) : null}
       <span>{isPending ? "Cerrando..." : label}</span>
     </button>

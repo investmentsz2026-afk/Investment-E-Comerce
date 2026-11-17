@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Boxes,
   Filter,
+  RotateCcw,
 } from "lucide-react";
 
 export const instant = false;
@@ -110,6 +111,20 @@ export default async function AdminRootDashboardPage({
           >
             <Package className="size-3.5 text-cochinilla" aria-hidden />
             <span>Gestionar Pedidos</span>
+          </Link>
+          <Link
+            href="/admin/suscripciones"
+            className="inline-flex items-center gap-2 border border-ink/20 bg-paper px-4 py-2.5 font-mono text-xs uppercase tracking-widest text-ink transition-colors hover:border-ink"
+          >
+            <Users className="size-3.5 text-[#0055FF]" aria-hidden />
+            <span>Suscripciones VIP</span>
+          </Link>
+          <Link
+            href="/admin/cambios"
+            className="inline-flex items-center gap-2 border border-ink/20 bg-paper px-4 py-2.5 font-mono text-xs uppercase tracking-widest text-ink transition-colors hover:border-ink"
+          >
+            <RotateCcw className="size-3.5 text-cochinilla" aria-hidden />
+            <span>Cambios y Tallas</span>
           </Link>
         </div>
       </div>

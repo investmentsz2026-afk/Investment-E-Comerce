@@ -13,9 +13,9 @@ import {
   AlertCircle,
   Loader2,
   ShoppingBag,
-  Sparkles,
   Building2,
 } from "lucide-react";
+import { FaBoxesStacked, FaLayerGroup } from "react-icons/fa6";
 import { submitWholesaleQuoteAction } from "@/server/actions/quotes";
 import { formatPEN } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -415,7 +415,7 @@ export function WholesaleQuoteBuilder({
       {!isUserAuthorized && (
         <div className="border border-cochinilla/20 bg-cochinilla/5 p-5 text-ink">
           <div className="flex items-start gap-3">
-            <Sparkles className="mt-0.5 size-5 shrink-0 text-cochinilla" aria-hidden />
+            <FaBoxesStacked className="mt-0.5 size-5 shrink-0 text-cochinilla" aria-hidden />
             <div className="flex-1">
               <p className="text-sm font-semibold text-ink">
                 Modo Borrador de Cotización B2B
@@ -523,7 +523,7 @@ export function WholesaleQuoteBuilder({
               Añadir modelos y tallas al lote
             </h3>
           </div>
-          <Sparkles className="size-5 text-cochinilla" aria-hidden />
+          <FaLayerGroup className="size-5 text-cochinilla" aria-hidden />
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-12">

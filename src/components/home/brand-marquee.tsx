@@ -1,18 +1,24 @@
 import { Marquee } from "@/components/motion/marquee";
 
 const values = [
-  "Siluetas atemporales",
-  "Tejidos seleccionados",
-  "Por menor y por mayor",
-  "Confección cuidada",
-  "Diseñado para el día a día",
+  "AMERICAN COLT JEANS™",
+  "OFERTA 3X2 Y HASTA 50% OFF",
+  "ENVÍO RÁPIDO 24HRS",
+  "VENTA POR UNIDAD Y POR MAYOR B2B",
+  "PAGOS SEGUROS CON YAPE, PLIN Y TARJETAS",
 ] as const;
 
-/** Transición editorial entre el hero y el contenido: cinta tipográfica serif. */
+/** Cinta promocional reluciente en Azul Eléctrico Oficial (#0055FF) con estrellas. */
 export function BrandMarquee() {
   return (
-    <div className="border-y border-ink/10 bg-paper py-6 lg:py-8" aria-label="Valores de la marca">
-      <Marquee items={values} itemClassName="font-display text-3xl italic text-ink lg:text-5xl" separator="✦" />
+    <div
+      className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#0055FF] py-3 text-paper shadow-sm"
+      aria-label="Valores de American Colt Jeans"
+    >
+      <Marquee
+        items={values}
+        itemClassName="font-sans text-xs sm:text-sm font-black uppercase tracking-[0.18em] text-paper"
+      />
     </div>
   );
 }

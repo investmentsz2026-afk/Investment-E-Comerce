@@ -371,3 +371,163 @@ export async function clearCartAction(): Promise<ActionResult<CartSnapshot>> {
   };
 }
 
+/**
+ * Permite cambiar la talla y/o color de una prenda en el carrito sin tener que eliminarla
+ * y volver al catálogo.
+ * - Valida que ambas variantes correspondan al mismo producto activo.
+ * - Valida que la nueva variante esté activa y tenga stock.
+ * - Si la nueva variante ya estaba en el carrito, combina las cantidades (acotadas al stock) y elimina el ítem anterior.
+ * - Si no estaba, actualiza el variantId y acota la cantidad al stock disponible.
+ */
+export async function updateCartItemVariantAction(input: {
+  currentVariantId: number;
+  newVariantId: number;
+}): Promise<ActionResult<CartSnapshot>> {
+  const currentVariantId = Number(input.currentVariantId);
+  const newVariantId = Number(input.newVariantId);
+
+  if (
+    !Number.isInteger(currentVariantId) ||
+    currentVariantId <= 0 ||
+    !Number.isInteger(newVariantId) ||
+    newVariantId <= 0
+  ) {
+    return { success: false, error: "Selección de variante no válida." };
+  }
+
+  if (currentVariantId === newVariantId) {
+    const snapshot = await getCartSnapshot();
+    return { success: true, data: snapshot };
+  }
+
+  const { user } = await getCurrentSession();
+  const { cartId } = await resolveOrCreateActiveCart(user, false);
+
+  if (!cartId) {
+    return { success: false, error: "Tu bolsa de compras está vacía o ha expirado." };
+  }
+
+  const db = getDb();
+
+  // Verificar el ítem actual en el carrito
+  const currentItemRows = await db
+    .select({
+      item: cartItems,
+      variant: productVariants,
+      product: products,
+    })
+    .from(cartItems)
+    .innerJoin(productVariants, eq(cartItems.variantId, productVariants.id))
+    .innerJoin(products, eq(productVariants.productId, products.id))
+    .where(and(eq(cartItems.cartId, cartId), eq(cartItems.variantId, currentVariantId)))
+    .limit(1);
+
+  if (currentItemRows.length === 0) {
+    return { success: false, error: "La prenda original no se encuentra en tu bolsa." };
+  }
+
+  const currentItem = currentItemRows[0];
+
+  // Verificar la nueva variante
+  const newVariantRows = await db
+    .select({
+      variant: productVariants,
+      product: products,
+    })
+    .from(productVariants)
+    .innerJoin(products, eq(productVariants.productId, products.id))
+    .where(eq(productVariants.id, newVariantId))
+    .limit(1);
+
+  if (newVariantRows.length === 0) {
+    return { success: false, error: "La nueva variante seleccionada no existe en el catálogo." };
+  }
+
+  const newVariant = newVariantRows[0];
+
+  // Validar que pertenezcan al mismo producto
+  if (newVariant.product.id !== currentItem.product.id) {
+    return { success: false, error: "La variante seleccionada no pertenece al mismo modelo de prenda." };
+  }
+
+  if (newVariant.product.status !== "active" || !newVariant.variant.isActive) {
+    return { success: false, error: "Esta variante ya no se encuentra disponible para la venta." };
+  }
+
+  if (newVariant.variant.stock <= 0) {
+    return {
+      success: false,
+      error: `La combinación ${newVariant.variant.colorName ?? ""} Talla ${newVariant.variant.size ?? ""} se encuentra temporalmente agotada.`,
+    };
+  }
+
+  // Precios para actualizar snapshot
+  const prices = await db
+    .select()
+    .from(productPrices)
+    .where(eq(productPrices.productId, newVariant.product.id));
+
+  const targetQty = Math.min(currentItem.item.quantity, newVariant.variant.stock);
+
+  const linePricing = calculateLinePricing({
+    prices,
+    quantity: targetQty,
+    isProductWholesaleEnabled: newVariant.product.isWholesale,
+    user,
+  });
+
+  const now = new Date();
+
+  // Verificar si la nueva variante ya existía en el carrito
+  const existingNewVariantItemRows = await db
+    .select()
+    .from(cartItems)
+    .where(and(eq(cartItems.cartId, cartId), eq(cartItems.variantId, newVariantId)))
+    .limit(1);
+
+  if (existingNewVariantItemRows.length > 0) {
+    const existing = existingNewVariantItemRows[0];
+    const mergedQty = Math.min(
+      existing.quantity + currentItem.item.quantity,
+      newVariant.variant.stock,
+    );
+
+    await db
+      .update(cartItems)
+      .set({
+        quantity: mergedQty,
+        addedUnitPriceSnapshot: linePricing.effectiveUnitAmount,
+        updatedAt: now,
+      })
+      .where(eq(cartItems.id, existing.id));
+
+    // Eliminar el ítem anterior
+    await db.delete(cartItems).where(eq(cartItems.id, currentItem.item.id));
+  } else {
+    // Actualizar variantId del ítem actual
+    await db
+      .update(cartItems)
+      .set({
+        variantId: newVariantId,
+        quantity: targetQty,
+        addedUnitPriceSnapshot: linePricing.effectiveUnitAmount,
+        updatedAt: now,
+      })
+      .where(eq(cartItems.id, currentItem.item.id));
+  }
+
+  await db
+    .update(carts)
+    .set({ updatedAt: now })
+    .where(eq(carts.id, cartId));
+
+  revalidatePath("/carrito");
+  revalidatePath("/cuenta");
+
+  const snapshot = await getCartSnapshot();
+  return {
+    success: true,
+    data: snapshot,
+  };
+}
+

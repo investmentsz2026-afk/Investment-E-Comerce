@@ -5,6 +5,7 @@ import { getProductBySlug, getRelatedProducts } from "@/server/queries/products"
 import { totalStock as sumStock } from "@/lib/variant-stock";
 import { CatalogBreadcrumbs } from "@/components/catalog/catalog-breadcrumbs";
 import { getCurrentSession } from "@/server/auth/session";
+import { getOrSeedShippingZones, getProductShippingCoverage } from "@/server/shipping/service";
 import { ProductDetailView } from "./product-detail-view";
 
 /** Datos dinámicos de Neon: la ruta puede bloquear (se renderiza en servidor por petición). */
@@ -39,9 +40,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const [product, shippingZones, sessionResult] = await Promise.all([
+    getProductBySlug(slug),
+    getOrSeedShippingZones(),
+    getCurrentSession(),
+  ]);
   if (!product) notFound();
 
+  const user = sessionResult.user;
+  const shippingCoverage = getProductShippingCoverage(shippingZones);
   const related = await getRelatedProducts(product.id, product.categoryId, 4);
 
   // Structured data (Product schema)
@@ -70,16 +77,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
       : undefined,
   };
 
-  const { user } = await getCurrentSession();
-
   return (
     <div className="bg-paper pt-[7.5rem] lg:pt-[8.75rem]">
       <div className="shell">
         <CatalogBreadcrumbs
+          variant="clean"
           items={[
-            { label: "Catálogo", href: "/catalogo" },
             { label: product.category.name, href: `/catalogo/${product.category.slug}` },
-            { label: product.name },
+            {
+              label: product.name.toLowerCase().includes("skinny") || product.name.toLowerCase().includes("slim")
+                ? product.name
+                : `${product.name} – Skinny Fit`,
+            },
           ]}
         />
 
@@ -90,7 +99,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           }}
         />
 
-        <ProductDetailView product={product} related={related} userRole={user?.role ?? null} />
+        <ProductDetailView
+          product={product}
+          related={related}
+          userRole={user?.role ?? null}
+          shippingCoverage={shippingCoverage}
+        />
       </div>
     </div>
   );

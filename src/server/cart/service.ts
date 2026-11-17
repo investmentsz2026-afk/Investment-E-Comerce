@@ -31,6 +31,15 @@ export type CartItemAvailabilityStatus =
   | "out_of_stock"
   | "unavailable_product";
 
+export interface CartItemVariantOption {
+  id: number;
+  sku: string;
+  size: string | null;
+  colorName: string | null;
+  colorSwatch: string | null;
+  stock: number;
+}
+
 export interface EnrichedCartItem {
   id: number;
   cartId: number;
@@ -38,6 +47,7 @@ export interface EnrichedCartItem {
   productId: number;
   productName: string;
   productSlug: string;
+  shortDescription?: string | null;
   isDemo: boolean;
   categoryName: string;
   categorySlug: string;
@@ -55,6 +65,8 @@ export interface EnrichedCartItem {
   addedUnitPriceSnapshot: number;
   /** Resultado vivo del motor de precios en el servidor. */
   pricing: LinePricingResult;
+  /** Variantes activas del producto para permitir cambio inline de talla y color */
+  availableVariants: CartItemVariantOption[];
 }
 
 export interface CartSnapshot {
@@ -359,7 +371,7 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
   const productIds = Array.from(new Set(rawRows.map((r) => r.product.id)));
   const now = new Date();
 
-  const [allPrices, allImages, activePromotions] = await Promise.all([
+  const [allPrices, allImages, activePromotions, allVariants] = await Promise.all([
     db
       .select()
       .from(productPrices)
@@ -379,7 +391,38 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
           gte(promotions.endsAt, now),
         ),
       ),
+    db
+      .select({
+        id: productVariants.id,
+        productId: productVariants.productId,
+        sku: productVariants.sku,
+        size: productVariants.size,
+        colorName: productVariants.colorName,
+        colorSwatch: productVariants.colorSwatch,
+        stock: productVariants.stock,
+      })
+      .from(productVariants)
+      .where(
+        and(
+          inArray(productVariants.productId, productIds),
+          eq(productVariants.isActive, true),
+        ),
+      ),
   ]);
+
+  const variantsByProduct = new Map<number, CartItemVariantOption[]>();
+  for (const v of allVariants) {
+    const list = variantsByProduct.get(v.productId) ?? [];
+    list.push({
+      id: v.id,
+      sku: v.sku,
+      size: v.size,
+      colorName: v.colorName,
+      colorSwatch: v.colorSwatch,
+      stock: v.stock,
+    });
+    variantsByProduct.set(v.productId, list);
+  }
 
   const pricesByProduct = new Map<number, (typeof allPrices)[number][]>();
   for (const p of allPrices) {
@@ -463,6 +506,7 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
       productId: product.id,
       productName: product.name,
       productSlug: product.slug,
+      shortDescription: product.shortDescription,
       isDemo: product.isDemo,
       categoryName: category.name,
       categorySlug: category.slug,
@@ -478,6 +522,7 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
       availabilityMessage,
       addedUnitPriceSnapshot: item.addedUnitPriceSnapshot,
       pricing,
+      availableVariants: variantsByProduct.get(product.id) ?? [],
     };
   });
 

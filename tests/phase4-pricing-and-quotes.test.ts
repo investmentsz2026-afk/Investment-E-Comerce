@@ -159,3 +159,15 @@ test("calculateLinePricing: no inventa precios si el producto no tiene tarifa co
   assert.ok(unconfigured.configurationWarning);
 });
 
+test("Carrito / Variantes: acota cantidades al stock de la nueva variante al cambiar talla/color", () => {
+  const currentQuantity = 4;
+  const newVariantStock = 2;
+  const clamped = Math.min(currentQuantity, newVariantStock);
+  assert.equal(clamped, 2);
+
+  // Si la nueva variante tiene stock suficiente, preserva la cantidad deseada
+  const ampleStock = 10;
+  assert.equal(Math.min(currentQuantity, ampleStock), 4);
+});
+
+

@@ -12,6 +12,7 @@ import {
   wholesaleQuotes,
   wholesaleQuoteItems,
   userAddresses,
+  physicalStores,
   auditLogs,
 } from "@/server/db/schema";
 import { getCurrentSession, requireAdmin } from "@/server/auth/session";
@@ -69,13 +70,15 @@ async function resolveBaseUrl(): Promise<string> {
 
 /**
  * Permite al formulario de `/checkout` consultar en tiempo real el costo de envío
- * y el total exacto calculado en el servidor al cambiar el departamento/provincia/distrito.
+ * y el total exacto calculado en el servidor al cambiar el departamento/provincia/distrito o la modalidad de entrega.
  */
 export async function quoteCheckoutShippingAction(input: {
   department: string;
   province?: string;
   district?: string;
   subtotalAfterDiscountCents: number;
+  deliveryMethod?: "delivery" | "express" | "store_pickup";
+  pickupStoreId?: number | null;
 }): Promise<
   ActionResult<{
     shipping: ShippingCalculationResult;
@@ -84,14 +87,30 @@ export async function quoteCheckoutShippingAction(input: {
     totalAmount: number;
   }>
 > {
-  const shipping = await calculateServerShipping(
-    {
-      department: input.department ?? "",
-      province: input.province ?? "",
-      district: input.district ?? "",
-    },
-    Math.max(0, Math.trunc(Number(input.subtotalAfterDiscountCents) || 0)),
-  );
+  let shipping: ShippingCalculationResult;
+
+  if (input.deliveryMethod === "store_pickup") {
+    shipping = {
+      isAvailable: true,
+      zoneCode: "RECOJO_TIENDA",
+      zoneName: "Recojo en Tienda Oficial American Colt",
+      shippingAmount: 0,
+      baseRateAmount: 0,
+      freeShippingMinSubtotal: null,
+      isFreeShippingApplied: true,
+      estimatedDaysLabel: "Disponible según horario de tienda",
+      unavailableReason: null,
+    };
+  } else {
+    shipping = await calculateServerShipping(
+      {
+        department: input.department ?? "",
+        province: input.province ?? "",
+        district: input.district ?? "",
+      },
+      Math.max(0, Math.trunc(Number(input.subtotalAfterDiscountCents) || 0)),
+    );
+  }
 
   const grandTotal =
     Math.max(0, Math.trunc(Number(input.subtotalAfterDiscountCents) || 0)) +
@@ -113,6 +132,8 @@ export interface PlaceCheckoutOrderInput {
   idempotencyKey: string;
   source: "cart" | "quote";
   quoteId?: number | null;
+  deliveryMethod?: "delivery" | "express" | "store_pickup";
+  pickupStoreId?: number | null;
   savedAddressId?: number | null;
   saveNewAddressToBook?: boolean;
   shippingRecipientName: string;
@@ -130,8 +151,39 @@ export interface PlaceCheckoutOrderInput {
   billingFiscalAddress?: string;
   paymentProvider: PaymentProviderName;
   paymentToken?: string;
+  paymentMethodBrand?: string;
   maskedCardLast4?: string;
+  paymentOperationCode?: string;
+  voucherImageUrl?: string;
   customerNotes?: string;
+}
+
+export interface PlaceCheckoutOrderResult {
+  orderId: number;
+  orderNumber: string;
+  orderStatus: string;
+  paymentStatus: string;
+  paymentMethodLabel?: string;
+  totalAmount?: number;
+  taxableBaseAmount?: number;
+  igvAmount?: number;
+  shippingAmount?: number;
+  subtotalAmount?: number;
+  deliveryMethod?: "delivery" | "express" | "store_pickup";
+  shippingRecipientName?: string;
+  shippingRecipientPhone?: string;
+  shippingDepartment?: string;
+  shippingProvince?: string;
+  shippingDistrict?: string;
+  shippingAddressLine1?: string;
+  shippingReference?: string | null;
+  taxDocumentType?: string;
+  billingDocType?: string;
+  billingDocNumber?: string;
+  billingCustomerName?: string;
+  providerTransactionId?: string | null;
+  checkoutRedirectUrl?: string | null;
+  paymentMessage?: string;
 }
 
 /**
@@ -150,14 +202,7 @@ export interface PlaceCheckoutOrderInput {
  */
 export async function placeCheckoutOrderAction(
   input: PlaceCheckoutOrderInput,
-): Promise<
-  ActionResult<{
-    orderId: number;
-    orderNumber: string;
-    orderStatus: string;
-    paymentStatus: string;
-  }>
-> {
+): Promise<ActionResult<PlaceCheckoutOrderResult>> {
   const { session, user } = await getCurrentSession();
   if (!session || !user) {
     return {
@@ -216,11 +261,32 @@ export async function placeCheckoutOrderAction(
         orderNumber: existing.orderNumber,
         orderStatus: existing.status,
         paymentStatus: existing.paymentStatus,
+        paymentMethodLabel: existing.paymentMethodLabel,
+        totalAmount: existing.totalAmount,
+        taxableBaseAmount: existing.taxableBaseAmount,
+        igvAmount: existing.igvAmount,
+        shippingAmount: existing.shippingAmount,
+        subtotalAmount: existing.subtotalAfterDiscountAmount,
+        deliveryMethod: input.deliveryMethod,
+        shippingRecipientName: existing.shippingRecipientName,
+        shippingRecipientPhone: existing.shippingRecipientPhone,
+        shippingDepartment: existing.shippingDepartment,
+        shippingProvince: existing.shippingProvince,
+        shippingDistrict: existing.shippingDistrict,
+        shippingAddressLine1: existing.shippingAddressLine1,
+        shippingReference: existing.shippingReference,
+        taxDocumentType: existing.taxDocumentType,
+        billingDocType: existing.billingDocType,
+        billingDocNumber: existing.billingDocNumber,
+        billingCustomerName: existing.billingCustomerName,
+        providerTransactionId: existing.paymentProviderReference,
+        paymentMessage: "Pedido existente recuperado por clave de idempotencia.",
       },
     };
   }
 
   // 2. Resolver y validar dirección de entrega peruana
+  const isStorePickup = input.deliveryMethod === "store_pickup";
   let recipientName = (input.shippingRecipientName ?? "").trim();
   let recipientPhone = (input.shippingRecipientPhone ?? "").trim();
   let department = (input.shippingDepartment ?? "").trim();
@@ -229,8 +295,44 @@ export async function placeCheckoutOrderAction(
   let addressLine1 = (input.shippingAddressLine1 ?? "").trim();
   let addressLine2 = (input.shippingAddressLine2 ?? "").trim();
   let reference = (input.shippingReference ?? "").trim();
+  let pickupStore: typeof physicalStores.$inferSelect | null = null;
 
-  if (input.savedAddressId && Number.isInteger(Number(input.savedAddressId)) && Number(input.savedAddressId) > 0) {
+  if (isStorePickup) {
+    if (!recipientName || recipientName.length < 3) {
+      return { success: false, error: "Ingresa el nombre de la persona que recogerá el pedido en tienda." };
+    }
+    const phoneCheck = validatePhone(recipientPhone, true);
+    if (!phoneCheck.valid) {
+      return { success: false, error: phoneCheck.error };
+    }
+
+    if (input.pickupStoreId && Number(input.pickupStoreId) > 0) {
+      const storesFound = await db
+        .select()
+        .from(physicalStores)
+        .where(eq(physicalStores.id, Number(input.pickupStoreId)))
+        .limit(1);
+      pickupStore = storesFound[0] ?? null;
+    }
+    if (!pickupStore) {
+      const allActive = await db
+        .select()
+        .from(physicalStores)
+        .where(eq(physicalStores.isActive, true))
+        .limit(1);
+      pickupStore = allActive[0] ?? null;
+    }
+
+    if (!pickupStore) {
+      return { success: false, error: "No hay tiendas oficiales disponibles para recojo en este momento." };
+    }
+
+    department = pickupStore.department;
+    province = pickupStore.province;
+    district = pickupStore.district;
+    addressLine1 = `Recojo en Tienda: ${pickupStore.name} — ${pickupStore.address}`;
+    reference = pickupStore.reference ?? pickupStore.openingHours;
+  } else if (input.savedAddressId && Number.isInteger(Number(input.savedAddressId)) && Number(input.savedAddressId) > 0) {
     const addrRows = await db
       .select()
       .from(userAddresses)
@@ -474,10 +576,22 @@ export async function placeCheckoutOrderAction(
   }
 
   // 5. Calcular y validar tarifa de envío en el servidor
-  const shippingCalc = await calculateServerShipping(
-    { department, province, district },
-    subtotalAfterDiscountAmount,
-  );
+  const shippingCalc = isStorePickup
+    ? {
+        isAvailable: true,
+        zoneCode: "RECOJO_TIENDA",
+        zoneName: `Recojo en Tienda Oficial American Colt (${pickupStore?.name ?? "Principal"})`,
+        shippingAmount: 0,
+        baseRateAmount: 0,
+        freeShippingMinSubtotal: null,
+        isFreeShippingApplied: true,
+        estimatedDaysLabel: "Disponible según horario de tienda",
+        unavailableReason: null,
+      }
+    : await calculateServerShipping(
+        { department, province, district },
+        subtotalAfterDiscountAmount,
+      );
 
   if (!shippingCalc.isAvailable) {
     return {
@@ -521,7 +635,10 @@ export async function placeCheckoutOrderAction(
         status: "pending_payment",
         paymentStatus: "pending",
         paymentProvider,
-        paymentMethodLabel: paymentMethodLabels[paymentProvider],
+        paymentMethodLabel: input.paymentMethodBrand
+          ? `${paymentMethodLabels[paymentProvider]} (${input.paymentMethodBrand})`
+          : paymentMethodLabels[paymentProvider],
+        paymentProviderReference: input.paymentOperationCode?.trim().slice(0, 160) || null,
         currency: "PEN",
         customerEmailSnapshot: user.email,
         customerFirstNameSnapshot: user.firstName,
@@ -552,7 +669,11 @@ export async function placeCheckoutOrderAction(
         taxableBaseAmount: taxBreakdown.taxableBaseAmount,
         igvAmount: taxBreakdown.igvAmount,
         totalAmount: taxBreakdown.totalAmount,
-        customerNotes: input.customerNotes?.trim() ? input.customerNotes.trim().slice(0, 1500) : null,
+        customerNotes: [
+          input.customerNotes?.trim(),
+          input.paymentOperationCode ? `N° Operación: ${input.paymentOperationCode.trim()}` : null,
+          input.voucherImageUrl ? `Comprobante Voucher: Adjuntado por cliente` : null,
+        ].filter(Boolean).join(" | ").slice(0, 1500) || null,
         reservationExpiresAt,
         createdAt: now,
         updatedAt: now,
@@ -663,6 +784,7 @@ export async function placeCheckoutOrderAction(
     provider: paymentProvider,
     idempotencyKey: `pay:${idempotencyKey}`,
     paymentToken: input.paymentToken,
+    paymentMethodBrand: input.paymentMethodBrand,
     maskedCardLast4: input.maskedCardLast4,
     actorId: user.id,
     baseUrl,
@@ -697,6 +819,27 @@ export async function placeCheckoutOrderAction(
       orderNumber: createdOrder.orderNumber,
       orderStatus: paymentRes.orderStatus,
       paymentStatus: paymentRes.paymentStatus,
+      paymentMethodLabel: createdOrder.paymentMethodLabel,
+      totalAmount: createdOrder.totalAmount,
+      taxableBaseAmount: createdOrder.taxableBaseAmount,
+      igvAmount: createdOrder.igvAmount,
+      shippingAmount: createdOrder.shippingAmount,
+      subtotalAmount: createdOrder.subtotalAfterDiscountAmount,
+      deliveryMethod: input.deliveryMethod,
+      shippingRecipientName: createdOrder.shippingRecipientName,
+      shippingRecipientPhone: createdOrder.shippingRecipientPhone,
+      shippingDepartment: createdOrder.shippingDepartment,
+      shippingProvince: createdOrder.shippingProvince,
+      shippingDistrict: createdOrder.shippingDistrict,
+      shippingAddressLine1: createdOrder.shippingAddressLine1,
+      shippingReference: createdOrder.shippingReference,
+      taxDocumentType: createdOrder.taxDocumentType,
+      billingDocType: createdOrder.billingDocType,
+      billingDocNumber: createdOrder.billingDocNumber,
+      billingCustomerName: createdOrder.billingCustomerName,
+      providerTransactionId: paymentRes.providerTransactionId,
+      checkoutRedirectUrl: paymentRes.checkoutRedirectUrl,
+      paymentMessage: paymentRes.message,
     },
   };
 }

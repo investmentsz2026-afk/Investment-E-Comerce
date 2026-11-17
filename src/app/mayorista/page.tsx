@@ -9,8 +9,8 @@ import {
   Truck,
   CheckCircle2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
+import { FaBoxesStacked } from "react-icons/fa6";
 import { getProducts } from "@/server/queries/products";
 import { ProductCard } from "@/components/product/product-card";
 
@@ -134,7 +134,7 @@ export default async function MayoristaPage() {
         <div className="border border-ink/15 bg-ink p-8 text-paper sm:p-14 lg:p-20">
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 border border-paper/20 bg-paper/10 px-3.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-cochinilla-bright">
-              <Sparkles className="size-3.5" aria-hidden />
+              <FaBoxesStacked className="size-3.5" aria-hidden />
               Canal Mayorista & Distribución B2B
             </span>
             <h1 className="mt-5 font-display text-display-md text-paper sm:text-display-lg leading-tight">

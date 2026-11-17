@@ -8,27 +8,27 @@
    ========================================================================== */
 
 @theme {
-  /* Neutros cálidos */
-  --color-ink: #0d0c0b;
-  --color-ink-soft: #171513;
-  --color-ink-muted: #24211e;
-  --color-paper: #f8f6f1;
-  --color-bone: #f1ece3;
-  --color-sand: #e6dfd3;
+  /* Paleta Reluciente American Colt JEANS™: Blanco Puro + Azul Eléctrico Real + Rojo Oficial */
+  --color-ink: #0f172a;
+  --color-ink-soft: #1d4ed8;
+  --color-ink-muted: #2563eb;
+  --color-paper: #ffffff;
+  --color-bone: #f0f6ff;
+  --color-sand: #e0ecff;
 
-  /* Grises elegantes (taupe cálido) */
-  --color-taupe-100: #ece7de;
-  --color-taupe-200: #d9d2c6;
-  --color-taupe-300: #bdb5a8;
-  --color-taupe-400: #958d81;
-  --color-taupe-500: #706a61;
-  --color-taupe-600: #514c45;
-  --color-taupe-700: #36322d;
+  /* Grises azulados luminosos */
+  --color-taupe-100: #f1f5f9;
+  --color-taupe-200: #e2e8f0;
+  --color-taupe-300: #cbd5e1;
+  --color-taupe-400: #64748b;
+  --color-taupe-500: #475569;
+  --color-taupe-600: #334155;
+  --color-taupe-700: #1e293b;
 
-  /* Acento de marca */
-  --color-cochinilla: #8f1d2c;
-  --color-cochinilla-deep: #6e1421;
-  --color-cochinilla-bright: #c23b4c;
+  /* Rojo Oficial Reluciente American Colt JEANS™ */
+  --color-cochinilla: #b91c24;
+  --color-cochinilla-deep: #91151b;
+  --color-cochinilla-bright: #ef233c;
 
   /* Escala tipográfica editorial (fluida) */
   --text-display-2xl: clamp(3.6rem, 9.6vw, 11rem);

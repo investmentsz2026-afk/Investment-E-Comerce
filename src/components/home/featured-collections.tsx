@@ -1,123 +1,172 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { demoCollections } from "@/data/demo/collections";
-import type { Collection } from "@/types/catalog";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { Button } from "@/components/ui/button";
-import { ParallaxImage } from "@/components/motion/parallax-image";
-import { Reveal } from "@/components/motion/reveal";
-import { cn } from "@/lib/utils";
-
-/** Composición editorial asimétrica en escritorio; carrusel con snap en móvil. */
-const layout = [
-  "lg:col-span-7 lg:aspect-[5/4]",
-  "lg:col-span-5 lg:aspect-[4/5] lg:-mt-10",
-  "lg:col-span-5 lg:aspect-[4/5]",
-  "lg:col-span-7 lg:aspect-[5/4] lg:-mt-10",
-] as const;
+import { ArrowRight, ArrowUpRight, Layers } from "lucide-react";
+import { InfiniteCardSlider } from "@/components/ui/infinite-card-slider";
 
 const categoryLinks = [
-  { label: "Polos", slug: "polos" },
-  { label: "Camisas", slug: "camisas" },
-  { label: "Blusas", slug: "blusas" },
-  { label: "Pantalones", slug: "pantalones" },
-  { label: "Casacas", slug: "casacas" },
-  { label: "Blazers", slug: "blazers" },
-  { label: "Vestidos", slug: "vestidos" },
-  { label: "Denim", slug: "denim" },
-  { label: "Tejidos de punto", slug: "tejidos-de-punto" },
+  { label: "Jeans Denim", href: "/catalogo/denim?audiencia=hombre" },
+  { label: "Pantalones Drill", href: "/catalogo/pantalones?audiencia=hombre" },
+  { label: "Bermuda Balance 770", href: "/producto/bermuda-drill-balance-770" },
+  { label: "Camisas Zair & Kendall", href: "/catalogo/camisas?audiencia=hombre" },
+  { label: "Polos Piqué Mark", href: "/catalogo/polos?audiencia=hombre" },
+  { label: "Ventas por Mayor B2B", href: "/mayorista" },
 ] as const;
 
-/** Mapa de colección demo → slug de categoría para enlazar. */
-const collectionSlugMap: Record<string, string> = {
-  "col-sastreria": "sastreria",
-  "col-esenciales": "polos",
-  "col-denim": "denim",
-  "col-punto": "tejidos-de-punto",
-};
+const COLLECTIONS_SLIDER = [
+  {
+    id: "col-denim",
+    name: "Jeans & Denim 2026",
+    description: "Relaxed 750, Comfort 762, Bull Denim 750 y Parker 769.",
+    href: "/catalogo/denim?audiencia=hombre",
+    tag: "COLECCIÓN ESTRELLA",
+    imageSrc: "/catalogo-colt/jean-comfort-762-model.png",
+    hoverImageSrc: "/catalogo-colt/jean-comfort-762-closeup.png",
+  },
+  {
+    id: "col-drill-premium",
+    name: "Línea Drill Premium",
+    description: "Pantalones King 767, Fendy 769 y Rolex 770 en tela Stretch.",
+    href: "/catalogo/pantalones?audiencia=hombre",
+    tag: "DRILL STRETCH",
+    imageSrc: "/catalogo-colt/pantalon-king-767-model.png",
+    hoverImageSrc: "/catalogo-colt/pantalon-king-767-closeup.png",
+  },
+  {
+    id: "col-camisas-hombre",
+    name: "Camisas Zair & Kendall",
+    description: "Camisas Denim Zair y Camisa Clásica Kendall Slim Fit.",
+    href: "/catalogo/camisas?audiencia=hombre",
+    tag: "SLIM FIT",
+    imageSrc: "/catalogo-colt/camisa-zair-model.png",
+    hoverImageSrc: "/catalogo-colt/camisa-zair-closeup.png",
+  },
+  {
+    id: "col-polos-pima",
+    name: "Polos Piqué Mark",
+    description: "Polos clásicos cuello camisero en 100% algodón peruano.",
+    href: "/catalogo/polos?audiencia=hombre",
+    tag: "10 COLORES",
+    imageSrc: "/catalogo-colt/polo-mark-model.png",
+    hoverImageSrc: "/catalogo-colt/polo-mark-closeup.png",
+  },
+  {
+    id: "col-bermudas",
+    name: "Bermuda Balance 770",
+    description: "Entalle recto Straight Fit en tela Drill Stretch fresca.",
+    href: "/producto/bermuda-drill-balance-770",
+    tag: "TEMPORADA",
+    imageSrc: "/catalogo-colt/bermuda-balance-770-model.png",
+    hoverImageSrc: "/catalogo-colt/bermuda-balance-770-closeup.png",
+  },
+  {
+    id: "col-linea-clasica",
+    name: "Jean Bull Denim 750",
+    description: "Calce tradicional en tela rígida hasta la talla 46.",
+    href: "/producto/jean-bull-denim-750",
+    tag: "LÍNEA CLÁSICA",
+    imageSrc: "/catalogo-colt/jean-bull-denim-750-model.png",
+    hoverImageSrc: "/catalogo-colt/jean-bull-denim-750-closeup.png",
+  },
+] as const;
 
 export function FeaturedCollections() {
   return (
-    <section id="colecciones" aria-labelledby="colecciones-title" className="overflow-hidden bg-bone py-24 lg:py-36">
+    <section id="colecciones" aria-labelledby="colecciones-title" className="overflow-hidden bg-paper py-10 lg:py-14">
       <div className="shell">
-        <SectionHeading
-          id="colecciones-title"
-          index="02"
-          label="Colecciones"
-          title={["Colecciones con", <em key="c">carácter.</em>]}
-          description="Cada colección nace de una idea: piezas que se combinan entre sí y acompañan distintos momentos de tu semana."
-          aside={
-            <Button href="/catalogo" variant="outline" className="self-start" icon={<ArrowUpRight className="size-4" />}>
-              Ver todas
-            </Button>
-          }
-        />
-      </div>
+        <div className="flex flex-col items-center text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0055FF] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
+            <Layers className="size-3.5 text-amber-300" aria-hidden />
+            <span>CATÁLOGO OFICIAL AMERICAN COLT JEANS™</span>
+          </span>
+          <h2
+            id="colecciones-title"
+            className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl"
+          >
+            ¡DESCUBRE NUESTRAS <span className="text-[#0055FF]">COLECCIONES!</span>
+          </h2>
+        </div>
 
-      <div className="shell mt-14 lg:mt-20">
-        <ul className="no-scrollbar -mx-[clamp(1.25rem,4vw,3.5rem)] flex snap-x snap-mandatory gap-4 overflow-x-auto px-[clamp(1.25rem,4vw,3.5rem)] lg:mx-0 lg:grid lg:grid-cols-12 lg:gap-x-6 lg:gap-y-0 lg:overflow-visible lg:px-0">
-          {demoCollections.map((collection, i) => (
-            <li key={collection.id} className={cn("aspect-[3/4] w-[78vw] shrink-0 snap-start sm:w-[46vw] lg:w-auto", layout[i])}>
-              <Reveal y={50} delay={(i % 2) * 0.1} className="h-full">
-                <CollectionCard collection={collection} index={i + 1} slug={collectionSlugMap[collection.id] ?? "sastreria"} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {/* Carrusel 1x1 de Colecciones con cambio de Modelo -> Solo Prenda al pasar el mouse */}
+        <div className="mt-5 px-2 sm:px-5">
+          <InfiniteCardSlider
+            items={COLLECTIONS_SLIDER}
+            desktopCols={4}
+            autoPlayMs={3500}
+            keyExtractor={(item) => item.id}
+            renderItem={(col) => (
+              <Link
+                href={col.href}
+                aria-label={`${col.name}: ${col.description}`}
+                className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl bg-slate-100 text-left text-paper shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
+              >
+                <Image
+                  src={col.imageSrc}
+                  alt={col.name}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0"
+                />
+                <Image
+                  src={col.hoverImageSrc}
+                  alt={`Vista cercana de ${col.name}`}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  className="scale-105 object-cover opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100"
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-[#0055FF]/90 via-slate-950/20 to-transparent"
+                />
 
-      <div className="shell mt-16 lg:mt-28">
-        <Reveal className="flex flex-col gap-5 border-t border-ink/10 pt-8 lg:flex-row lg:items-center lg:gap-10">
-          <p className="eyebrow shrink-0 text-taupe-500">Comprar por categoría</p>
-          <ul className="no-scrollbar -mx-[clamp(1.25rem,4vw,3.5rem)] flex gap-2 overflow-x-auto px-[clamp(1.25rem,4vw,3.5rem)] lg:mx-0 lg:flex-wrap lg:px-0">
-            {categoryLinks.map((cat) => (
-              <li key={cat.slug} className="shrink-0">
-                <Link
-                  href={`/catalogo/${cat.slug}`}
-                  className="rounded-full border border-ink/15 px-5 py-2.5 text-sm text-ink/80 transition-[background-color,color,border-color] duration-300 hover:border-ink hover:bg-ink hover:text-paper"
-                >
-                  {cat.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+                <span className="absolute left-3.5 top-3.5 rounded-full bg-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-widest text-paper shadow-md">
+                  {col.tag}
+                </span>
+
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
+                  <span className="min-w-0">
+                    <span className="block font-sans text-lg font-black uppercase leading-tight tracking-tight text-paper drop-shadow-xs">
+                      {col.name}
+                    </span>
+                    <span className="mt-1 block line-clamp-2 text-xs leading-relaxed text-white/90">
+                      {col.description}
+                    </span>
+                    <span className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 font-mono text-[0.63rem] font-extrabold uppercase tracking-wider text-amber-300 backdrop-blur-xs">
+                      Explorar Línea
+                    </span>
+                  </span>
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-paper text-[#0055FF] shadow-md transition-all duration-300 group-hover:bg-[#EF233C] group-hover:text-paper">
+                    <ArrowUpRight className="size-4" aria-hidden />
+                  </span>
+                </span>
+              </Link>
+            )}
+          />
+        </div>
+
+        {/* Botones rápidos de nuestras categorías reales */}
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-bone p-4 shadow-xs">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <p className="font-mono text-xs font-extrabold uppercase tracking-wider text-[#0055FF] shrink-0">
+              Ir directo a categoría:
+            </p>
+            <ul className="flex flex-wrap gap-2">
+              {categoryLinks.map((cat) => (
+                <li key={cat.label}>
+                  <Link
+                    href={cat.href}
+                    className="inline-flex items-center gap-1 rounded-xl border border-blue-200 bg-paper px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0055FF] shadow-2xs transition-all hover:border-cochinilla hover:bg-cochinilla hover:text-paper"
+                  >
+                    <span>{cat.label}</span>
+                    <ArrowRight className="size-3" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-function CollectionCard({ collection, index, slug }: { collection: Collection; index: number; slug: string }) {
-  return (
-    <Link
-      href={`/catalogo/${slug}`}
-      aria-label={`${collection.name}: ${collection.description}`}
-      className="group/col relative block h-full w-full overflow-hidden bg-taupe-200 text-left text-paper"
-    >
-      <ParallaxImage
-        image={collection.image}
-        sizes="(min-width: 1024px) 50vw, 80vw"
-        strength={7}
-        className="absolute inset-0"
-        imageClassName="transition-transform duration-[1.6s] ease-luxe group-hover/col:scale-[1.05]"
-      />
-      <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent transition-opacity duration-700 group-hover/col:opacity-90" />
-
-      <span className="absolute left-5 top-5 font-mono text-[0.65rem] tracking-[0.2em] text-paper/80 lg:left-7 lg:top-7">
-        N°{String(index).padStart(2, "0")}
-      </span>
-
-      <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-5 lg:p-7">
-        <span className="min-w-0">
-          <span className="block font-display text-[2rem] leading-none lg:text-display-sm">{collection.name}</span>
-          <span className="mt-3 block max-w-xs text-xs leading-relaxed text-paper/75 lg:text-sm">{collection.description}</span>
-        </span>
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-paper/40 transition-[transform,background-color,color] duration-500 ease-luxe group-hover/col:rotate-45 group-hover/col:bg-paper group-hover/col:text-ink">
-          <ArrowUpRight className="size-4" aria-hidden />
-        </span>
-      </span>
-    </Link>
   );
 }

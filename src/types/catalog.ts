@@ -19,7 +19,23 @@ export type Audience = "mujer" | "hombre" | "unisex";
 
 export type ProductBadge = "nuevo" | "edicion-limitada" | "mayorista" | "esencial";
 
-export type SizeCode = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "28" | "30" | "32" | "34" | "36";
+export type SizeCode =
+  | "XS"
+  | "S"
+  | "M"
+  | "L"
+  | "XL"
+  | "XXL"
+  | "28"
+  | "30"
+  | "32"
+  | "34"
+  | "36"
+  | "38"
+  | "40"
+  | "42"
+  | "44"
+  | "46";
 
 export interface ProductColor {
   name: string;
@@ -49,6 +65,8 @@ export interface Product {
   sizes: readonly SizeCode[];
   badge?: ProductBadge;
   image: ImageAsset;
+  /** Segunda imagen (vista cercana solo de la prenda) que aparece al pasar el cursor. */
+  hoverImage?: ImageAsset;
   wholesale?: WholesaleTier;
   /** True cuando no queda stock en ninguna variante activa. */
   soldOut?: boolean;
