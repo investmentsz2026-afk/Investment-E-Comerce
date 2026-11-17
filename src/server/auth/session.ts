@@ -240,7 +240,7 @@ export async function requireRole(
 export async function requireAdmin(): Promise<{ session: AuthSession; user: AuthUser }> {
   const { session, user } = await getCurrentSession();
   if (!session || !user) {
-    redirect("/iniciar-sesion?next=/admin/solicitudes");
+    redirect("/iniciar-sesion?next=/admin");
   }
   if (user.role !== "admin") {
     redirect("/cuenta?error=acceso-denegado");

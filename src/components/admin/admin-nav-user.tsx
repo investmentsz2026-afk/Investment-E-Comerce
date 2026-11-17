@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MoreVertical, User, ShoppingBag, ShieldCheck, LogOut, CheckCircle2 } from "lucide-react";
+import { MoreVertical, User, ShoppingBag, ShieldCheck, LogOut, CheckCircle2, Home } from "lucide-react";
 import { logoutAction } from "@/server/actions/auth";
 
 interface AdminNavUserProps {
@@ -126,6 +126,16 @@ export function AdminNavUser({ user }: AdminNavUserProps) {
 
           {/* Opciones */}
           <div className="py-1">
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              role="menuitem"
+              className="flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 transition-colors hover:bg-ink/5 hover:text-ink"
+            >
+              <Home className="size-3.5 text-taupe-500" aria-hidden />
+              <span>Inicio del panel</span>
+            </Link>
+
             <Link
               href="/cuenta"
               onClick={() => setOpen(false)}

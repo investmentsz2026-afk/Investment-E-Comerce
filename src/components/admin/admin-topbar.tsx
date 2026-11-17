@@ -13,6 +13,7 @@ import {
   LogOut,
   CheckCircle2,
   Lock,
+  Home,
 } from "lucide-react";
 import { logoutAction } from "@/server/actions/auth";
 
@@ -147,6 +148,15 @@ export function AdminTopbar({ user }: AdminTopbarProps) {
 
               {/* Opciones */}
               <div className="py-1">
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                >
+                  <Home className="size-4 text-neutral-400" />
+                  <span>Inicio del panel</span>
+                </Link>
+
                 <Link
                   href="/cuenta"
                   onClick={() => setMenuOpen(false)}

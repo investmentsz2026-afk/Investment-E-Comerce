@@ -220,7 +220,7 @@ export async function loginAction(
   if (nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")) {
     targetRedirect = nextParam;
   } else if (user.role === "admin") {
-    targetRedirect = "/admin/solicitudes";
+    targetRedirect = "/admin";
   } else if (user.role === "business_approved" || user.role === "business_pending") {
     targetRedirect = "/cuenta";
   }

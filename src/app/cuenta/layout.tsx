@@ -91,7 +91,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
             <div className="flex items-center gap-3 shrink-0">
               {user.role === "admin" && (
                 <Link
-                  href="/admin/solicitudes"
+                  href="/admin"
                   className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#EF233C] hover:bg-red-100 transition-colors"
                 >
                   <FaShieldHalved className="size-3" aria-hidden />
