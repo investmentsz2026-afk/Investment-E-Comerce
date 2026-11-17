@@ -14,7 +14,6 @@ interface CheckoutPaymentProcessingProps {
 
 export function CheckoutPaymentProcessing({
   isOpen,
-  paymentMethod,
   cardBrand = "Visa",
   maskedLast4 = "••••",
   onAnimationComplete,
@@ -22,10 +21,11 @@ export function CheckoutPaymentProcessing({
   const [phase, setPhase] = useState<1 | 2 | 3 | 4>(1);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen) return;
+
+    const t0 = setTimeout(() => {
       setPhase(1);
-      return;
-    }
+    }, 0);
 
     // Fase 1: Cifrado SSL 256-Bit (0 a 600ms)
     const t1 = setTimeout(() => {
@@ -46,6 +46,7 @@ export function CheckoutPaymentProcessing({
     }, 2100);
 
     return () => {
+      clearTimeout(t0);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);

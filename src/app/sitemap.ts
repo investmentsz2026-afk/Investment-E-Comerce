@@ -9,6 +9,11 @@ import { getSitemapCategorySlugs, getSitemapProducts } from "@/server/queries/pr
  * - Los productos con is_demo = true se excluyen: no deben indexarse públicamente.
  * - Si la base de datos no responde, devuelve solo las rutas estáticas (no rompe el sitemap).
  */
+async function getCachedSitemapData() {
+  "use cache";
+  return Promise.all([getSitemapCategorySlugs(), getSitemapProducts()]);
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
 
@@ -18,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const [categorySlugs, products] = await Promise.all([getSitemapCategorySlugs(), getSitemapProducts()]);
+    const [categorySlugs, products] = await getCachedSitemapData();
 
     for (const slug of categorySlugs) {
       entries.push({ url: `${base}/catalogo/${slug}`, changeFrequency: "weekly", priority: 0.8 });
