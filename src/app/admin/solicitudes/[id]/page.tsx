@@ -4,10 +4,17 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/server/auth/session";
 import { getAdminApplicationById } from "@/server/queries/admin";
 import { ReviewActionForm } from "@/components/admin/review-action-form";
-import { Building2, User, ArrowLeft } from "lucide-react";
+import {
+  Building2,
+  User,
+  ArrowLeft,
+  Sparkles,
+  CheckCircle2,
+  MapPin,
+} from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Detalle de Solicitud Comercial | Admin INVESTMENTS",
+  title: "Detalle de Solicitud Comercial | Admin American Colt",
   robots: { index: false, follow: false },
 };
 
@@ -17,7 +24,9 @@ interface DetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function AdminApplicationDetailPage({ params }: DetailPageProps) {
+export default async function AdminApplicationDetailPage({
+  params,
+}: DetailPageProps) {
   await requireAdmin();
   const { id } = await params;
   const appId = parseInt(id, 10);
@@ -27,191 +36,260 @@ export default async function AdminApplicationDetailPage({ params }: DetailPageP
   if (!app) notFound();
 
   const badgeStyles: Record<string, string> = {
-    pending: "bg-amber-100 text-amber-900 border-amber-300",
-    under_review: "bg-blue-100 text-blue-900 border-blue-300",
-    approved: "bg-emerald-100 text-emerald-900 border-emerald-300",
-    rejected: "bg-cochinilla/10 text-cochinilla border-cochinilla/30",
-    suspended: "bg-rose-100 text-rose-900 border-rose-300",
+    pending: "border-amber-300 bg-amber-50 text-amber-950",
+    under_review: "border-blue-300 bg-blue-50 text-blue-950",
+    approved: "border-emerald-300 bg-emerald-50 text-emerald-950",
+    rejected: "border-red-300 bg-red-50 text-red-950",
+    suspended: "border-rose-300 bg-rose-100 text-rose-950",
   };
 
   const statusLabels: Record<string, string> = {
-    pending: "Pendiente de revisión",
-    under_review: "En evaluación comercial",
+    pending: "Pendiente de Revisión",
+    under_review: "En Evaluación Comercial",
     approved: "Empresa Aprobada",
     rejected: "Solicitud Rechazada",
     suspended: "Acceso Suspendido",
   };
 
   return (
-    <div className="py-8 sm:py-10">
-      <div className="shell max-w-4xl space-y-8">
-        {/* Enlace de regreso */}
-        <div>
-          <Link
-            href="/admin/solicitudes"
-            className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.14em] text-taupe-600 hover:text-ink"
-          >
-            <ArrowLeft className="size-3.5" aria-hidden />
-            Volver a la lista de solicitudes
-          </Link>
-        </div>
+    <div className="space-y-6 font-sans">
+      <div>
+        <Link
+          href="/admin/solicitudes"
+          className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-extrabold uppercase tracking-wider text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-[#DC2626]/40 hover:text-[#DC2626]"
+        >
+          <ArrowLeft className="size-4" aria-hidden />
+          Volver a la lista de solicitudes
+        </Link>
+      </div>
 
-        {/* Cabecera del expediente */}
-        <div className="border-b border-ink/10 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs text-taupe-400">Expediente #{app.id}</span>
+      {/* CABECERA HERO 3D DEL EXPEDIENTE B2B */}
+      <header className="relative overflow-hidden rounded-3xl border border-red-900/20 bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] p-6 text-white shadow-[0_20px_48px_-14px_rgba(220,38,38,0.42)] sm:p-8">
+        <div className="pointer-events-none absolute -right-10 -top-10 size-56 rounded-full bg-white/15 blur-3xl" />
+
+        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.16em] backdrop-blur-md">
+                <Sparkles className="size-3.5" />
+                Expediente B2B #{app.id}
+              </span>
               <span
-                className={`inline-flex items-center rounded-full border px-3 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider ${
-                  badgeStyles[app.status] ?? "bg-taupe-100"
+                className={`inline-flex items-center rounded-full border px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-wider ${
+                  badgeStyles[app.status] ?? "bg-white text-slate-900"
                 }`}
               >
                 {statusLabels[app.status] ?? app.status}
               </span>
             </div>
-            <h1 className="mt-2 font-display text-display-md text-ink">{app.legalName}</h1>
-            <p className="mt-1 text-xs text-taupe-500">
-              Nombre comercial: <strong className="text-ink">{app.tradeName}</strong> · RUC:{" "}
-              <strong className="text-ink font-mono">{app.taxId}</strong>
+
+            <h1 className="font-sans text-3xl font-black tracking-tight sm:text-4xl">
+              {app.legalName}
+            </h1>
+
+            <p className="text-xs font-semibold text-white/90">
+              Nombre comercial:{" "}
+              <strong className="font-extrabold text-white">
+                {app.tradeName}
+              </strong>{" "}
+              · RUC: <strong className="font-black text-white">{app.taxId}</strong>
             </p>
           </div>
 
-          <div className="text-xs text-taupe-500 font-mono text-right">
-            <p>
-              Presentada:{" "}
+          <div className="rounded-2xl border border-white/25 bg-white/95 px-5 py-4 text-right text-slate-900 shadow-lg">
+            <span className="block text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-500">
+              Fecha de Presentación
+            </span>
+            <span className="mt-0.5 block text-lg font-black text-slate-900">
               {new Date(app.createdAt).toLocaleDateString("es-PE", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
               })}
-            </p>
+            </span>
             {app.reviewedAt && (
-              <p className="mt-0.5 text-emerald-800">
-                Última revisión:{" "}
+              <span className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
+                <CheckCircle2 className="size-3.5" />
+                Revisado:{" "}
                 {new Date(app.reviewedAt).toLocaleDateString("es-PE", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
                 })}
+              </span>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Expediente: Datos de la Empresa y Representante */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Tarjeta Empresa */}
+        <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-[0_14px_34px_-16px_rgba(15,23,42,0.16)]">
+          <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#DC2626]">
+              <Building2 className="size-4" aria-hidden />
+            </span>
+            <h2 className="text-sm font-black uppercase tracking-wider text-slate-900">
+              Datos de la Empresa
+            </h2>
+          </div>
+
+          <div className="space-y-3 text-xs leading-relaxed">
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                Razón Social
               </p>
+              <p className="text-sm font-extrabold text-slate-900">
+                {app.legalName}
+              </p>
+            </div>
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                Nombre Comercial
+              </p>
+              <p className="font-bold text-slate-800">{app.tradeName}</p>
+            </div>
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                RUC (Formato Validado)
+              </p>
+              <p className="text-sm font-black text-slate-900">{app.taxId}</p>
+              <p className="mt-0.5 text-[0.68rem] font-medium text-slate-500">
+                Verificar condición Activo/Habido en consulta oficial SUNAT
+                antes de aprobar.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                  Tipo de Negocio
+                </p>
+                <p className="font-bold text-slate-900">{app.businessType}</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                  Volumen Mensual
+                </p>
+                <p className="font-extrabold text-[#991B1B]">
+                  {app.estimatedVolume}
+                </p>
+              </div>
+            </div>
+            <div>
+              <p className="flex items-center gap-1 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                <MapPin className="size-3 text-[#DC2626]" />
+                Domicilio Comercial
+              </p>
+              <p className="mt-0.5 font-bold text-slate-900">
+                {app.addressLine}
+              </p>
+              <p className="font-medium text-slate-500">
+                {app.district}, {app.province}, {app.department}
+              </p>
+            </div>
+            {app.additionalNotes && (
+              <div>
+                <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                  Notas del cliente
+                </p>
+                <p className="mt-1 rounded-2xl border border-slate-200 bg-slate-50 p-3 font-medium italic text-slate-700">
+                  &ldquo;{app.additionalNotes}&rdquo;
+                </p>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Expediente: Datos de la Empresa y Representante */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Tarjeta Empresa */}
-          <div className="border border-ink/10 bg-paper p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-ink/10 pb-2.5">
-              <Building2 className="size-4 text-taupe-500" aria-hidden />
-              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-                Datos de la Empresa
-              </h2>
-            </div>
-
-            <div className="space-y-3 text-xs leading-relaxed">
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Razón Social</p>
-                <p className="font-medium text-ink text-sm">{app.legalName}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Nombre Comercial</p>
-                <p className="font-medium text-ink">{app.tradeName}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">RUC (Formato Validado)</p>
-                <p className="font-mono text-ink text-sm">{app.taxId}</p>
-                <p className="mt-0.5 text-[0.65rem] text-taupe-500">
-                  Formato de 11 dígitos validado en sistema · Verificar condición Activo/Habido en consulta oficial SUNAT antes de aprobar.
-                </p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Tipo de Negocio</p>
-                <p className="text-ink">{app.businessType}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Volumen Mensual Estimado</p>
-                <p className="font-semibold text-ink">{app.estimatedVolume}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Domicilio Comercial</p>
-                <p className="text-ink">{app.addressLine}</p>
-                <p className="text-taupe-500">
-                  {app.district}, {app.province}, {app.department}
-                </p>
-              </div>
-              {app.additionalNotes && (
-                <div>
-                  <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Notas adicionales del cliente</p>
-                  <p className="italic text-taupe-700 bg-ink/[0.02] p-2 border border-ink/5 mt-1">
-                    &ldquo;{app.additionalNotes}&rdquo;
-                  </p>
-                </div>
-              )}
-            </div>
+        {/* Tarjeta Contacto y Usuario */}
+        <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-[0_14px_34px_-16px_rgba(15,23,42,0.16)]">
+          <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+              <User className="size-4" aria-hidden />
+            </span>
+            <h2 className="text-sm font-black uppercase tracking-wider text-slate-900">
+              Representante y Cuenta de Usuario
+            </h2>
           </div>
 
-          {/* Tarjeta Contacto y Usuario */}
-          <div className="border border-ink/10 bg-paper p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-ink/10 pb-2.5">
-              <User className="size-4 text-taupe-500" aria-hidden />
-              <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
-                Representante y Cuenta de Usuario
-              </h2>
+          <div className="space-y-3 text-xs leading-relaxed">
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                Contacto Comercial
+              </p>
+              <p className="text-sm font-extrabold text-slate-900">
+                {app.contactName}
+              </p>
+            </div>
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                Correo Corporativo
+              </p>
+              <p className="font-bold text-slate-800">{app.contactEmail}</p>
+            </div>
+            <div>
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                Teléfono de Contacto
+              </p>
+              <p className="font-bold text-slate-900">{app.contactPhone}</p>
             </div>
 
-            <div className="space-y-3 text-xs leading-relaxed">
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Contacto Comercial</p>
-                <p className="font-medium text-ink text-sm">{app.contactName}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Correo Corporativo</p>
-                <p className="font-mono text-ink">{app.contactEmail}</p>
-              </div>
-              <div>
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Teléfono de Contacto</p>
-                <p className="font-mono text-ink">{app.contactPhone}</p>
-              </div>
-              <div className="border-t border-ink/10 pt-3">
-                <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Usuario Responsable en Plataforma</p>
-                <p className="font-medium text-ink">
-                  {app.applicant.firstName} {app.applicant.lastName} (ID #{app.applicant.id})
-                </p>
-                <p className="font-mono text-taupe-500 text-[0.7rem]">{app.applicant.email}</p>
-                <p className="text-[0.7rem] mt-1 text-taupe-600">
-                  Rol actual en base de datos:{" "}
-                  <code className="bg-ink/5 px-1 py-0.5 text-ink font-semibold">{app.applicant.role}</code>
-                </p>
-                <p className="text-[0.7rem] text-taupe-600 mt-0.5">
-                  Correo verificado:{" "}
-                  {app.applicant.emailVerifiedAt ? (
-                    <span className="text-emerald-700 font-semibold">Sí ({new Date(app.applicant.emailVerifiedAt).toLocaleDateString("es-PE")})</span>
-                  ) : (
-                    <span className="text-amber-700 font-semibold">No verificado</span>
-                  )}
-                </p>
-              </div>
-
-              {app.reviewer && (
-                <div className="border-t border-ink/10 pt-3 text-[0.7rem] text-taupe-600">
-                  <p className="text-taupe-400 uppercase tracking-wider text-[0.65rem]">Revisado Previamente Por</p>
-                  <p className="font-medium text-ink">
-                    {app.reviewer.firstName} {app.reviewer.lastName} ({app.reviewer.email})
-                  </p>
-                </div>
-              )}
+            <div className="space-y-1.5 rounded-2xl border border-slate-200/80 bg-slate-50/75 p-4">
+              <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-500">
+                Usuario Responsable en Plataforma
+              </p>
+              <p className="font-extrabold text-slate-900">
+                {app.applicant.firstName} {app.applicant.lastName} (ID #
+                {app.applicant.id})
+              </p>
+              <p className="font-medium text-slate-500">
+                {app.applicant.email}
+              </p>
+              <p className="pt-1 font-semibold text-slate-700">
+                Rol actual:{" "}
+                <code className="rounded-lg bg-white px-2 py-0.5 font-extrabold text-slate-900 shadow-2xs">
+                  {app.applicant.role}
+                </code>
+              </p>
+              <p className="font-semibold text-slate-700">
+                Correo verificado:{" "}
+                {app.applicant.emailVerifiedAt ? (
+                  <span className="font-extrabold text-emerald-700">
+                    Sí (
+                    {new Date(app.applicant.emailVerifiedAt).toLocaleDateString(
+                      "es-PE",
+                    )}
+                    )
+                  </span>
+                ) : (
+                  <span className="font-extrabold text-amber-700">
+                    No verificado
+                  </span>
+                )}
+              </p>
             </div>
+
+            {app.reviewer && (
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 text-xs text-slate-600">
+                <p className="text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-400">
+                  Revisado Previamente Por
+                </p>
+                <p className="mt-0.5 font-bold text-slate-900">
+                  {app.reviewer.firstName} {app.reviewer.lastName} (
+                  {app.reviewer.email})
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Formulario de Dictamen */}
-        <ReviewActionForm
-          applicationId={app.id}
-          currentStatus={app.status}
-          defaultInternalNotes={app.internalNotes}
-        />
       </div>
+
+      {/* Formulario de Dictamen */}
+      <ReviewActionForm
+        applicationId={app.id}
+        currentStatus={app.status}
+        defaultInternalNotes={app.internalNotes}
+      />
     </div>
   );
 }

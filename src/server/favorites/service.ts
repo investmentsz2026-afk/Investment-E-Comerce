@@ -16,6 +16,7 @@ import {
   calculateLinePricing,
   isUserAuthorizedForWholesale,
 } from "@/server/pricing/engine";
+import { parsePromoDescription } from "@/lib/promo-display";
 
 export interface FavoriteVariantOption {
   id: number;
@@ -153,6 +154,10 @@ async function buildFavoriteItemsFromProducts(
     pricesByProduct.set(p.productId, list);
   }
 
+  const discountPromos = activePromos.filter(
+    (p) => parsePromoDescription(p.description, p.code).applyToCart,
+  );
+
   const result: FavoriteProductItem[] = [];
 
   for (const pid of productIdOrder) {
@@ -180,7 +185,7 @@ async function buildFavoriteItemsFromProducts(
       productGroupQuantity: evalQty,
       isProductWholesaleEnabled: product.isWholesale,
       user,
-      promotions: activePromos,
+      promotions: discountPromos,
       productId: product.id,
       categoryId: product.categoryId,
       now,

@@ -8,13 +8,13 @@
    ========================================================================== */
 
 @theme {
-  /* Paleta Reluciente American Colt JEANS™: Blanco Puro + Azul Eléctrico Real + Rojo Oficial */
+  /* Paleta Moderna y Elegante American Colt JEANS™: Blanco Puro + Índigo Real + Carmesí Coral Suave */
   --color-ink: #0f172a;
-  --color-ink-soft: #1d4ed8;
+  --color-ink-soft: #1e40af;
   --color-ink-muted: #2563eb;
   --color-paper: #ffffff;
-  --color-bone: #f0f6ff;
-  --color-sand: #e0ecff;
+  --color-bone: #f4f7fb;
+  --color-sand: #e8f0fe;
 
   /* Grises azulados luminosos */
   --color-taupe-100: #f1f5f9;
@@ -25,9 +25,9 @@
   --color-taupe-600: #334155;
   --color-taupe-700: #1e293b;
 
-  /* Rojo Oficial Reluciente American Colt JEANS™ */
-  --color-cochinilla: #b91c24;
-  --color-cochinilla-deep: #91151b;
+  /* Rojo Fuerte Vivo Elegante American Colt JEANS™ (Cero guinda viejo, cero rosado pálido) */
+  --color-cochinilla: #dc2626;
+  --color-cochinilla-deep: #b91c1c;
   --color-cochinilla-bright: #ef233c;
 
   /* Escala tipográfica editorial (fluida) */
@@ -56,6 +56,19 @@
 
   --animate-marquee: marquee 48s linear infinite;
   --animate-scroll-cue: scroll-cue 2.4s var(--ease-curtain) infinite;
+  --animate-gradient-flow: gradient-flow 7s ease infinite;
+
+  @keyframes gradient-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 
   @keyframes marquee {
     from {
@@ -185,6 +198,56 @@
 /* Espacio seguro inferior para la barra de navegación móvil */
 @utility pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Degradado con movimiento fluido y elegante */
+@utility bg-flow {
+  background-size: 200% 200%;
+  animation: gradient-flow 7s ease infinite;
+}
+
+@keyframes silk-wave-slow {
+  0%,
+  100% {
+    transform: translate3d(0%, 0%, 0) scaleY(1);
+  }
+  50% {
+    transform: translate3d(-25%, 3%, 0) scaleY(1.12);
+  }
+}
+
+@keyframes silk-wave-reverse {
+  0%,
+  100% {
+    transform: translate3d(-25%, -2%, 0) scaleY(1.06);
+  }
+  50% {
+    transform: translate3d(0%, 4%, 0) scaleY(0.94);
+  }
+}
+
+@keyframes silk-air-ribbon {
+  0%,
+  100% {
+    transform: translate3d(-8%, -4%, 0) rotate(-1.5deg) scale(1.02);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(8%, 5%, 0) rotate(1.5deg) scale(1.1);
+    opacity: 0.85;
+  }
+}
+
+@utility animate-silk-wave {
+  animation: silk-wave-slow 11s ease-in-out infinite;
+}
+
+@utility animate-silk-wave-reverse {
+  animation: silk-wave-reverse 9s ease-in-out infinite;
+}
+
+@utility animate-silk-ribbon {
+  animation: silk-air-ribbon 7.5s ease-in-out infinite;
 }
 
 /* ==========================================================================

@@ -30,8 +30,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
-    qualities: [75, 85],
+    qualities: [75, 85, 90],
     deviceSizes: [640, 828, 1080, 1280, 1600, 1920, 2560],
+    localPatterns: [{ pathname: "/**" }],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },

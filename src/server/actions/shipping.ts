@@ -54,6 +54,10 @@ export async function saveShippingRateAction(
   try {
     if (input.zoneId && Number(input.zoneId) > 0) {
       await updateShippingZoneConfig(admin.id, Number(input.zoneId), {
+        name,
+        department,
+        province: input.province?.trim() || "*",
+        district: input.district?.trim() || "*",
         rateAmount: rateAmountCents,
         freeShippingMinSubtotal: freeShippingMinCents,
         estimatedDaysLabel: (input.estimatedDaysLabel ?? "24 a 48 horas").trim(),
@@ -62,6 +66,7 @@ export async function saveShippingRateAction(
       });
 
       revalidatePath("/admin/envios");
+      revalidatePath("/admin/pedidos");
       revalidatePath("/checkout");
       revalidatePath("/producto/[slug]", "page");
 
@@ -80,6 +85,7 @@ export async function saveShippingRateAction(
       });
 
       revalidatePath("/admin/envios");
+      revalidatePath("/admin/pedidos");
       revalidatePath("/checkout");
       revalidatePath("/producto/[slug]", "page");
 
@@ -100,6 +106,7 @@ export async function deleteShippingRateAction(zoneId: number): Promise<ActionRe
   try {
     await deleteShippingZone(admin.id, zoneId);
     revalidatePath("/admin/envios");
+    revalidatePath("/admin/pedidos");
     revalidatePath("/checkout");
     revalidatePath("/producto/[slug]", "page");
     return { success: true };
@@ -124,6 +131,8 @@ export interface SavePhysicalStoreInput {
   phone?: string | null;
   openingHours?: string;
   googleMapsUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   isActive?: boolean;
   sortOrder?: number;
 }
@@ -156,12 +165,16 @@ export async function savePhysicalStoreAction(
         phone: input.phone?.trim() || null,
         openingHours: input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm",
         googleMapsUrl: input.googleMapsUrl?.trim() || null,
+        latitude: input.latitude ?? null,
+        longitude: input.longitude ?? null,
         isActive: input.isActive ?? true,
         sortOrder: Number(input.sortOrder) || 0,
       });
 
       revalidatePath("/admin/tiendas");
       revalidatePath("/checkout");
+      revalidatePath("/tiendas");
+      revalidatePath("/");
 
       return { success: true, data: { storeId: Number(input.storeId) } };
     } else {
@@ -175,12 +188,16 @@ export async function savePhysicalStoreAction(
         phone: input.phone?.trim() || null,
         openingHours: input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm",
         googleMapsUrl: input.googleMapsUrl?.trim() || null,
+        latitude: input.latitude ?? null,
+        longitude: input.longitude ?? null,
         isActive: input.isActive ?? true,
         sortOrder: Number(input.sortOrder) || 0,
       });
 
       revalidatePath("/admin/tiendas");
       revalidatePath("/checkout");
+      revalidatePath("/tiendas");
+      revalidatePath("/");
 
       return { success: true, data: { storeId: created.id } };
     }
@@ -200,6 +217,8 @@ export async function deletePhysicalStoreAction(storeId: number): Promise<Action
     await deletePhysicalStore(admin.id, storeId);
     revalidatePath("/admin/tiendas");
     revalidatePath("/checkout");
+    revalidatePath("/tiendas");
+    revalidatePath("/");
     return { success: true };
   } catch (error) {
     console.error("Error eliminando tienda física:", error);

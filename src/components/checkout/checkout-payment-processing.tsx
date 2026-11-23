@@ -64,7 +64,7 @@ export function CheckoutPaymentProcessing({
       <div className="relative w-full max-w-md rounded-3xl bg-gradient-to-b from-[#141824] via-[#0F1422] to-[#0A0D16] p-7 text-white text-center shadow-2xl border border-white/10 space-y-6 overflow-hidden">
         {/* Destellos de fondo */}
         <div className="absolute -top-24 -left-24 size-48 rounded-full bg-[#0055FF]/20 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 size-48 rounded-full bg-[#801323]/25 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 size-48 rounded-full bg-[#DC2626]/25 blur-3xl pointer-events-none" />
 
         {/* Encabezado Seguro */}
         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-300">

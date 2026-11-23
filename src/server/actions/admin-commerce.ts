@@ -62,6 +62,8 @@ export interface AdminProductSavePayload {
     url: string;
     alt: string;
     isPrimary: boolean;
+    imageType?: "portada" | "cerca" | "reverso" | "ficha" | "galeria";
+    colorName?: string | null;
     sortOrder?: number;
   }>;
   variants: Array<{
@@ -76,6 +78,7 @@ export interface AdminProductSavePayload {
 }
 
 function revalidateCatalogAndAdminPaths(productSlug?: string) {
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/catalogo");
   revalidatePath("/mujer");
@@ -179,6 +182,44 @@ export async function adminSaveProductAction(
     };
   }
 
+  // Validar imágenes obligatorias de presentación principal (Portada con modelo + Imagen de cerca)
+  const ALLOWED_IMAGE_TYPES = new Set(["portada", "cerca", "reverso", "ficha", "galeria"]);
+  const normalizedImages = (payload.images ?? [])
+    .map((im) => {
+      const cleanType =
+        im.imageType && ALLOWED_IMAGE_TYPES.has(im.imageType)
+          ? im.imageType
+          : im.isPrimary
+            ? "portada"
+            : "galeria";
+      const cleanColor = im.colorName?.trim() ? im.colorName.trim().slice(0, 60) : null;
+      return {
+        url: im.url.trim(),
+        alt: (im.alt || payload.name).trim().slice(0, 300),
+        imageType: cleanType as "portada" | "cerca" | "reverso" | "ficha" | "galeria",
+        colorName: cleanColor,
+        isPrimary: !cleanColor && (cleanType === "portada" || Boolean(im.isPrimary)),
+      };
+    })
+    .filter((im) => im.url.length > 0);
+
+  const generalOnly = normalizedImages.filter((im) => !im.colorName);
+  const hasPortada = generalOnly.some((im) => im.imageType === "portada" || im.isPrimary);
+  const hasCerca = generalOnly.some((im) => im.imageType === "cerca");
+
+  if (!hasPortada) {
+    return {
+      success: false,
+      error: "Debes subir la imagen obligatoria de Portada (con el modelo).",
+    };
+  }
+  if (!hasCerca) {
+    return {
+      success: false,
+      error: "Debes subir la imagen obligatoria de Cerca (detalle de la prenda).",
+    };
+  }
+
   const now = new Date();
   let targetProductId = productId ?? 0;
 
@@ -255,26 +296,41 @@ export async function adminSaveProductAction(
   }
   await db.insert(productPrices).values(priceRowsToInsert);
 
-  // Sincronizar imágenes del producto
-  const validImages = (payload.images ?? [])
-    .map((im) => ({
-      url: im.url.trim(),
-      alt: (im.alt || payload.name).trim().slice(0, 300),
-      isPrimary: Boolean(im.isPrimary),
-    }))
-    .filter((im) => im.url.length > 0);
+  // Sincronizar imágenes del producto (generales + por color con rol editorial)
+  const roleWeight: Record<string, number> = {
+    portada: 0,
+    cerca: 1,
+    reverso: 2,
+    ficha: 3,
+    galeria: 4,
+  };
+  const orderedImages = [...normalizedImages].sort((a, b) => {
+    const aIsColor = a.colorName ? 1 : 0;
+    const bIsColor = b.colorName ? 1 : 0;
+    if (aIsColor !== bIsColor) return aIsColor - bIsColor;
+    if (a.colorName !== b.colorName) {
+      return (a.colorName ?? "").localeCompare(b.colorName ?? "");
+    }
+    return (roleWeight[a.imageType] ?? 9) - (roleWeight[b.imageType] ?? 9);
+  });
 
   await db.delete(productImages).where(eq(productImages.productId, targetProductId));
-  if (validImages.length > 0) {
-    const hasPrimary = validImages.some((im) => im.isPrimary);
+  if (orderedImages.length > 0) {
+    let assignedPrimary = false;
     await db.insert(productImages).values(
-      validImages.map((im, idx) => ({
-        productId: targetProductId,
-        url: im.url,
-        alt: im.alt,
-        isPrimary: hasPrimary ? im.isPrimary : idx === 0,
-        sortOrder: idx,
-      })),
+      orderedImages.map((im, idx) => {
+        const shouldBePrimary = !assignedPrimary && !im.colorName && im.isPrimary;
+        if (shouldBePrimary) assignedPrimary = true;
+        return {
+          productId: targetProductId,
+          url: im.url,
+          alt: im.alt,
+          imageType: im.imageType,
+          colorName: im.colorName,
+          isPrimary: shouldBePrimary || (!assignedPrimary && idx === 0),
+          sortOrder: idx,
+        };
+      }),
     );
   }
 
@@ -463,6 +519,68 @@ export async function adminSetProductStatusAction(input: {
   return {
     success: true,
     message: `Estado del producto "${found.name}" actualizado a ${input.status}.`,
+  };
+}
+
+/**
+ * 6.2b — Eliminar un producto comercial de forma segura preservando snapshots históricos de pedidos y cotizaciones.
+ */
+export async function adminDeleteProductAction(input: {
+  productId: number;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  const db = getDb();
+
+  const targetId = Number(input.productId);
+  if (!Number.isInteger(targetId) || targetId <= 0) {
+    return { success: false, error: "Identificador de producto inválido." };
+  }
+
+  const [found] = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, targetId))
+    .limit(1);
+
+  if (!found) {
+    return { success: false, error: "El producto indicado no existe o ya fue eliminado." };
+  }
+
+  const variantRows = await db
+    .select({ id: productVariants.id })
+    .from(productVariants)
+    .where(eq(productVariants.productId, found.id));
+
+  const variantIds = variantRows.map((v) => v.id);
+
+  if (variantIds.length > 0) {
+    // Limpiar reservas e historial de movimientos ligados a estas variantes para permitir eliminación física segura;
+    // los pedidos y cotizaciones conservan sus snapshots inmutables gracias a onDelete: "set null".
+    await db
+      .delete(inventoryReservations)
+      .where(inArray(inventoryReservations.variantId, variantIds));
+    await db
+      .delete(inventoryMovements)
+      .where(inArray(inventoryMovements.variantId, variantIds));
+  }
+
+  await db.delete(products).where(eq(products.id, found.id));
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "product",
+    targetId: found.id,
+    details: `Eliminación permanente del producto "${found.name}" (slug: ${found.slug}, variantes: ${variantIds.length})`,
+  });
+
+  revalidateCatalogAndAdminPaths(found.slug);
+  revalidatePath("/admin/productos");
+  revalidatePath("/admin");
+
+  return {
+    success: true,
+    message: `El producto "${found.name}" fue eliminado permanentemente.`,
   };
 }
 
@@ -826,6 +944,47 @@ export async function adminTogglePromotionStatusAction(input: {
   return {
     success: true,
     message: `Promoción ${promo.code} ${input.isActive ? "activada" : "pausada"} correctamente.`,
+  };
+}
+
+/**
+ * 6.4b — Eliminar permanentemente una promoción comercial o anuncio.
+ */
+export async function adminDeletePromotionAction(input: {
+  promotionId: number;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  const db = getDb();
+
+  const targetId = Number(input.promotionId);
+  if (!Number.isInteger(targetId) || targetId <= 0) {
+    return { success: false, error: "Identificador de promoción inválido." };
+  }
+
+  const [promo] = await db
+    .select()
+    .from(promotions)
+    .where(eq(promotions.id, targetId))
+    .limit(1);
+
+  if (!promo) {
+    return { success: false, error: "La promoción indicada no existe o ya fue eliminada." };
+  }
+
+  await db.delete(promotions).where(eq(promotions.id, promo.id));
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "promotion_updated",
+    targetType: "promotion",
+    targetId: promo.id,
+    details: `Eliminación permanente de promoción ${promo.code} ("${promo.name}") por administrador.`,
+  });
+
+  revalidateCatalogAndAdminPaths();
+  return {
+    success: true,
+    message: `La promoción "${promo.name}" (${promo.code}) fue eliminada permanentemente.`,
   };
 }
 

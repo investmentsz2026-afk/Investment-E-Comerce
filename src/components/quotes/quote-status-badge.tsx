@@ -57,7 +57,7 @@ export function QuoteStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center border px-2.5 py-0.5 font-mono text-[0.62rem] uppercase tracking-[0.14em]",
+        "inline-flex items-center rounded-full border px-3 py-1 font-sans text-[0.68rem] font-extrabold uppercase tracking-[0.08em] shadow-xs",
         meta.badgeClass,
         className,
       )}

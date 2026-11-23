@@ -14,7 +14,9 @@
  */
 import { config } from "dotenv";
 import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import { eq } from "drizzle-orm";
 import * as schema from "../src/server/db/schema";
 import { hashPassword } from "../src/server/auth/crypto";
@@ -81,8 +83,20 @@ async function main() {
     process.exit(1);
   }
 
-  const sql = neon(dbUrl);
-  const db = drizzle({ client: sql, schema });
+  let pool: Pool | null = null;
+  const db = dbUrl.includes("neon.tech")
+    ? drizzleNeon({ client: neon(dbUrl), schema })
+    : (() => {
+        pool = new Pool({
+          connectionString: dbUrl,
+          ssl: dbUrl.includes("rlwy.net") || dbUrl.includes("sslmode=require")
+            ? { rejectUnauthorized: false }
+            : undefined,
+        });
+        return drizzlePg({ client: pool, schema }) as unknown as ReturnType<
+          typeof drizzleNeon<typeof schema>
+        >;
+      })();
 
   const existing = await db.select().from(schema.users).where(eq(schema.users.email, email)).limit(1);
 
@@ -138,6 +152,9 @@ async function main() {
     console.log(`✅ Administrador '${email}' creado exitosamente (ID: ${newUser.id}).`);
   }
 
+  if (pool) {
+    await (pool as Pool).end();
+  }
   process.exit(0);
 }
 

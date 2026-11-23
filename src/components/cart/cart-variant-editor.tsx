@@ -216,7 +216,7 @@ export function CartVariantEditor({ item, onClose, onSaved }: CartVariantEditorP
           type="button"
           onClick={handleSave}
           disabled={isSaving || isTargetOutOfStock}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-4 py-2 text-xs font-bold text-white shadow-xs transition-colors disabled:opacity-50"
+          className="bg-flow inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] px-4 py-2 text-xs font-bold text-white shadow-xs transition-all disabled:opacity-50"
         >
           {isSaving ? (
             <>

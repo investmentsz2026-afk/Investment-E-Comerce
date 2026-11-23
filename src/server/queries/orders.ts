@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, desc, eq, inArray, ilike, or, gte, lte } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, ilike, isNotNull, or, gte, lte } from "drizzle-orm";
 import { getDb } from "@/server/db";
 import {
   orders,
@@ -693,5 +693,409 @@ export async function getAdminOrdersList(filters?: {
       taxDocument: taxDoc,
     };
   });
+}
+
+// ──────────────────────────────────────────────────────────────
+// Seguimiento Público de Pedido (/seguir-pedido)
+// ──────────────────────────────────────────────────────────────
+
+export interface PublicOrderTrackingEvent {
+  id: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  tone: "blue" | "emerald" | "indigo" | "purple" | "amber" | "rose";
+}
+
+export interface PublicOrderTrackingItem {
+  id: number;
+  productName: string;
+  productSlug: string;
+  size: string | null;
+  colorName: string | null;
+  colorSwatch: string | null;
+  quantity: number;
+  imageUrl: string;
+}
+
+export interface PublicOrderTrackingResult {
+  orderNumber: string;
+  orderMode: "retail" | "wholesale";
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethodLabel: string;
+  createdAt: string;
+  updatedAt: string;
+  paidAt: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+  refundedAt: string | null;
+  carrierName: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  deliveryProofImageUrl: string | null;
+  cancellationReason: string | null;
+  shippingZoneName: string;
+  shippingEstimatedLabel: string;
+  destinationSummary: string;
+  recipientDisplay: string;
+  totalUnits: number;
+  isOwner: boolean;
+  ownerOrderId: number | null;
+  items: PublicOrderTrackingItem[];
+  events: PublicOrderTrackingEvent[];
+}
+
+function maskRecipientName(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "Cliente American Colt";
+  if (parts.length === 1) {
+    const w = parts[0];
+    return w.length <= 2 ? `${w[0]}***` : `${w.slice(0, 2)}${"*".repeat(Math.min(5, w.length - 2))}`;
+  }
+  const first = parts[0];
+  const rest = parts.slice(1).map((w) => `${w[0].toUpperCase()}.`).join(" ");
+  return `${first} ${rest}`;
+}
+
+function mapStatusLogToPublicEvent(
+  logId: number,
+  action: string,
+  details: string,
+  createdAt: Date,
+): { statusTag?: string; event: PublicOrderTrackingEvent } | null {
+  const ts = createdAt.toISOString();
+
+  if (action === "order_cancelled") {
+    return {
+      statusTag: "cancelled",
+      event: {
+        id: `log-${logId}`,
+        title: "Pedido Cancelado",
+        description: "La orden fue cancelada y las prendas fueron liberadas del stock.",
+        timestamp: ts,
+        tone: "rose",
+      },
+    };
+  }
+
+  if (action === "order_refunded") {
+    return {
+      statusTag: "refunded",
+      event: {
+        id: `log-${logId}`,
+        title: "Pedido Reembolsado",
+        description: "El reembolso de la compra ha sido procesado correctamente.",
+        timestamp: ts,
+        tone: "amber",
+      },
+    };
+  }
+
+  if (action === "order_status_change") {
+    const match = details.match(
+      /→\s*(pending_payment|payment_processing|paid|preparing|shipped|delivered|cancelled|payment_failed|refunded)/,
+    );
+    const targetStatus = match?.[1] as OrderStatus | undefined;
+
+    const carrierMatch = details.match(/Transportista:\s*([^.]+)\./);
+    const trackingMatch = details.match(/Tracking:\s*([^.]+)\./);
+    const courierSuffix = [
+      carrierMatch?.[1] ? `Operador: ${carrierMatch[1].trim()}` : null,
+      trackingMatch?.[1] ? `Guía: ${trackingMatch[1].trim()}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    switch (targetStatus) {
+      case "paid":
+        return {
+          statusTag: "paid",
+          event: {
+            id: `log-${logId}`,
+            title: "Pago Verificado y Aprobado",
+            description: "Tu pago fue validado. El pedido ingresó a cola de preparación.",
+            timestamp: ts,
+            tone: "emerald",
+          },
+        };
+      case "preparing":
+        return {
+          statusTag: "preparing",
+          event: {
+            id: `log-${logId}`,
+            title: "Empacando en Almacén Central",
+            description:
+              "Nuestros especialistas están verificando tallas, acabados y embalando tu paquete.",
+            timestamp: ts,
+            tone: "indigo",
+          },
+        };
+      case "shipped":
+        return {
+          statusTag: "shipped",
+          event: {
+            id: `log-${logId}`,
+            title: "Despachado / En Ruta de Entrega",
+            description: courierSuffix
+              ? `Tu paquete fue entregado al courier. ${courierSuffix}.`
+              : "Tu pedido salió de nuestro almacén central y va en camino a tu dirección.",
+            timestamp: ts,
+            tone: "purple",
+          },
+        };
+      case "delivered":
+        return {
+          statusTag: "delivered",
+          event: {
+            id: `log-${logId}`,
+            title: "Pedido Entregado con Éxito",
+            description: "¡Gracias por confiar en American Colt JEANS™! Tu pedido fue entregado.",
+            timestamp: ts,
+            tone: "emerald",
+          },
+        };
+      case "payment_failed":
+        return {
+          statusTag: "payment_failed",
+          event: {
+            id: `log-${logId}`,
+            title: "Incidencia en la Validación de Pago",
+            description: "No pudimos confirmar el cobro. Puedes reintentar o contactar soporte.",
+            timestamp: ts,
+            tone: "rose",
+          },
+        };
+      case "payment_processing":
+        return {
+          statusTag: "payment_processing",
+          event: {
+            id: `log-${logId}`,
+            title: "Pago en Verificación",
+            description: "Estamos procesando y validando la operación de pago.",
+            timestamp: ts,
+            tone: "blue",
+          },
+        };
+      default:
+        return courierSuffix
+          ? {
+              event: {
+                id: `log-${logId}`,
+                title: "Actualización Logística",
+                description: courierSuffix,
+                timestamp: ts,
+                tone: "blue",
+              },
+            }
+          : null;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Consulta pública sanitizada para rastrear un pedido por número de pedido (`ORD-2026-...`)
+ * o código de guía/tracking asignado. Nunca expone datos sensibles como direcciones exactas,
+ * documentos tributarios ni notas internas administrativas a usuarios no propietarios.
+ */
+export async function getPublicOrderTracking(
+  rawCode: string,
+  requester?: { id: number; role: string } | null,
+): Promise<PublicOrderTrackingResult | null> {
+  const cleaned = rawCode.trim().replace(/^#/, "");
+  if (cleaned.length < 4 || cleaned.length > 80) {
+    return null;
+  }
+
+  await releaseExpiredInventoryReservations();
+  const db = getDb();
+
+  const found = await db
+    .select()
+    .from(orders)
+    .where(
+      or(
+        ilike(orders.orderNumber, cleaned),
+        and(isNotNull(orders.trackingNumber), ilike(orders.trackingNumber, cleaned)),
+      ),
+    )
+    .limit(1);
+
+  if (found.length === 0) return null;
+
+  const ord = found[0];
+  const isOwner = Boolean(
+    requester && (requester.id === ord.userId || requester.role === "admin"),
+  );
+
+  const [items, logs] = await Promise.all([
+    db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, ord.id))
+      .orderBy(asc(orderItems.id)),
+    db
+      .select({
+        id: auditLogs.id,
+        action: auditLogs.action,
+        details: auditLogs.details,
+        createdAt: auditLogs.createdAt,
+      })
+      .from(auditLogs)
+      .where(and(eq(auditLogs.targetType, "order"), eq(auditLogs.targetId, ord.id)))
+      .orderBy(desc(auditLogs.createdAt)),
+  ]);
+
+  const seenTags = new Set<string>();
+  const events: PublicOrderTrackingEvent[] = [];
+
+  for (const l of logs) {
+    const mapped = mapStatusLogToPublicEvent(l.id, l.action, l.details ?? "", l.createdAt);
+    if (mapped) {
+      if (mapped.statusTag) seenTags.add(mapped.statusTag);
+      events.push(mapped.event);
+    }
+  }
+
+  if (ord.deliveredAt && !seenTags.has("delivered")) {
+    events.push({
+      id: "milestone-delivered",
+      title: "Pedido Entregado con Éxito",
+      description: "¡Gracias por tu compra en American Colt JEANS™! El paquete fue entregado.",
+      timestamp: ord.deliveredAt.toISOString(),
+      tone: "emerald",
+    });
+  }
+
+  if (ord.shippedAt && !seenTags.has("shipped")) {
+    events.push({
+      id: "milestone-shipped",
+      title: "Despachado / En Ruta de Entrega",
+      description: ord.carrierName
+        ? `Tu pedido salió con ${ord.carrierName}${ord.trackingNumber ? ` (Guía ${ord.trackingNumber})` : ""}.`
+        : "Tu pedido fue despachado desde nuestro almacén central.",
+      timestamp: ord.shippedAt.toISOString(),
+      tone: "purple",
+    });
+  }
+
+  if (ord.paidAt && !seenTags.has("paid")) {
+    events.push({
+      id: "milestone-paid",
+      title: "Pago Confirmado",
+      description: "Pago validado correctamente. Orden habilitada para alistamiento.",
+      timestamp: ord.paidAt.toISOString(),
+      tone: "emerald",
+    });
+  }
+
+  if (ord.cancelledAt && !seenTags.has("cancelled")) {
+    events.push({
+      id: "milestone-cancelled",
+      title: "Pedido Cancelado",
+      description: "El pedido fue cancelado y las unidades fueron liberadas.",
+      timestamp: ord.cancelledAt.toISOString(),
+      tone: "rose",
+    });
+  }
+
+  if (ord.refundedAt && !seenTags.has("refunded")) {
+    events.push({
+      id: "milestone-refunded",
+      title: "Reembolso Completado",
+      description: "El importe del pedido ha sido reembolsado.",
+      timestamp: ord.refundedAt.toISOString(),
+      tone: "amber",
+    });
+  }
+
+  events.push({
+    id: "milestone-created",
+    title: "Pedido Registrado",
+    description: "Recibimos tu orden y reservamos las prendas seleccionadas.",
+    timestamp: ord.createdAt.toISOString(),
+    tone: "blue",
+  });
+
+  // Ordenar eventos del más reciente al más antiguo
+  events.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
+
+  const destinationSummary =
+    [ord.shippingDistrict, ord.shippingProvince, ord.shippingDepartment]
+      .map((s) => (s ?? "").trim())
+      .filter(Boolean)
+      .join(", ") || "Lima, Perú";
+
+  const totalUnits = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  return {
+    orderNumber: ord.orderNumber,
+    orderMode: ord.orderMode,
+    status: ord.status,
+    paymentStatus: ord.paymentStatus,
+    paymentMethodLabel: ord.paymentMethodLabel,
+    createdAt: ord.createdAt.toISOString(),
+    updatedAt: ord.updatedAt.toISOString(),
+    paidAt: ord.paidAt ? ord.paidAt.toISOString() : null,
+    shippedAt: ord.shippedAt ? ord.shippedAt.toISOString() : null,
+    deliveredAt: ord.deliveredAt ? ord.deliveredAt.toISOString() : null,
+    cancelledAt: ord.cancelledAt ? ord.cancelledAt.toISOString() : null,
+    refundedAt: ord.refundedAt ? ord.refundedAt.toISOString() : null,
+    carrierName: ord.carrierName,
+    trackingNumber: ord.trackingNumber,
+    trackingUrl: ord.trackingUrl,
+    deliveryProofImageUrl: ord.deliveryProofImageUrl,
+    cancellationReason: ord.cancellationReason,
+    shippingZoneName: ord.shippingZoneNameSnapshot,
+    shippingEstimatedLabel: ord.shippingEstimatedLabel,
+    destinationSummary,
+    recipientDisplay: isOwner
+      ? ord.shippingRecipientName
+      : maskRecipientName(ord.shippingRecipientName),
+    totalUnits,
+    isOwner,
+    ownerOrderId: isOwner ? ord.id : null,
+    items: items.map((item) => ({
+      id: item.id,
+      productName: item.productNameSnapshot,
+      productSlug: item.productSlugSnapshot,
+      size: item.sizeSnapshot,
+      colorName: item.colorNameSnapshot,
+      colorSwatch: item.colorSwatchSnapshot,
+      quantity: item.quantity,
+      imageUrl: item.imageUrlSnapshot ?? "/placeholder.jpg",
+    })),
+    events,
+  };
+}
+
+/**
+ * Devuelve los últimos 5 códigos de pedido del usuario autenticado para acceso rápido en `/seguir-pedido`.
+ */
+export async function getRecentOrderNumbersForUser(
+  userId: number,
+): Promise<{ orderNumber: string; status: OrderStatus; createdAt: string }[]> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      orderNumber: orders.orderNumber,
+      status: orders.status,
+      createdAt: orders.createdAt,
+    })
+    .from(orders)
+    .where(eq(orders.userId, userId))
+    .orderBy(desc(orders.createdAt))
+    .limit(5);
+
+  return rows.map((r) => ({
+    orderNumber: r.orderNumber,
+    status: r.status,
+    createdAt: r.createdAt.toISOString(),
+  }));
 }
 

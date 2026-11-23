@@ -9,6 +9,7 @@
  */
 import {
   boolean,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -246,11 +247,16 @@ export const productImages = pgTable(
       .notNull(),
     url: text("url").notNull(),
     alt: varchar("alt", { length: 300 }).notNull(),
+    /** Rol editorial de la imagen: portada | cerca | reverso | ficha | galeria */
+    imageType: varchar("image_type", { length: 30 }).default("galeria").notNull(),
+    /** Nombre del color asociado (null = presentación general del producto). */
+    colorName: varchar("color_name", { length: 60 }),
     sortOrder: integer("sort_order").default(0).notNull(),
     isPrimary: boolean("is_primary").default(false).notNull(),
   },
   (t) => [
     index("product_images_product_idx").on(t.productId),
+    index("product_images_color_idx").on(t.productId, t.colorName),
   ],
 );
 
@@ -834,6 +840,7 @@ export const orders = pgTable(
     carrierName: varchar("carrier_name", { length: 120 }),
     trackingNumber: varchar("tracking_number", { length: 120 }),
     trackingUrl: text("tracking_url"),
+    deliveryProofImageUrl: text("delivery_proof_image_url"),
     customerNotes: text("customer_notes"),
     adminNotes: text("admin_notes"),
     cancellationReason: text("cancellation_reason"),
@@ -1260,6 +1267,8 @@ export const physicalStores = pgTable(
     phone: varchar("phone", { length: 30 }),
     openingHours: varchar("opening_hours", { length: 150 }).default("Lunes a Sábado: 10:00 am - 8:00 pm").notNull(),
     googleMapsUrl: text("google_maps_url"),
+    latitude: doublePrecision("latitude"),
+    longitude: doublePrecision("longitude"),
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -1271,6 +1280,124 @@ export const physicalStores = pgTable(
     index("physical_stores_district_idx").on(t.district),
   ],
 );
+
+// ──────────────────────────────────────────────────────────────
+// Media Assets (Imágenes subidas desde el administrador de archivos)
+// ──────────────────────────────────────────────────────────────
+export const mediaAssets = pgTable(
+  "media_assets",
+  {
+    id: serial("id").primaryKey(),
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+    mimeType: varchar("mime_type", { length: 80 }).notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    dataBase64: text("data_base64").notNull(),
+    uploadedBy: integer("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("media_assets_created_idx").on(t.createdAt)],
+);
+
+// ──────────────────────────────────────────────────────────────
+// Lookbook Showcase Slides (Contenido visual 3D en Portada / E-Commerce)
+// ──────────────────────────────────────────────────────────────
+export const lookbookSlides = pgTable(
+  "lookbook_slides",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 140 }).notNull(),
+    subtitle: varchar("subtitle", { length: 160 }),
+    badge: varchar("badge", { length: 60 }).default("TOP LOOK").notNull(),
+    priceTag: varchar("price_tag", { length: 50 }),
+    imageUrl: text("image_url").notNull(),
+    linkHref: varchar("link_href", { length: 240 }).default("/catalogo").notNull(),
+    /** Ubicación visual en el escenario 3D de portada: "left" o "right". */
+    slot: varchar("slot", { length: 20 }).default("right").notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("lookbook_slides_active_sort_idx").on(t.isActive, t.sortOrder),
+  ],
+);
+
+// ──────────────────────────────────────────────────────────────
+// Ecommerce Showcase Config (Textos centrales y títulos de secciones editables)
+// ──────────────────────────────────────────────────────────────
+export const ecommerceShowcaseConfig = pgTable(
+  "ecommerce_showcase_config",
+  {
+    id: serial("id").primaryKey(),
+    key: varchar("key", { length: 60 }).notNull(),
+    centerBadge: varchar("center_badge", { length: 120 }).notNull(),
+    centerTitle: varchar("center_title", { length: 120 }).notNull(),
+    centerHighlight: varchar("center_highlight", { length: 80 }).notNull(),
+    centerSubtitle: varchar("center_subtitle", { length: 220 }).notNull(),
+    leftLabel: varchar("left_label", { length: 80 }).notNull(),
+    rightLabel: varchar("right_label", { length: 80 }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("ecommerce_showcase_config_key_idx").on(t.key)],
+);
+
+// ──────────────────────────────────────────────────────────────
+// Hero Slides (Banners de Portada Principal + Cuadro Producto Enlazado)
+// ──────────────────────────────────────────────────────────────
+export const heroSlides = pgTable(
+  "hero_slides",
+  {
+    id: serial("id").primaryKey(),
+    badge: varchar("badge", { length: 80 }).notNull(),
+    promoPill: varchar("promo_pill", { length: 80 }).notNull(),
+    eyebrow: varchar("eyebrow", { length: 120 }).notNull(),
+    titleLine1: varchar("title_line1", { length: 120 }).notNull(),
+    titleHighlight: varchar("title_highlight", { length: 120 }).notNull(),
+    description: varchar("description", { length: 280 }).notNull(),
+    primaryCtaLabel: varchar("primary_cta_label", { length: 60 }).default("Ver más aquí >>").notNull(),
+    primaryCtaHref: varchar("primary_cta_href", { length: 240 }).default("/catalogo").notNull(),
+    secondaryCtaLabel: varchar("secondary_cta_label", { length: 60 }).default("Ofertas -50%").notNull(),
+    secondaryCtaHref: varchar("secondary_cta_href", { length: 240 }).default("/catalogo?oferta=1").notNull(),
+    bgImageUrl: text("bg_image_url").notNull(),
+    productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
+    cardTag: varchar("card_tag", { length: 60 }).default("Catálogo 2026").notNull(),
+    cardTitle: varchar("card_title", { length: 140 }).notNull(),
+    cardSubtitle: varchar("card_subtitle", { length: 160 }).notNull(),
+    cardPriceText: varchar("card_price_text", { length: 60 }).notNull(),
+    cardHref: varchar("card_href", { length: 240 }).notNull(),
+    cardImageUrl: text("card_image_url").notNull(),
+    cardHoverImageUrl: text("card_hover_image_url"),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("hero_slides_active_sort_idx").on(t.isActive, t.sortOrder)],
+);
+
+// ──────────────────────────────────────────────────────────────
+// Home Line Slides (Carrusel "¡Explora Nuestras Líneas!" en Portada)
+// ──────────────────────────────────────────────────────────────
+export const homeLineSlides = pgTable(
+  "home_line_slides",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 120 }).notNull(),
+    subtitle: varchar("subtitle", { length: 160 }).notNull(),
+    badge: varchar("badge", { length: 60 }).default("Colección 2026").notNull(),
+    imageUrl: text("image_url").notNull(),
+    hoverImageUrl: text("hover_image_url"),
+    linkHref: varchar("link_href", { length: 240 }).default("/catalogo").notNull(),
+    accent: varchar("accent", { length: 16 }).default("blue").notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("home_line_slides_active_sort_idx").on(t.isActive, t.sortOrder)],
+);
+
 
 
 

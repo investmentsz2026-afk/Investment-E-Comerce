@@ -5,6 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import {
+  Headphones,
+  PackageSearch,
+  Ruler,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+} from "lucide-react";
+import {
   FaArrowRight,
   FaChevronDown,
   FaChevronLeft,
@@ -23,6 +31,8 @@ import {
   FaTruckFast,
 } from "react-icons/fa6";
 import { SiWhatsapp } from "react-icons/si";
+import { ElasticMesh } from "@/components/ui/elastic-mesh";
+import { MagicRings } from "@/components/ui/magic-rings";
 import { cn } from "@/lib/utils";
 
 interface CareSlide {
@@ -35,13 +45,15 @@ interface CareSlide {
   description: string;
   primaryCta: { label: string; href: string; external?: boolean };
   secondaryCta: { label: string; href: string };
-  bgImageSrc: string;
-  sideCard: {
+  accentTheme: "crimson" | "cobalt" | "emerald";
+  orbitalHub: {
     tag: string;
+    metricValue: string;
+    metricLabel: string;
     title: string;
     subtitle: string;
     highlight: string;
-    imageSrc: string;
+    orbitTags: readonly [string, string, string];
   };
 }
 
@@ -60,14 +72,16 @@ const CARE_SLIDES: readonly CareSlide[] = [
       href: "https://wa.me/51926922583?text=Hola%20American%20Colt%20JEANS%E2%84%A2,%20deseo%20asesor%C3%ADa%20sobre%20prendas,%20tallas%20o%20mi%20pedido.",
       external: true,
     },
-    secondaryCta: { label: "Guía de Tallas", href: "#tallas" },
-    bgImageSrc: "/catalogo-colt/atencion-hero-banner.png",
-    sideCard: {
-      tag: "Asesoría en Vivo",
-      title: "WhatsApp Oficial",
+    secondaryCta: { label: "Seguir mi Pedido", href: "/seguir-pedido" },
+    accentTheme: "crimson",
+    orbitalHub: {
+      tag: "EN LÍNEA AHORA",
+      metricValue: "< 5 MIN",
+      metricLabel: "TIEMPO DE RESPUESTA",
+      title: "Asesoría Directa WhatsApp",
       subtitle: "+51 926 922 583",
-      highlight: "Lunes a Sábado · 9am - 8pm",
-      imageSrc: "/catalogo-colt/pantalon-king-767-model.png",
+      highlight: "Lun – Sáb · 9:00 a 20:00 hrs",
+      orbitTags: ["Soporte B2C & B2B", "Cambios 7 Días", "Rastreo en Vivo"],
     },
   },
   {
@@ -80,14 +94,16 @@ const CARE_SLIDES: readonly CareSlide[] = [
     description:
       "Entregas en Lima Metropolitana y Callao en 24 a 48 hrs con motorizado express (¡Gratis desde S/ 199!). Envíos a provincias vía Olva Courier y Shalom.",
     primaryCta: { label: "Ver Tarifas y Plazos", href: "#envios" },
-    secondaryCta: { label: "Rastrear Pedido", href: "/cuenta/pedidos" },
-    bgImageSrc: "/catalogo-colt/atencion-envios-banner.png",
-    sideCard: {
-      tag: "Despacho Rápido",
+    secondaryCta: { label: "Rastrear Pedido", href: "/seguir-pedido" },
+    accentTheme: "cobalt",
+    orbitalHub: {
+      tag: "RED LOGÍSTICA NACIONAL",
+      metricValue: "24 - 48H",
+      metricLabel: "DESPACHO EXPRESS LIMA",
       title: "Olva Courier & Shalom",
-      subtitle: "Código de seguimiento",
-      highlight: "Lima y Provincias",
-      imageSrc: "/catalogo-colt/camisa-zair-model.png",
+      subtitle: "Tracking y Guía Online",
+      highlight: "Envío Gratis Lima > S/ 199",
+      orbitTags: ["25 Regiones Perú", "Motorizado Express", "Guía en Vivo"],
     },
   },
   {
@@ -100,14 +116,16 @@ const CARE_SLIDES: readonly CareSlide[] = [
     description:
       "Consulta las medidas en centímetros de nuestros Pantalones Drill, Jeans Denim, Camisas y Polos. Si no te queda, te lo cambiamos sin problemas.",
     primaryCta: { label: "Explorar Tallas", href: "#tallas" },
-    secondaryCta: { label: "Ver Catálogo", href: "/catalogo?audiencia=hombre" },
-    bgImageSrc: "/catalogo-colt/atencion-tallas-banner.png",
-    sideCard: {
-      tag: "Calce Exacto",
+    secondaryCta: { label: "Solicitar Cambio", href: "/cambios-y-devoluciones" },
+    accentTheme: "emerald",
+    orbitalHub: {
+      tag: "PATRONES PERUANOS",
+      metricValue: "28 – 46",
+      metricLabel: "ESCALA DE TALLAS OFICIAL",
       title: "Drill Stretch & Denim",
       subtitle: "Skinny · Slim · Straight",
-      highlight: "Cambio Garantizado",
-      imageSrc: "/catalogo-colt/jean-comfort-762-model.png",
+      highlight: "Cambio Garantizado 7 Días",
+      orbitTags: ["Medidas en cm", "Elastano Premium", "Cambio Sin Costo"],
     },
   },
 ];
@@ -139,7 +157,7 @@ const QUICK_CARDS: readonly QuickCardItem[] = [
     icon: FaRotateLeft,
     href: "/cambios-y-devoluciones",
     badge: "GARANTÍA 7 DÍAS",
-    colorClass: "from-[#EF233C] to-[#B91C24]",
+    colorClass: "from-[#EF233C] to-[#DC2626]",
   },
   {
     id: "tallas",
@@ -301,7 +319,7 @@ const FAQS: readonly FaqItem[] = [
     id: "f4",
     category: "envios",
     q: "¿Cómo realizo el seguimiento de mi compra?",
-    a: "Apenas tu pedido sale de nuestro almacén central, recibirás una notificación a tu correo y WhatsApp con el código de seguimiento de la agencia. También puedes consultar el estado en cualquier momento iniciando sesión en la sección 'Mis Pedidos' dentro de tu cuenta.",
+    a: "Apenas realizas tu compra puedes ingresar a 'Seguir Pedido' en el menú superior con tu número de orden (ORD-2026-...) o código de guía para ver las actualizaciones en tiempo real. También puedes consultar todo tu historial iniciando sesión en 'Mis Pedidos'.",
   },
   {
     id: "f5",
@@ -429,120 +447,230 @@ export function CustomerCareView() {
 
   return (
     <div className="bg-white pt-[6rem] lg:pt-[9.25rem]">
-      {/* 1. HERO SLIDER INTERACTIVO DE ATENCIÓN AL CLIENTE */}
-      <section className="relative overflow-hidden bg-slate-950">
+      {/* 1. HERO CINÉTICO CON ANILLOS MÁGICOS WEBGL2 Y TÍTULO ELÁSTICO 3D (SIN IMAGEN DE FONDO) */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#040711] via-[#0A132B] to-[#0F172A] text-white">
+        {/* ANILLOS MÁGICOS INTERACTIVOS DE FONDO EN COLORES DE LA MARCA (ROJO CARMESÍ + AZUL COBALTO) */}
+        <div aria-hidden className="absolute inset-0 z-0">
+          <MagicRings
+            color="#EF233C"
+            colorTwo="#2563EB"
+            motion="pulse"
+            ringCount={6}
+            speed={1}
+            lineThickness={2}
+            glow={1}
+            hoverScale={1.2}
+            clickBurst
+            baseRadius={0.35}
+            radiusStep={0.1}
+            expansion={0.1}
+            taper={1.5}
+            rotation={0}
+            spin={0}
+            tilt={0}
+            dispersion={0}
+            grain={0}
+            opacity={1}
+            followMouse={false}
+            mouseInfluence={0.2}
+            hoverIntensity={1}
+            parallax={0.05}
+            intro
+            theme="dark"
+          />
+        </div>
+
+        {/* Halos de luz ambiental muy suaves para integrar el lienzo */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 -top-24 z-0 size-96 rounded-full bg-[#2563EB]/15 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 right-0 z-0 size-[420px] rounded-full bg-[#EF233C]/15 blur-3xl"
+        />
+
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={slide.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="relative flex min-h-[440px] w-full items-center sm:min-h-[480px] lg:min-h-[500px]"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 flex min-h-[450px] w-full items-center py-10 sm:min-h-[480px] lg:min-h-[500px] lg:py-12"
           >
-            {/* Imagen de fondo nítida de lado a lado */}
-            <div className="absolute inset-0">
-              <Image
-                src={slide.bgImageSrc}
-                alt={slide.titleLine1}
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover object-center"
-              />
-            </div>
-
-            {/* Sombra para contraste cinematográfico */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent"
-            />
-
-            <div className="shell relative z-10 flex w-full flex-col items-start justify-between gap-6 py-8 lg:flex-row lg:items-center">
-              {/* Cuadro de texto principal con transparencia moderna y texto nítido */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="w-full max-w-[24rem] rounded-2xl border border-white/25 bg-slate-950/30 p-4 text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-md sm:max-w-[27rem] sm:p-5"
-              >
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white shadow-xs">
-                    <FaHeadset className="size-2.5 text-white" aria-hidden />
-                    {slide.badge}
+            <div className="shell grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-8">
+              {/* COLUMNA IZQUIERDA: TIPOGRAFÍA GRÁFICA MODERNA Y LIMPIA */}
+              <div className="space-y-4 lg:col-span-7">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3.5 py-1 font-mono text-[0.65rem] font-black uppercase tracking-widest text-white shadow-md shadow-red-600/25">
+                    <FaHeadset className="size-3 text-white" aria-hidden />
+                    <span>{slide.badge}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-[#0055FF]/80 px-2.5 py-0.5 font-mono text-[0.6rem] font-extrabold uppercase tracking-wider text-white">
-                    <FaCircleCheck className="size-2.5 text-white" aria-hidden />
-                    {slide.promoPill}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/35 bg-sky-500/15 px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-sky-200 backdrop-blur-md">
+                    <FaCircleCheck className="size-3 text-emerald-400" aria-hidden />
+                    <span>{slide.promoPill}</span>
                   </span>
                 </div>
 
-                <p className="mt-2 font-mono text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-cyan-200 drop-shadow-sm">
-                  {slide.eyebrow}
+                <p className="flex items-center gap-2 font-mono text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-amber-300">
+                  <Sparkles className="size-3.5" aria-hidden />
+                  <span>{slide.eyebrow}</span>
                 </p>
 
-                <h1 className="mt-1 font-sans text-xl font-black uppercase leading-[1.1] tracking-tight text-white drop-shadow-md sm:text-2xl lg:text-3xl">
-                  <span>{slide.titleLine1} </span>
-                  <span className="mt-1 inline-block rounded-lg bg-[#EF233C] px-2.5 py-0.5 text-white">
-                    {slide.titleHighlight}
-                  </span>
-                </h1>
+                <div className="relative h-[108px] w-full max-w-[660px] sm:h-[132px] lg:h-[154px]">
+                  <h1 className="sr-only">
+                    {slide.titleLine1} {slide.titleHighlight}
+                  </h1>
+                  <ElasticMesh
+                    text={`${slide.titleLine1}\n${slide.titleHighlight}`}
+                    material="balloon"
+                    color="#ef233c"
+                    lineColors={["#ffffff", "#ff4b5c"]}
+                    align="left"
+                    fontWeight={900}
+                    inflate={1}
+                    stiffness={0.5}
+                    wobble={0.6}
+                    grabRadius={70}
+                    stretch={0.5}
+                    press={0.5}
+                    shadow={0.5}
+                    intro
+                    theme="dark"
+                    className="cursor-grab active:cursor-grabbing"
+                  />
+                </div>
 
-                <p className="mt-2 text-xs leading-relaxed text-white/95 drop-shadow-sm sm:text-sm">
+                <p className="max-w-xl text-sm font-medium leading-relaxed text-slate-300 sm:text-base">
                   {slide.description}
                 </p>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <a
-                    href={slide.primaryCta.href}
-                    target={slide.primaryCta.external ? "_blank" : undefined}
-                    rel={slide.primaryCta.external ? "noopener noreferrer" : undefined}
-                    className="inline-flex h-9.5 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-4 font-sans text-xs font-black uppercase tracking-wider text-white shadow-md transition-all hover:scale-105 hover:shadow-lg sm:h-10 sm:text-[0.75rem]"
-                  >
-                    <SiWhatsapp className="size-3.5" aria-hidden />
-                    <span>{slide.primaryCta.label}</span>
-                  </a>
-                  <a
-                    href={slide.secondaryCta.href}
-                    className="inline-flex h-9.5 items-center justify-center gap-1.5 rounded-full border border-white/80 bg-white/20 px-4 text-xs font-black uppercase tracking-wider text-white backdrop-blur-xs transition-all hover:scale-105 hover:bg-white hover:text-[#0055FF] sm:h-10 sm:text-[0.75rem]"
-                  >
-                    <span>{slide.secondaryCta.label}</span>
-                    <FaArrowRight className="size-3" aria-hidden />
-                  </a>
-                </div>
-              </motion.div>
+                {/* Botones Principales */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  {slide.primaryCta.external ? (
+                    <a
+                      href={slide.primaryCta.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-11 items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-6 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-emerald-600/25 transition-all hover:scale-105 hover:shadow-xl sm:text-sm"
+                    >
+                      <SiWhatsapp className="size-4" aria-hidden />
+                      <span>{slide.primaryCta.label}</span>
+                    </a>
+                  ) : (
+                    <a
+                      href={slide.primaryCta.href}
+                      className="bg-flow inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-6 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-red-600/25 transition-all hover:scale-105 sm:text-sm"
+                    >
+                      <span>{slide.primaryCta.label}</span>
+                      <FaArrowRight className="size-3.5" aria-hidden />
+                    </a>
+                  )}
 
-              {/* Tarjeta Visual de Soporte al Costado (3D / Imagen con modelo) */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.45, delay: 0.1 }}
-                className="hidden sm:block"
-              >
-                <div className="w-56 overflow-hidden rounded-3xl border-3 border-white bg-white p-2.5 shadow-[0_24px_55px_rgba(0,0,0,0.55)] transition-all hover:-translate-y-1 hover:border-[#0055FF]">
-                  <div className="relative aspect-[3/3.8] w-full overflow-hidden rounded-2xl bg-slate-100">
-                    <Image
-                      src={slide.sideCard.imageSrc}
-                      alt={slide.sideCard.title}
-                      fill
-                      sizes="220px"
-                      className="object-cover"
-                    />
-                    <span className="absolute left-2 top-2 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.52rem] font-extrabold uppercase text-white shadow-sm">
-                      {slide.sideCard.tag}
-                    </span>
-                  </div>
-                  <div className="mt-2 px-1">
-                    <p className="font-sans text-xs font-black uppercase text-slate-900">
-                      {slide.sideCard.title}
-                    </p>
-                    <p className="font-mono text-[0.68rem] font-bold text-[#0055FF]">
-                      {slide.sideCard.subtitle}
-                    </p>
-                    <p className="mt-0.5 text-[0.62rem] text-slate-500">{slide.sideCard.highlight}</p>
-                  </div>
+                  <Link
+                    href={slide.secondaryCta.href}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 text-xs font-extrabold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:scale-105 hover:border-white/60 hover:bg-white hover:text-slate-950 sm:text-sm"
+                  >
+                    <PackageSearch className="size-4" aria-hidden />
+                    <span>{slide.secondaryCta.label}</span>
+                  </Link>
                 </div>
-              </motion.div>
+
+                {/* Franja gráfica de confianza */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-3 text-xs font-semibold text-slate-300">
+                  <span className="inline-flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-emerald-400" aria-hidden />
+                    <span>Garantía Oficial 7 Días</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <FaClock className="size-3.5 text-amber-300" aria-hidden />
+                    <span>Lun – Sáb · 9:00 a 20:00 hrs</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <FaLocationDot className="size-3.5 text-sky-400" aria-hidden />
+                    <span>Lima &amp; 25 Regiones del Perú</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* COLUMNA DERECHA: NÚCLEO GRÁFICO DENTRO DE LOS ANILLOS ORBITALES */}
+              <div className="relative flex items-center justify-center lg:col-span-5">
+                <div className="relative flex size-[290px] items-center justify-center sm:size-[330px]">
+                  {/* Onda de pulso radar central */}
+                  <motion.div
+                    aria-hidden
+                    animate={{ scale: [0.88, 1.15, 0.88], opacity: [0.4, 0.08, 0.4] }}
+                    transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+                    className="pointer-events-none absolute inset-0 rounded-full border-2 border-sky-400/35"
+                  />
+
+                  {/* Anillo satélite con cápsulas flotantes */}
+                  <motion.div
+                    aria-hidden
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+                    className="pointer-events-none absolute inset-3 rounded-full border border-white/15"
+                  >
+                    <span className="absolute -top-1.5 left-1/2 size-3 -translate-x-1/2 rounded-full bg-amber-300 shadow-[0_0_12px_#FCD34D]" />
+                  </motion.div>
+
+                  {/* Tarjeta Central Glassmorphic con Gráficos */}
+                  <motion.div
+                    initial={{ scale: 0.94, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.45 }}
+                    className="relative z-10 w-64 rounded-3xl border border-white/20 bg-slate-900/75 p-5 text-center shadow-[0_24px_65px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:w-72 sm:p-6"
+                  >
+                    <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2563EB] via-[#1E3A8A] to-[#EF233C] text-white shadow-lg shadow-blue-600/30">
+                      {slide.id === "whatsapp-soporte" ? (
+                        <Headphones className="size-7" aria-hidden />
+                      ) : slide.id === "envios-nacionales" ? (
+                        <Truck className="size-7" aria-hidden />
+                      ) : (
+                        <Ruler className="size-7" aria-hidden />
+                      )}
+                    </div>
+
+                    <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-widest text-emerald-300">
+                      <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+                      {slide.orbitalHub.tag}
+                    </span>
+
+                    <div className="mt-3">
+                      <p className="bg-gradient-to-r from-white via-sky-100 to-amber-200 bg-clip-text font-sans text-3xl font-black tracking-tight text-transparent sm:text-4xl">
+                        {slide.orbitalHub.metricValue}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-sky-300">
+                        {slide.orbitalHub.metricLabel}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 border-t border-white/10 pt-3">
+                      <p className="font-sans text-sm font-black uppercase text-white">
+                        {slide.orbitalHub.title}
+                      </p>
+                      <p className="mt-0.5 font-mono text-xs font-bold text-amber-300">
+                        {slide.orbitalHub.subtitle}
+                      </p>
+                      <p className="mt-0.5 text-[0.68rem] text-slate-400">
+                        {slide.orbitalHub.highlight}
+                      </p>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                      {slide.orbitalHub.orbitTags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-[0.56rem] font-bold text-slate-200"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -552,7 +680,7 @@ export function CustomerCareView() {
           type="button"
           onClick={prevSlide}
           aria-label="Diapositiva anterior"
-          className="absolute left-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white bg-slate-950/60 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#0055FF] sm:size-10"
+          className="absolute left-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:size-10"
         >
           <FaChevronLeft className="size-3.5" aria-hidden />
         </button>
@@ -560,24 +688,24 @@ export function CustomerCareView() {
           type="button"
           onClick={nextSlide}
           aria-label="Siguiente diapositiva"
-          className="absolute right-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white bg-slate-950/60 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#0055FF] sm:size-10"
+          className="absolute right-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:size-10"
         >
           <FaChevronRight className="size-3.5" aria-hidden />
         </button>
 
         {/* Pestañas inferiores del carrusel */}
-        <div className="border-t border-white/10 bg-slate-950/80 backdrop-blur-md">
-          <div className="shell grid grid-cols-3 gap-2 py-2">
+        <div className="relative z-10 border-t border-white/10 bg-slate-950/75 backdrop-blur-md">
+          <div className="shell grid grid-cols-3 gap-2 py-2.5">
             {CARE_SLIDES.map((s, idx) => (
               <button
                 key={s.id}
                 type="button"
                 onClick={() => setSlideIdx(idx)}
                 className={cn(
-                  "rounded-xl px-3 py-1.5 text-center font-sans text-xs font-black uppercase tracking-wider transition-all",
+                  "rounded-xl px-3 py-2 text-center font-sans text-xs font-black uppercase tracking-wider transition-all",
                   idx === slideIdx
-                    ? "bg-[#0055FF] text-white shadow-md"
-                    : "text-slate-400 hover:text-white",
+                    ? "bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#EF233C] text-white shadow-md"
+                    : "text-slate-400 hover:bg-white/5 hover:text-white",
                 )}
               >
                 {s.titleHighlight}
@@ -609,10 +737,10 @@ export function CustomerCareView() {
           </div>
 
           {/* Banner Destacado: Gestión Oficial de Cambio de Talla con Subida de Fotos */}
-          <div className="mt-6 overflow-hidden rounded-3xl border-2 border-red-200 bg-gradient-to-r from-[#91151B] via-[#B91C24] to-[#041C4A] p-5 text-white shadow-xl sm:p-6">
+          <div className="mt-6 overflow-hidden rounded-3xl border-2 border-red-200 bg-gradient-to-r from-[#1E3A8A] via-[#DC2626] to-[#041C4A] p-5 text-white shadow-xl sm:p-6">
             <div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
               <div className="max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider text-[#B91C24] shadow-xs">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider text-[#DC2626] shadow-xs">
                   <FaRotateLeft className="size-2.5" aria-hidden />
                   <span>GARANTÍA DE CAMBIO DE TALLA</span>
                 </span>
@@ -626,7 +754,7 @@ export function CustomerCareView() {
 
               <Link
                 href="/cambios-y-devoluciones"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-sans text-xs font-black uppercase tracking-wider text-[#B91C24] shadow-lg transition-transform hover:scale-105 hover:bg-slate-100"
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-sans text-xs font-black uppercase tracking-wider text-[#DC2626] shadow-lg transition-transform hover:scale-105 hover:bg-slate-100"
               >
                 <span>Solicitar Cambio de Talla Ahora</span>
                 <FaArrowRight className="size-3" aria-hidden />
@@ -820,7 +948,7 @@ export function CustomerCareView() {
 
             {/* Tarjeta Provincias */}
             <div className="rounded-3xl border-2 border-blue-100 bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:border-[#EF233C]">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#EF233C] to-[#B91C24] text-white shadow-md">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#EF233C] to-[#DC2626] text-white shadow-md">
                 <FaLocationDot className="size-6" aria-hidden />
               </span>
               <h3 className="mt-4 font-sans text-lg font-black uppercase text-slate-900">
@@ -996,7 +1124,7 @@ export function CustomerCareView() {
       </section>
 
       {/* 6. BANNER DE CANALES OFICIALES DE SOPORTE DIRECTO */}
-      <section className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#91151B] py-12 text-white lg:py-16">
+      <section className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#1E3A8A] py-12 text-white lg:py-16">
         <div className="shell max-w-5xl">
           <div className="rounded-3xl border-2 border-white/20 bg-slate-950/40 p-6 backdrop-blur-md sm:p-10">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">

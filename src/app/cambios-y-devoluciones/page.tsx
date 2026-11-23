@@ -48,7 +48,7 @@ export default async function ProductReturnsPage() {
         <div>
           <Link
             href="/atencion-al-cliente"
-            className="inline-flex items-center gap-1.5 font-mono text-xs font-extrabold uppercase text-[#0055FF] hover:text-[#B91C24]"
+            className="inline-flex items-center gap-1.5 font-mono text-xs font-extrabold uppercase text-[#0055FF] hover:text-[#DC2626]"
           >
             <FaArrowLeft className="size-3" aria-hidden />
             <span>Volver al Centro de Atención al Cliente</span>

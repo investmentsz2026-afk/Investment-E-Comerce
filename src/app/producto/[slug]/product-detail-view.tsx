@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Check,
+  Clock,
   Package,
   ArrowRight,
   Heart,
@@ -23,7 +24,11 @@ import {
   X,
 } from "lucide-react";
 import { FaRulerHorizontal, FaShieldHalved } from "react-icons/fa6";
-import type { ProductRecord, CatalogProduct } from "@/types/catalog";
+import type {
+  ProductRecord,
+  ProductImageRecord,
+  CatalogProduct,
+} from "@/types/catalog";
 import type { ProductShippingCoverageInfo } from "@/server/shipping/service";
 import { formatPEN } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -41,6 +46,31 @@ interface ProductDetailViewProps {
   shippingCoverage: ProductShippingCoverageInfo;
 }
 
+const IMAGE_ROLE_WEIGHT: Record<string, number> = {
+  portada: 0,
+  cerca: 1,
+  reverso: 2,
+  ficha: 3,
+  galeria: 4,
+};
+
+const IMAGE_ROLE_LABEL: Record<string, string | null> = {
+  portada: "Modelo",
+  cerca: "De cerca",
+  reverso: "Reverso",
+  ficha: "Ficha",
+  galeria: null,
+};
+
+function sortImagesByRole(list: ProductImageRecord[]): ProductImageRecord[] {
+  return [...list].sort((a, b) => {
+    const wa = IMAGE_ROLE_WEIGHT[a.imageType ?? "galeria"] ?? 4;
+    const wb = IMAGE_ROLE_WEIGHT[b.imageType ?? "galeria"] ?? 4;
+    if (wa !== wb) return wa - wb;
+    return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+  });
+}
+
 export function ProductDetailView({
   product,
   related,
@@ -51,23 +81,7 @@ export function ProductDetailView({
   const favorited = isFavorite(product.slug);
   const { addItem, pendingVariantId } = useCart();
 
-  // Image gallery state
-  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
-  const images =
-    product.images.length > 0
-      ? product.images
-      : [
-          {
-            id: 0,
-            url: "/placeholder.jpg",
-            alt: product.name,
-            sortOrder: 0,
-            isPrimary: true,
-          },
-        ];
-  const selectedImage = images[selectedImageIdx] ?? images[0];
-
-  // Variant selection state
+  // Variant selection options
   const uniqueColors = useMemo(() => {
     const map = new Map<string, string>();
     for (const v of product.variants) {
@@ -86,7 +100,89 @@ export function ProductDetailView({
     return Array.from(set);
   }, [product.variants]);
 
-  const [selectedColor, setSelectedColor] = useState(uniqueColors[0]?.name ?? null);
+  // Galería base (imágenes generales del producto)
+  const generalImages = useMemo<ProductImageRecord[]>(() => {
+    const fallbackPlaceholder: ProductImageRecord[] = [
+      {
+        id: 0,
+        url: "/placeholder.jpg",
+        alt: product.name,
+        sortOrder: 0,
+        isPrimary: true,
+        imageType: "portada",
+        colorName: null,
+      },
+    ];
+    if (product.images.length === 0) return fallbackPlaceholder;
+    const generalOnly = product.images.filter(
+      (im) => !im.colorName || !im.colorName.trim(),
+    );
+    return sortImagesByRole(generalOnly.length > 0 ? generalOnly : product.images);
+  }, [product.images, product.name]);
+
+  const getImagesForColor = useCallback(
+    (colorName: string | null): ProductImageRecord[] | null => {
+      if (!colorName || !colorName.trim()) return null;
+      const target = colorName.trim().toLowerCase();
+      const matching = product.images.filter(
+        (im) => im.colorName && im.colorName.trim().toLowerCase() === target,
+      );
+      if (matching.length === 0) return null;
+
+      const sorted = sortImagesByRole(matching);
+      // Si la ficha técnica existe en la galería general y el color no tiene una propia, la anexamos al final
+      const generalFicha = generalImages.find((im) => im.imageType === "ficha");
+      const hasColorFicha = sorted.some((im) => im.imageType === "ficha");
+      if (generalFicha && !hasColorFicha) {
+        return [...sorted, generalFicha];
+      }
+      return sorted;
+    },
+    [product.images, generalImages],
+  );
+
+  const initialColor = useMemo(() => {
+    const mainPortadaUrl = generalImages[0]?.url;
+    if (mainPortadaUrl) {
+      const matched = uniqueColors.find((c) => {
+        const keyLower = c.name.trim().toLowerCase();
+        return product.images.some(
+          (im) =>
+            im.colorName &&
+            im.colorName.trim().toLowerCase() === keyLower &&
+            im.url === mainPortadaUrl,
+        );
+      });
+      if (matched) return matched.name;
+    }
+    return uniqueColors[0]?.name ?? null;
+  }, [generalImages, uniqueColors, product.images]);
+
+  const [selectedColor, setSelectedColor] = useState<string | null>(initialColor);
+  const [displayedImages, setDisplayedImages] = useState<ProductImageRecord[]>(
+    () => getImagesForColor(initialColor) ?? generalImages,
+  );
+  const [pendingColorNotice, setPendingColorNotice] = useState<string | null>(null);
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
+
+  const images = displayedImages.length > 0 ? displayedImages : generalImages;
+  const selectedImage = images[selectedImageIdx] ?? images[0];
+
+  const handleSelectColor = (colorName: string) => {
+    setSelectedColor(colorName);
+    setSizeHint(false);
+
+    const colorGallery = getImagesForColor(colorName);
+    if (colorGallery && colorGallery.length > 0) {
+      setDisplayedImages(colorGallery);
+      setSelectedImageIdx(0);
+      setPendingColorNotice(null);
+    } else {
+      // Conservamos las imágenes que sí se estaban mostrando y avisamos al cliente
+      setPendingColorNotice(colorName);
+    }
+  };
+
   const [selectedSize, setSelectedSize] = useState<string | null>(() => {
     if (uniqueSizes.includes("30")) return "30";
     return uniqueSizes[0] ?? null;
@@ -153,28 +249,39 @@ export function ProductDetailView({
           {/* Miniaturas verticales (escritorio) */}
           {images.length > 1 && (
             <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto sm:max-h-[640px] no-scrollbar w-full sm:w-20 shrink-0">
-              {images.map((img, i) => (
-                <button
-                  key={img.id}
-                  type="button"
-                  onClick={() => setSelectedImageIdx(i)}
-                  className={cn(
-                    "relative aspect-[3/4] w-16 sm:w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]",
-                    i === selectedImageIdx
-                      ? "border-[#801323] shadow-sm ring-1 ring-[#801323]"
-                      : "border-neutral-200/80 opacity-70 hover:opacity-100 hover:border-neutral-400",
-                  )}
-                  aria-label={`Ver foto ${i + 1} de ${product.name}`}
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.alt}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </button>
-              ))}
+              {images.map((img, i) => {
+                const roleLabel = img.imageType
+                  ? IMAGE_ROLE_LABEL[img.imageType] ?? null
+                  : null;
+                return (
+                  <button
+                    key={`${img.id}-${i}`}
+                    type="button"
+                    onClick={() => setSelectedImageIdx(i)}
+                    className={cn(
+                      "relative aspect-[3/4] w-16 sm:w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+                      i === selectedImageIdx
+                        ? "border-[#2563EB] shadow-sm ring-1 ring-[#2563EB]"
+                        : "border-neutral-200/80 opacity-70 hover:opacity-100 hover:border-neutral-400",
+                    )}
+                    aria-label={`Ver foto ${i + 1} de ${product.name}`}
+                  >
+                    <Image
+                      src={img.url}
+                      alt={img.alt}
+                      fill
+                      unoptimized={img.url.startsWith("/api/media/")}
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                    {roleLabel && (
+                      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-slate-950/70 py-0.5 text-center font-mono text-[0.52rem] font-bold uppercase tracking-wider text-white backdrop-blur-2xs">
+                        {roleLabel}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -182,7 +289,7 @@ export function ProductDetailView({
           <div className="relative aspect-[3/4] w-full flex-1 overflow-hidden rounded-3xl bg-[#EBF3EF] border border-neutral-200/60 shadow-xs">
             <AnimatePresence mode="wait">
               <motion.div
-                key={selectedImage.id}
+                key={`${selectedImage.id}-${selectedImage.url}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -193,6 +300,7 @@ export function ProductDetailView({
                   src={selectedImage.url}
                   alt={selectedImage.alt}
                   fill
+                  unoptimized={selectedImage.url.startsWith("/api/media/")}
                   priority
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
@@ -213,7 +321,29 @@ export function ProductDetailView({
                   Agotado
                 </span>
               )}
+              {selectedImage.imageType && IMAGE_ROLE_LABEL[selectedImage.imageType] && (
+                <span className="rounded-full bg-slate-950/75 px-3 py-1 font-mono text-[0.6rem] font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur-xs">
+                  {IMAGE_ROLE_LABEL[selectedImage.imageType]}
+                </span>
+              )}
             </div>
+
+            {/* Aviso sobre la imagen cuando el color seleccionado aún no tiene fotos propias */}
+            <AnimatePresence>
+              {pendingColorNotice && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute bottom-4 left-4 right-20 z-10 flex items-center gap-2 rounded-2xl border border-amber-300/80 bg-slate-950/85 px-3.5 py-2 text-xs font-semibold text-amber-100 shadow-lg backdrop-blur-md"
+                >
+                  <Clock className="size-3.5 shrink-0 text-amber-300" aria-hidden />
+                  <span>
+                    Foto en color <strong>{pendingColorNotice}</strong> en proceso de subida
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Flechas de Navegación Anterior / Siguiente */}
             {images.length > 1 && (
@@ -249,6 +379,16 @@ export function ProductDetailView({
         {/* ─── Columna Derecha: Información y Opciones de Compra ─── */}
         <div className="lg:col-span-6 space-y-5">
           <Reveal y={12}>
+            {/* Categoría oficial de la prenda */}
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Link
+                href={`/catalogo/${product.category.slug}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-red-200/80 bg-red-50 px-3 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-[#DC2626] transition-colors hover:border-[#DC2626] hover:bg-[#DC2626] hover:text-white"
+              >
+                <span>{product.category.name}</span>
+              </Link>
+            </div>
+
             {/* Título de la Prenda */}
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 leading-tight">
               {product.name}
@@ -302,14 +442,11 @@ export function ProductDetailView({
                         role="radio"
                         aria-checked={isSelected}
                         aria-label={c.name}
-                        onClick={() => {
-                          setSelectedColor(c.name);
-                          setSizeHint(false);
-                        }}
+                        onClick={() => handleSelectColor(c.name)}
                         title={inStock ? c.name : `${c.name} (agotado)`}
                         className={cn(
-                          "size-8 rounded-full border border-black/10 transition-all duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]",
-                          isSelected && "ring-2 ring-offset-2 ring-[#801323]",
+                          "size-8 rounded-full border border-black/10 transition-all duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+                          isSelected && "ring-2 ring-offset-2 ring-[#2563EB]",
                           !inStock && "opacity-35",
                         )}
                         style={{ backgroundColor: c.swatch }}
@@ -317,6 +454,29 @@ export function ProductDetailView({
                     );
                   })}
                 </div>
+
+                {/* Aviso amigable cuando el color elegido aún no tiene imágenes subidas */}
+                <AnimatePresence>
+                  {pendingColorNotice && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      role="status"
+                      className="mt-3 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/90 px-3.5 py-2.5 text-xs font-medium text-amber-950 shadow-2xs"
+                    >
+                      <Clock
+                        className="mt-0.5 size-4 shrink-0 text-amber-600"
+                        aria-hidden
+                      />
+                      <p>
+                        La imagen de esta prenda en color{" "}
+                        <strong className="font-extrabold">{pendingColorNotice}</strong>{" "}
+                        está en proceso de subida. Mientras tanto, te mostramos la vista de referencia disponible.
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
 
@@ -356,9 +516,9 @@ export function ProductDetailView({
                           setSizeHint(false);
                         }}
                         className={cn(
-                          "flex h-11 min-w-14 items-center justify-center rounded-xl border text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]",
+                          "flex h-11 min-w-14 items-center justify-center rounded-xl border text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
                           isSelected
-                            ? "border-[#801323] bg-[#801323]/5 font-bold text-[#801323] shadow-xs"
+                            ? "border-[#2563EB] bg-blue-50/70 font-bold text-[#1E40AF] shadow-xs"
                             : available
                               ? "border-neutral-300 bg-white text-neutral-800 hover:border-neutral-500"
                               : "border-neutral-200 bg-neutral-100 text-neutral-400 line-through cursor-not-allowed",
@@ -371,7 +531,7 @@ export function ProductDetailView({
                 </div>
 
                 {sizeHint && !selectedSize && (
-                  <p role="alert" className="mt-2 text-xs font-semibold text-[#801323]">
+                  <p role="alert" className="mt-2 text-xs font-semibold text-[#DC2626]">
                     Selecciona una talla para continuar.
                   </p>
                 )}
@@ -428,7 +588,7 @@ export function ProductDetailView({
             )}
 
             {actionFeedback && (
-              <p role="alert" className="mt-3 text-xs font-semibold text-[#801323]">
+              <p role="alert" className="mt-3 text-xs font-semibold text-[#DC2626]">
                 {actionFeedback}
               </p>
             )}
@@ -465,10 +625,10 @@ export function ProductDetailView({
                   (selectedVariant !== null && selectedVariant.stock <= 0)
                 }
                 className={cn(
-                  "flex h-13 flex-1 items-center justify-center gap-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]",
+                  "flex h-13 flex-1 items-center justify-center gap-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
                   isOutOfStock || (selectedVariant !== null && selectedVariant.stock <= 0)
                     ? "cursor-not-allowed bg-neutral-300 text-neutral-500 shadow-none"
-                    : "bg-[#801323] hover:bg-[#6b0f1c] shadow-[#801323]/25",
+                    : "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] shadow-red-600/25",
                 )}
               >
                 {isAddingCurrent ? (
@@ -492,9 +652,9 @@ export function ProductDetailView({
                 aria-pressed={favorited}
                 onClick={() => void toggleFavorite(product.slug, product.name)}
                 className={cn(
-                  "flex size-13 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]",
+                  "flex size-13 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]",
                   favorited
-                    ? "border-[#801323] bg-red-50 text-[#801323]"
+                    ? "border-rose-300 bg-rose-50 text-[#DC2626]"
                     : "border-neutral-300 bg-white text-neutral-700 hover:border-black hover:text-black",
                 )}
                 aria-label={
@@ -504,7 +664,7 @@ export function ProductDetailView({
                 }
               >
                 <Heart
-                  className={cn("size-5", favorited && "fill-[#801323] text-[#801323]")}
+                  className={cn("size-5", favorited && "fill-[#DC2626] text-[#DC2626]")}
                 />
               </button>
             </div>
@@ -521,7 +681,7 @@ export function ProductDetailView({
                   aria-expanded={showDescription}
                   aria-controls="accordion-description-content"
                   onClick={() => setShowDescription((prev) => !prev)}
-                  className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]"
+                  className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
                 >
                   <div className="flex items-center gap-2.5">
                     <FileText className="size-4 text-neutral-800" aria-hidden />
@@ -612,7 +772,7 @@ export function ProductDetailView({
                   aria-expanded={showShipping}
                   aria-controls="accordion-shipping-content"
                   onClick={() => setShowShipping((prev) => !prev)}
-                  className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]"
+                  className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
                 >
                   <div className="flex items-center gap-2.5">
                     <Truck className="size-4 text-neutral-800" aria-hidden />
@@ -646,22 +806,42 @@ export function ProductDetailView({
                         <div>
                           <div className="flex items-center gap-1.5 font-bold text-neutral-900">
                             <span className="size-2 rounded-full bg-emerald-600" />
-                            <span>Lima Metropolitana y Callao (Distritos habilitados)</span>
+                            <span>Lima Metropolitana y Callao (Zonas habilitadas)</span>
                           </div>
                           <p className="mt-1 text-neutral-500 text-[0.72rem]">
-                            Despacho directo a domicilio en todos los distritos activos de la capital:
+                            Zonas y distritos de Lima Metropolitana / Callao configurados por la tienda:
                           </p>
 
-                          {/* Lista alfabética en varias columnas en escritorio y legible en celular */}
-                          <div className="mt-2.5 max-h-48 overflow-y-auto rounded-xl border border-neutral-200/80 bg-white p-3 shadow-2xs">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-3 gap-y-1.5 font-mono text-[0.68rem] text-neutral-700">
-                              {shippingCoverage.enabledLimaDistricts.map((district) => (
-                                <span key={district} className="truncate">
-                                  • {district}
-                                </span>
+                          {shippingCoverage.configuredLimaPlaces.length > 0 ? (
+                            <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {shippingCoverage.configuredLimaPlaces.map((place) => (
+                                <div
+                                  key={place.code}
+                                  className="flex items-center justify-between gap-2 rounded-xl border border-emerald-200/80 bg-white px-3 py-2 shadow-2xs"
+                                >
+                                  <div className="min-w-0">
+                                    <p className="truncate font-bold text-neutral-900">
+                                      {place.district && place.district !== "*"
+                                        ? place.district
+                                        : place.name}
+                                    </p>
+                                    {place.district && place.district !== "*" && (
+                                      <p className="truncate text-[0.65rem] text-neutral-500">
+                                        {place.name}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-emerald-700">
+                                    {place.estimatedDays}
+                                  </span>
+                                </div>
                               ))}
                             </div>
-                          </div>
+                          ) : (
+                            <div className="mt-2.5 rounded-xl border border-neutral-200/80 bg-white p-3 text-[0.7rem] text-neutral-500">
+                              No hay zonas de Lima habilitadas actualmente en administración.
+                            </div>
+                          )}
 
                           <p className="mt-2 text-[0.7rem] text-neutral-500 italic">
                             El costo de envío se calcula cuando eliges tu destino al finalizar la compra.
@@ -676,7 +856,7 @@ export function ProductDetailView({
                           </div>
 
                           <p className="mt-1 text-neutral-500 text-[0.72rem]">
-                            Despachamos hacia todas las regiones del Perú a través de agencias autorizadas:
+                            Despachamos hacia las provincias habilitadas y agencias autorizadas:
                           </p>
 
                           {/* Agencias activas (incluye Shalom únicamente si está habilitada) */}
@@ -701,16 +881,20 @@ export function ProductDetailView({
                             ))}
                           </div>
 
-                          {/* Destinos configurados */}
+                          {/* Destinos provinciales configurados por admin */}
                           {shippingCoverage.provinceDestinations.length > 0 && (
-                            <div className="mt-2.5 rounded-xl border border-neutral-200/80 bg-white p-3 text-[0.68rem] text-neutral-600 space-y-1">
+                            <div className="mt-2.5 rounded-xl border border-neutral-200/80 bg-white p-3 text-[0.68rem] text-neutral-600 space-y-1.5">
                               <span className="font-bold text-neutral-800 block uppercase tracking-wider text-[0.62rem]">
-                                Destinos con cobertura configurada:
+                                Provincias y zonas habilitadas ({shippingCoverage.provinceDestinations.length}):
                               </span>
                               <ul className="list-disc pl-4 space-y-0.5">
                                 {shippingCoverage.provinceDestinations.map((d) => (
                                   <li key={d.code}>
-                                    <strong>{d.name}</strong> ({d.estimatedDays})
+                                    <strong>{d.name}</strong>
+                                    {d.department && d.department !== "*"
+                                      ? ` — ${d.department}${d.province && d.province !== "*" ? ` / ${d.province}` : ""}`
+                                      : ""}{" "}
+                                    ({d.estimatedDays})
                                   </li>
                                 ))}
                               </ul>
@@ -725,7 +909,7 @@ export function ProductDetailView({
                         {/* Bloque 3: Cambios y Devoluciones */}
                         <div className="pt-3 border-t border-neutral-200/60">
                           <div className="flex items-center gap-1.5 font-bold text-neutral-900">
-                            <RotateCcw className="size-3.5 text-[#801323]" />
+                            <RotateCcw className="size-3.5 text-[#DC2626]" />
                             <span>Cambios y Devoluciones (Garantía Oficial)</span>
                           </div>
 
@@ -742,7 +926,7 @@ export function ProductDetailView({
                             <div className="pt-1.5">
                               <Link
                                 href="/cambios-y-devoluciones"
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0055FF] hover:underline"
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E40AF] hover:underline"
                               >
                                 <span>Gestionar solicitud de cambio de talla o modelo</span>
                                 <ArrowRight className="size-3" />
@@ -765,7 +949,7 @@ export function ProductDetailView({
                     aria-expanded={showWholesale}
                     aria-controls="accordion-wholesale-content"
                     onClick={() => setShowWholesale((prev) => !prev)}
-                    className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#801323]"
+                    className="flex w-full items-center justify-between p-4 sm:p-4.5 text-left transition-colors hover:bg-[#F5F2EB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
                   >
                     <div className="flex items-center gap-2.5">
                       <Package className="size-4 text-neutral-800" aria-hidden />
@@ -825,7 +1009,7 @@ export function ProductDetailView({
                                   Desde {wp.minQuantity} uds.
                                   {wp.maxQuantity ? ` hasta ${wp.maxQuantity} uds.` : " a más"}
                                 </span>
-                                <span className="font-mono font-bold text-[#801323]">
+                                <span className="font-mono font-bold text-[#DC2626]">
                                   {formatPEN(wp.amount)} / ud.
                                 </span>
                               </div>
@@ -853,7 +1037,7 @@ export function ProductDetailView({
                           ) : (
                             <Link
                               href="/mayorista/registro"
-                              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] text-xs font-bold text-white shadow-xs transition-colors"
+                              className="bg-flow inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-xs font-bold text-white shadow-xs transition-all hover:brightness-105"
                             >
                               <Building2 className="size-3.5" />
                               <span>Registrar empresa mayorista con RUC</span>
@@ -888,7 +1072,7 @@ export function ProductDetailView({
             >
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <FaRulerHorizontal className="size-4 text-[#801323]" />
+                  <FaRulerHorizontal className="size-4 text-[#2563EB]" />
                   <h3
                     id="size-guide-title"
                     className="text-base font-extrabold uppercase tracking-tight text-neutral-900"
@@ -926,7 +1110,7 @@ export function ProductDetailView({
                       <td className="p-2.5">90 - 92 cm</td>
                       <td className="p-2.5">102 cm</td>
                     </tr>
-                    <tr className="bg-neutral-50/60 font-semibold text-[#801323]">
+                    <tr className="bg-blue-50/50 font-semibold text-[#1E40AF]">
                       <td className="p-2.5 font-bold">30</td>
                       <td className="p-2.5">78 - 80 cm</td>
                       <td className="p-2.5">94 - 96 cm</td>

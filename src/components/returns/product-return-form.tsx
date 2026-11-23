@@ -550,7 +550,7 @@ export function ProductReturnForm({ user, recentOrders = [] }: ProductReturnForm
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#B91C24] font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/25 transition-all hover:scale-[1.01] hover:from-[#0055FF] hover:via-[#1D4ED8] hover:to-[#0F3299] hover:shadow-blue-500/30 disabled:opacity-50 sm:text-sm"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#DC2626] font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/25 transition-all hover:scale-[1.01] hover:from-[#0055FF] hover:via-[#1D4ED8] hover:to-[#0F3299] hover:shadow-blue-500/30 disabled:opacity-50 sm:text-sm"
             >
               {isPending ? (
                 <>
@@ -665,7 +665,7 @@ export function ProductReturnForm({ user, recentOrders = [] }: ProductReturnForm
               <div className="mt-4 flex items-center justify-between gap-3 pt-2">
                 <Link
                   href="/cuenta/pedidos"
-                  className="font-mono text-xs font-bold text-[#0055FF] underline hover:text-[#B91C24]"
+                  className="font-mono text-xs font-bold text-[#0055FF] underline hover:text-[#DC2626]"
                 >
                   Ver mis pedidos en mi cuenta
                 </Link>

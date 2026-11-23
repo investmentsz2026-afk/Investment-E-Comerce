@@ -118,6 +118,7 @@ export function FavoritesView({ isAccountPage = false }: { isAccountPage?: boole
                       src={item.imageUrl}
                       alt={item.imageAlt}
                       fill
+                      unoptimized={item.imageUrl.startsWith("/api/media/")}
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 90vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />

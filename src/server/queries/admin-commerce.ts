@@ -586,7 +586,10 @@ export async function getAdminPromotionsCatalog() {
 
   const [allPromotions, allCategories, allProducts] = await Promise.all([
     db.select().from(promotions).orderBy(desc(promotions.createdAt)),
-    db.select({ id: categories.id, name: categories.name }).from(categories).orderBy(asc(categories.name)),
+    db
+      .select({ id: categories.id, name: categories.name, slug: categories.slug })
+      .from(categories)
+      .orderBy(asc(categories.sortOrder), asc(categories.name)),
     db
       .select({ id: products.id, name: products.name, slug: products.slug, isWholesale: products.isWholesale })
       .from(products)
@@ -638,7 +641,7 @@ export async function getAdminInventoryCatalog(filters?: {
 
   const db = getDb();
 
-  const [variantsRows, activeReservations, movementsRows] = await Promise.all([
+  const [variantsRows, activeReservations, movementsRows, primaryImagesRows] = await Promise.all([
     db
       .select({
         variant: productVariants,
@@ -679,8 +682,23 @@ export async function getAdminInventoryCatalog(filters?: {
       .leftJoin(users, eq(inventoryMovements.actorId, users.id))
       .leftJoin(orders, eq(inventoryMovements.orderId, orders.id))
       .orderBy(desc(inventoryMovements.createdAt))
-      .limit(200),
+      .limit(300),
+    db
+      .select({
+        productId: productImages.productId,
+        url: productImages.url,
+        isPrimary: productImages.isPrimary,
+      })
+      .from(productImages)
+      .orderBy(asc(productImages.sortOrder)),
   ]);
+
+  const primaryImageByProduct = new Map<number, string>();
+  for (const img of primaryImagesRows) {
+    if (!primaryImageByProduct.has(img.productId) || img.isPrimary) {
+      primaryImageByProduct.set(img.productId, img.url);
+    }
+  }
 
   const reservedByVariant = new Map<number, number>();
   for (const r of activeReservations) {
@@ -693,6 +711,7 @@ export async function getAdminInventoryCatalog(filters?: {
     return {
       ...row,
       reservedUnits,
+      primaryImageUrl: primaryImageByProduct.get(row.productId) ?? "/placeholder.jpg",
     };
   });
 
@@ -767,7 +786,11 @@ export async function getAdminInventoryCatalog(filters?: {
       lowStockCount,
     },
     variants: filteredVariants,
-    allVariantsForSelector: variantsRows,
+    allVariantsForSelector: variantsRows.map((r) => ({
+      ...r,
+      reservedUnits: reservedByVariant.get(r.variant.id) ?? 0,
+      primaryImageUrl: primaryImageByProduct.get(r.productId) ?? "/placeholder.jpg",
+    })),
     activeReservations,
     movements: filteredMovements,
   };

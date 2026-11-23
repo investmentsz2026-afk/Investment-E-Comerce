@@ -14,16 +14,16 @@ export function CategoryNav({ categories }: CategoryNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Categorías" className="no-scrollbar w-full max-w-full overflow-x-auto lg:mx-0 lg:px-0">
-      <ul className="flex gap-1 border-b border-ink/10">
+    <nav aria-label="Categorías" className="no-scrollbar w-full max-w-full overflow-x-auto py-2">
+      <ul className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
         <li>
           <Link
             href="/catalogo"
             className={cn(
-              "relative block whitespace-nowrap px-4 py-3.5 text-[0.72rem] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+              "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
               pathname === "/catalogo"
-                ? "text-ink after:absolute after:inset-x-4 after:-bottom-px after:h-0.5 after:bg-ink"
-                : "text-taupe-400 hover:text-ink",
+                ? "border-[#DC2626] bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm shadow-red-500/25"
+                : "border-slate-200 bg-white text-slate-600 hover:border-[#DC2626]/50 hover:bg-red-50/50 hover:text-[#DC2626]",
             )}
           >
             Todo
@@ -37,15 +37,24 @@ export function CategoryNav({ categories }: CategoryNavProps) {
               <Link
                 href={href}
                 className={cn(
-                  "relative block whitespace-nowrap px-4 py-3.5 text-[0.72rem] font-medium uppercase tracking-[0.16em] transition-colors duration-300",
+                  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
                   isActive
-                    ? "text-ink after:absolute after:inset-x-4 after:-bottom-px after:h-0.5 after:bg-ink"
-                    : "text-taupe-400 hover:text-ink",
+                    ? "border-[#DC2626] bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm shadow-red-500/25"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-[#DC2626]/50 hover:bg-red-50/50 hover:text-[#DC2626]",
                 )}
               >
-                {cat.name}
+                <span>{cat.name}</span>
                 {cat.productCount !== undefined && cat.productCount > 0 && (
-                  <span className="ml-1 font-mono text-[0.58rem] opacity-50">{cat.productCount}</span>
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-0.5 font-mono text-[0.6rem] font-black",
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-100 text-slate-500",
+                    )}
+                  >
+                    {cat.productCount}
+                  </span>
                 )}
               </Link>
             </li>

@@ -17,7 +17,7 @@ import {
 } from "@/server/db/schema";
 import { getCurrentSession, requireAdmin } from "@/server/auth/session";
 import { validatePhone } from "@/server/auth/validators";
-import { checkRateLimit, recordFailedAttempt } from "@/server/auth/rate-limit";
+import { checkRateLimit, clearRateLimit, recordFailedAttempt } from "@/server/auth/rate-limit";
 import { getCartSnapshot } from "@/server/cart/service";
 import { isUserAuthorizedForWholesale } from "@/server/pricing/engine";
 import {
@@ -49,7 +49,11 @@ import {
   sendOrderDeliveredEmail,
 } from "@/server/email";
 import type { ActionResult } from "./auth";
-import type { OrderStatus } from "@/server/queries/orders";
+import {
+  getPublicOrderTracking,
+  type OrderStatus,
+  type PublicOrderTrackingResult,
+} from "@/server/queries/orders";
 
 function generateOrderNumber(): string {
   const year = new Date().getFullYear();
@@ -1001,6 +1005,7 @@ export async function customerCancelPendingOrderAction(input: {
   revalidatePath(`/cuenta/pedidos/${order.id}`);
   revalidatePath("/cuenta/pedidos");
   revalidatePath("/admin/pedidos");
+  revalidatePath("/seguir-pedido");
 
   return { success: true };
 }
@@ -1022,6 +1027,7 @@ export async function adminManageOrderAction(input: {
   carrierName?: string;
   trackingNumber?: string;
   trackingUrl?: string;
+  deliveryProofImageUrl?: string;
   paymentReference?: string;
   adminNotes?: string;
   reason?: string;
@@ -1118,6 +1124,7 @@ export async function adminManageOrderAction(input: {
     revalidatePath("/admin/pedidos");
     revalidatePath(`/cuenta/pedidos/${order.id}`);
     revalidatePath("/cuenta/pedidos");
+    revalidatePath("/seguir-pedido");
 
     return { success: true, data: { status: "cancelled" } };
   }
@@ -1162,6 +1169,7 @@ export async function adminManageOrderAction(input: {
     revalidatePath("/admin/pedidos");
     revalidatePath(`/cuenta/pedidos/${order.id}`);
     revalidatePath("/cuenta/pedidos");
+    revalidatePath("/seguir-pedido");
 
     return { success: true, data: { status: "refunded" } };
   }
@@ -1178,6 +1186,10 @@ export async function adminManageOrderAction(input: {
     ? (input.trackingUrl.trim() ? input.trackingUrl.trim().slice(0, 500) : null)
     : order.trackingUrl;
 
+  const deliveryProofImageUrl = input.deliveryProofImageUrl !== undefined
+    ? (input.deliveryProofImageUrl.trim() ? input.deliveryProofImageUrl.trim().slice(0, 500) : null)
+    : order.deliveryProofImageUrl;
+
   await db
     .update(orders)
     .set({
@@ -1185,6 +1197,7 @@ export async function adminManageOrderAction(input: {
       carrierName,
       trackingNumber,
       trackingUrl,
+      deliveryProofImageUrl,
       adminNotes: input.adminNotes !== undefined
         ? (input.adminNotes.trim() ? input.adminNotes.trim().slice(0, 2000) : null)
         : order.adminNotes,
@@ -1226,6 +1239,7 @@ export async function adminManageOrderAction(input: {
   revalidatePath("/admin/pedidos");
   revalidatePath(`/cuenta/pedidos/${order.id}`);
   revalidatePath("/cuenta/pedidos");
+  revalidatePath("/seguir-pedido");
 
   return {
     success: true,
@@ -1407,6 +1421,56 @@ export async function adminReconcileMercadoPagoPaymentAction(input: {
   return {
     success: true,
     data: { message: syncRes.message },
+  };
+}
+
+/**
+ * Acción pública para rastrear el estado en tiempo real de un pedido por número de orden
+ * (`ORD-2026-XXXXXX`) o número de seguimiento/guía del courier.
+ * Incluye protección anti-enumeración mediante Rate Limiting por IP.
+ */
+export async function trackPublicOrderAction(
+  orderCodeInput: string,
+): Promise<ActionResult<PublicOrderTrackingResult>> {
+  const code = (orderCodeInput ?? "").trim().replace(/^#/, "");
+  if (code.length < 4 || code.length > 80) {
+    return {
+      success: false,
+      error: "Ingresa un número de pedido válido (ej. ORD-2026-481920) o código de guía.",
+    };
+  }
+
+  const hdrs = await headers();
+  const forwarded = hdrs.get("x-forwarded-for");
+  const clientIp = (forwarded ? forwarded.split(",")[0] : hdrs.get("x-real-ip") ?? "anon").trim();
+  const rateKey = `track-order:${clientIp}`;
+  const limitStatus = checkRateLimit(rateKey, 25, 10 * 60 * 1000);
+
+  if (!limitStatus.allowed) {
+    return {
+      success: false,
+      error: `Demasiados intentos de búsqueda consecutivos. Espera ${limitStatus.retryAfterSeconds ?? 60} segundos e intenta nuevamente.`,
+    };
+  }
+
+  const { user } = await getCurrentSession();
+  const trackingData = await getPublicOrderTracking(
+    code,
+    user ? { id: user.id, role: user.role } : null,
+  );
+
+  if (!trackingData) {
+    recordFailedAttempt(rateKey, 25, 10 * 60 * 1000);
+    return {
+      success: false,
+      error: `No encontramos ningún pedido con el código "${code.toUpperCase()}". Verifica el número en tu correo de confirmación o en tu historial de cuenta.`,
+    };
+  }
+
+  clearRateLimit(rateKey);
+  return {
+    success: true,
+    data: trackingData,
   };
 }
 

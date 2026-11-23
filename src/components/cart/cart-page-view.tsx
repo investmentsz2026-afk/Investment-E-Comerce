@@ -136,7 +136,7 @@ export function CartPageView() {
             />
             <polygon
               points="50,54 110,54 105,108 44,108"
-              stroke="#801323"
+              stroke="#DC2626"
               strokeWidth="2"
               strokeDasharray="4 3"
               fill="none"
@@ -153,7 +153,7 @@ export function CartPageView() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/catalogo"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-8 text-xs font-bold text-white shadow-md shadow-[#801323]/25 transition-all active:scale-95"
+            className="bg-flow inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] px-8 text-xs font-bold text-white shadow-md shadow-blue-900/20 transition-all active:scale-95"
           >
             <span>Explorar catálogo</span>
             <ArrowRight className="size-3.5" aria-hidden />
@@ -268,6 +268,7 @@ export function CartPageView() {
                         src={item.imageUrl}
                         alt={item.imageAlt}
                         fill
+                        unoptimized={item.imageUrl.startsWith("/api/media/")}
                         sizes="128px"
                         className="object-cover transition-transform duration-500 hover:scale-105"
                       />

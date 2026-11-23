@@ -82,7 +82,7 @@ export function OrderStatusBadge({ status }: { status: OrderStatus }) {
     <span
       data-testid={`order-status-badge-${status}`}
       className={cn(
-        "inline-flex items-center border px-2.5 py-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em]",
+        "inline-flex items-center rounded-full border px-3 py-1 font-sans text-[0.68rem] font-extrabold uppercase tracking-[0.08em] shadow-xs",
         meta.className,
       )}
     >
@@ -100,7 +100,7 @@ export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
     <span
       data-testid={`payment-status-badge-${status}`}
       className={cn(
-        "inline-flex items-center border px-2.5 py-0.5 font-mono text-[0.62rem] font-medium uppercase tracking-[0.12em]",
+        "inline-flex items-center rounded-full border px-3 py-1 font-sans text-[0.65rem] font-bold uppercase tracking-[0.08em]",
         meta.className,
       )}
     >

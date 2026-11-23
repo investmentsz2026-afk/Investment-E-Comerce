@@ -346,10 +346,20 @@ export const LIMA_METROPOLITANA_DISTRICTS = [
 export interface ProductShippingCoverageInfo {
   /** Distritos de Lima Metropolitana actualmente habilitados según las reglas activas de shipping_zones */
   enabledLimaDistricts: string[];
+  /** Zonas y distritos de Lima/Callao configurados explícitamente por el administrador */
+  configuredLimaPlaces: Array<{
+    code: string;
+    name: string;
+    district: string | null;
+    estimatedDays: string;
+  }>;
   /** Destinos configurados para Provincias */
   provinceDestinations: Array<{
     code: string;
     name: string;
+    department: string;
+    province: string | null;
+    district: string | null;
     estimatedDays: string;
   }>;
   /** Agencias activas según la configuración de la tienda */
@@ -393,18 +403,40 @@ export function getProductShippingCoverage(zones: ShippingZoneRecord[]): Product
     })
     .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
 
-  // 3. Destinos en Provincias configurados y habilitados (excluyendo Lima y Callao)
-  const provinceDestinations = zones
-    .filter(
-      (z) =>
-        z.isAvailable &&
-        z.code !== "LIMA_METRO" &&
-        z.code !== "CALLAO_METRO" &&
-        !z.code.startsWith("AGENCIA_"),
-    )
+  // 2b. Zonas y distritos de Lima/Callao activos configurados por administración
+  const configuredLimaPlaces = zones
+    .filter((z) => {
+      if (!z.isAvailable) return false;
+      const dept = z.department.trim().toLowerCase();
+      const prov = (z.province ?? "*").trim().toLowerCase();
+      if (dept === "callao") return true;
+      if (dept === "lima" && prov === "lima") return true;
+      return false;
+    })
     .map((z) => ({
       code: z.code,
       name: z.name,
+      district: z.district,
+      estimatedDays: z.estimatedDaysLabel,
+    }));
+
+  // 3. Destinos en Provincias configurados y habilitados (excluyendo Lima Metropolitana y Callao)
+  const provinceDestinations = zones
+    .filter((z) => {
+      if (!z.isAvailable) return false;
+      if (z.code.startsWith("AGENCIA_")) return false;
+      const dept = z.department.trim().toLowerCase();
+      const prov = (z.province ?? "*").trim().toLowerCase();
+      if (dept === "callao") return false;
+      if (dept === "lima" && prov === "lima") return false;
+      return true;
+    })
+    .map((z) => ({
+      code: z.code,
+      name: z.name,
+      department: z.department,
+      province: z.province,
+      district: z.district,
       estimatedDays: z.estimatedDaysLabel,
     }));
 
@@ -446,6 +478,7 @@ export function getProductShippingCoverage(zones: ShippingZoneRecord[]): Product
 
   return {
     enabledLimaDistricts,
+    configuredLimaPlaces,
     provinceDestinations,
     activeAgencies,
     isShalomEnabled,
@@ -474,6 +507,10 @@ export async function updateShippingZoneConfig(
   adminId: number,
   zoneId: number,
   input: {
+    name?: string;
+    department?: string;
+    province?: string | null;
+    district?: string | null;
     rateAmount: number;
     freeShippingMinSubtotal: number | null;
     estimatedDaysLabel: string;
@@ -482,22 +519,43 @@ export async function updateShippingZoneConfig(
   },
 ): Promise<void> {
   const db = getDb();
+  const patch: Partial<typeof shippingZones.$inferInsert> = {
+    rateAmount: Math.max(0, Math.trunc(input.rateAmount)),
+    freeShippingMinSubtotal:
+      input.freeShippingMinSubtotal !== null && input.freeShippingMinSubtotal > 0
+        ? Math.trunc(input.freeShippingMinSubtotal)
+        : null,
+    estimatedDaysLabel: input.estimatedDaysLabel.trim().slice(0, 120),
+    isAvailable: input.isAvailable,
+    unavailableReason: input.unavailableReason?.trim()
+      ? input.unavailableReason.trim().slice(0, 255)
+      : null,
+    updatedBy: adminId,
+    updatedAt: new Date(),
+  };
+
+  if (input.name?.trim()) {
+    patch.name = input.name.trim().slice(0, 150);
+  }
+  if (input.department?.trim()) {
+    patch.department = input.department.trim().slice(0, 80);
+  }
+  if (input.province !== undefined) {
+    patch.province =
+      input.province?.trim() && input.province !== "*"
+        ? input.province.trim().slice(0, 80)
+        : "*";
+  }
+  if (input.district !== undefined) {
+    patch.district =
+      input.district?.trim() && input.district !== "*"
+        ? input.district.trim().slice(0, 80)
+        : "*";
+  }
+
   await db
     .update(shippingZones)
-    .set({
-      rateAmount: Math.max(0, Math.trunc(input.rateAmount)),
-      freeShippingMinSubtotal:
-        input.freeShippingMinSubtotal !== null && input.freeShippingMinSubtotal > 0
-          ? Math.trunc(input.freeShippingMinSubtotal)
-          : null,
-      estimatedDaysLabel: input.estimatedDaysLabel.trim().slice(0, 120),
-      isAvailable: input.isAvailable,
-      unavailableReason: input.unavailableReason?.trim()
-        ? input.unavailableReason.trim().slice(0, 255)
-        : null,
-      updatedBy: adminId,
-      updatedAt: new Date(),
-    })
+    .set(patch)
     .where(eq(shippingZones.id, zoneId));
 
   await db.insert(auditLogs).values({
@@ -521,6 +579,8 @@ export interface PhysicalStoreRecord {
   phone: string | null;
   openingHours: string;
   googleMapsUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
   isActive: boolean;
   sortOrder: number;
 }
@@ -563,6 +623,8 @@ export async function createPhysicalStore(
     phone?: string | null;
     openingHours?: string;
     googleMapsUrl?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     isActive?: boolean;
     sortOrder?: number;
   },
@@ -582,6 +644,14 @@ export async function createPhysicalStore(
       phone: input.phone?.trim() ? input.phone.trim().slice(0, 30) : null,
       openingHours: (input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm").slice(0, 150),
       googleMapsUrl: input.googleMapsUrl?.trim() ? input.googleMapsUrl.trim() : null,
+      latitude:
+        typeof input.latitude === "number" && Number.isFinite(input.latitude)
+          ? input.latitude
+          : null,
+      longitude:
+        typeof input.longitude === "number" && Number.isFinite(input.longitude)
+          ? input.longitude
+          : null,
       isActive: input.isActive ?? true,
       sortOrder: input.sortOrder ?? 0,
     })
@@ -614,6 +684,8 @@ export async function updatePhysicalStore(
     phone?: string | null;
     openingHours?: string;
     googleMapsUrl?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     isActive?: boolean;
     sortOrder?: number;
   },
@@ -631,6 +703,14 @@ export async function updatePhysicalStore(
       phone: input.phone?.trim() ? input.phone.trim().slice(0, 30) : null,
       openingHours: (input.openingHours?.trim() || "Lunes a Sábado: 10:00 am - 8:00 pm").slice(0, 150),
       googleMapsUrl: input.googleMapsUrl?.trim() ? input.googleMapsUrl.trim() : null,
+      latitude:
+        typeof input.latitude === "number" && Number.isFinite(input.latitude)
+          ? input.latitude
+          : null,
+      longitude:
+        typeof input.longitude === "number" && Number.isFinite(input.longitude)
+          ? input.longitude
+          : null,
       isActive: input.isActive ?? true,
       sortOrder: input.sortOrder ?? 0,
       updatedAt: new Date(),

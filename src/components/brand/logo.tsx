@@ -26,7 +26,7 @@ export function Logo({ className, withDescriptor = false, size = "md" }: LogoPro
     <span className={cn("inline-flex flex-col items-center leading-none select-none", className)}>
       <span
         className={cn(
-          "relative inline-block overflow-hidden rounded-sm bg-[#91151B] shadow-xs",
+          "relative inline-block overflow-hidden rounded-lg bg-[#91151B] shadow-md ring-1 ring-white/40",
           dimensions,
         )}
       >

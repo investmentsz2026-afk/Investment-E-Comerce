@@ -67,6 +67,8 @@ export interface Product {
   image: ImageAsset;
   /** Segunda imagen (vista cercana solo de la prenda) que aparece al pasar el cursor. */
   hoverImage?: ImageAsset;
+  /** Imágenes específicas por nombre de color para cambiar al seleccionar color en el catálogo. */
+  colorImages?: Record<string, { primary?: ImageAsset; hover?: ImageAsset }>;
   wholesale?: WholesaleTier;
   /** True cuando no queda stock en ninguna variante activa. */
   soldOut?: boolean;
@@ -97,11 +99,15 @@ export interface CategoryRecord {
   productCount?: number;
 }
 
+export type ProductImageType = "portada" | "cerca" | "reverso" | "ficha" | "galeria";
+
 /** Imagen de producto consultada desde la DB. */
 export interface ProductImageRecord {
   id: number;
   url: string;
   alt: string;
+  imageType?: ProductImageType | string;
+  colorName?: string | null;
   sortOrder: number;
   isPrimary: boolean;
 }

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { siteConfig } from "@/config/site";
 import { getProducts, getAvailableFilters } from "@/server/queries/products";
-import { getCategoriesWithProducts } from "@/server/queries/categories";
+import { getCategories } from "@/server/queries/categories";
+import { getActivePublicPromotions } from "@/server/queries/promotions";
 import { parseCatalogParams, type RawSearchParams } from "@/lib/catalog-params";
 import { CatalogBreadcrumbs } from "@/components/catalog/catalog-breadcrumbs";
 import { CatalogSkeleton } from "@/components/catalog/catalog-skeleton";
@@ -30,10 +31,11 @@ interface CatalogPageProps {
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const filters = parseCatalogParams(await searchParams);
 
-  const [result, available, categories] = await Promise.all([
+  const [result, available, categories, promotions] = await Promise.all([
     getProducts(filters),
     getAvailableFilters(),
-    getCategoriesWithProducts(),
+    getCategories(),
+    getActivePublicPromotions(),
   ]);
 
   return (
@@ -49,6 +51,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
             totalPages={result.totalPages}
             available={available}
             categories={categories}
+            promotions={promotions}
             title="Shop American Colt"
           />
         </Suspense>

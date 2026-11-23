@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import {
   FaArrowRight,
   FaBagShopping,
@@ -18,6 +18,7 @@ import {
   FaMagnifyingGlass,
   FaPercent,
   FaTag,
+  FaTruckFast,
   FaUser,
   FaXmark,
 } from "react-icons/fa6";
@@ -286,8 +287,57 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const lastScrollYRef = useRef(0);
   const pathname = usePathname();
   const router = useRouter();
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 220,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  const isSideDrawerOpen = drawerCategoryId !== null;
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const currentY = Math.max(0, window.scrollY);
+        const delta = currentY - lastScrollYRef.current;
+
+        setIsScrolled(currentY > 24);
+
+        if (isSideDrawerOpen || searchOpen || mobileOpen || currentY < 80) {
+          setHeaderHidden(false);
+        } else if (delta > 8 && currentY > 120) {
+          setHeaderHidden(true);
+        } else if (delta < -6) {
+          setHeaderHidden(false);
+        }
+
+        lastScrollYRef.current = currentY;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isSideDrawerOpen, searchOpen, mobileOpen]);
+
+  useEffect(() => {
+    const resetTimer = window.setTimeout(() => {
+      setHeaderHidden(false);
+    }, 0);
+    return () => window.clearTimeout(resetTimer);
+  }, [pathname]);
 
   const isAuthOrAdmin =
     pathname.startsWith("/admin") ||
@@ -302,7 +352,6 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
   const { cart, openDrawer } = useCart();
   const favoritesHref = favSnapshot.isAuthenticated ? "/cuenta/favoritos" : "/favoritos";
 
-  const isSideDrawerOpen = drawerCategoryId !== null;
   useLockBodyScroll(isSideDrawerOpen);
   useEscapeKey(isSideDrawerOpen, () => setDrawerCategoryId(null));
 
@@ -330,12 +379,13 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
 
   // Promoción activa para el Cintillo Superior (configurada desde /admin/promociones)
   const topBarPromos = promotions.filter((p) => p.showInTopBar);
-  const activeTopPromo = topBarPromos[0] ?? promotions[0] ?? null;
+  const activeTopPromo = topBarPromos[0] ?? null;
+  const rawTopBaseHref = activeTopPromo?.ctaHref || "/catalogo";
   const topPromoHref = activeTopPromo
-    ? `${activeTopPromo.ctaHref || "/catalogo"}${
-        (activeTopPromo.ctaHref || "/catalogo").includes("?") ? "&" : "?"
-      }oferta=${activeTopPromo.discountPercent}`
-    : "/catalogo?novedades=1&oferta=50";
+    ? rawTopBaseHref.includes("oferta=")
+      ? rawTopBaseHref
+      : `${rawTopBaseHref}${rawTopBaseHref.includes("?") ? "&" : "?"}oferta=${activeTopPromo.discountPercent}`
+    : "/catalogo";
 
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -353,40 +403,123 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 shadow-md">
-        {/* FILA 1: Cintillo Promocional Superior en Azul Eléctrico Reluciente con Icono Font Awesome */}
-        <div className="bg-gradient-to-r from-[#0055FF] via-[#0077FF] to-[#0055FF] text-white border-b border-white/20">
-          <div className="shell flex min-h-8 items-center justify-center py-1 text-center">
+      <motion.header
+        initial={false}
+        animate={{
+          y: headerHidden ? "-108%" : "0%",
+          opacity: headerHidden ? 0.92 : 1,
+        }}
+        transition={{
+          duration: 0.34,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 will-change-transform transition-shadow duration-300",
+          isScrolled
+            ? "shadow-[0_18px_42px_-12px_rgba(153,15,25,0.42)]"
+            : "shadow-[0_12px_32px_-10px_rgba(153,15,25,0.32)]",
+        )}
+      >
+        {/* FILA 1: Cintillo Promocional Superior en Oro Brillante Metálico (sin marrones) sobre Header Rojo */}
+        <div className="relative overflow-hidden bg-flow bg-gradient-to-r from-[#F59E0B] via-[#FACC15] to-[#F59E0B] text-[#450A0A] border-b border-amber-200/70">
+          {/* Destello satinado blanco-dorado en movimiento */}
+          <div
+            aria-hidden
+            className="animate-silk-ribbon pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.58)_0%,transparent_70%)]"
+          />
+          <div className="shell relative z-10 flex min-h-8 items-center justify-center py-1 text-center">
             {activeTopPromo ? (
               <Link
                 href={topPromoHref}
-                className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[0.68rem] font-extrabold tracking-wide text-white hover:underline sm:text-xs"
+                className="inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-0.5 text-[0.68rem] font-black tracking-wide text-[#450A0A] hover:opacity-90 sm:text-xs"
               >
-                <FaTag className="size-3 shrink-0 text-white" aria-hidden />
+                <FaTag className="size-3 shrink-0 text-[#B91C1C]" aria-hidden />
                 <span>{activeTopPromo.cleanDescription}</span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white shadow-xs">
-                  <FaPercent className="size-2.5" aria-hidden />
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-gradient-to-r from-[#B91C1C] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-105">
+                  <FaPercent className="size-2.5 text-[#FEF08A]" aria-hidden />
                   <span>OFERTA -{activeTopPromo.discountPercent}% · VER PRENDAS</span>
                 </span>
               </Link>
             ) : (
               <Link
-                href="/catalogo?novedades=1&oferta=50"
-                className="inline-flex flex-wrap items-center justify-center gap-x-2 text-[0.68rem] font-extrabold tracking-wide text-white hover:underline sm:text-xs"
+                href="/catalogo"
+                className="inline-flex flex-wrap items-center justify-center gap-x-2 text-[0.68rem] font-black tracking-wide text-[#450A0A] hover:underline sm:text-xs"
               >
-                <FaTag className="size-3 shrink-0 text-white" aria-hidden />
+                <FaTag className="size-3 shrink-0 text-[#B91C1C]" aria-hidden />
                 <span>
-                  GRAN PROMOCIÓN 3x2 Y HASTA 50% DE DESCUENTO · Delivery Gratis en Lima por compras mayores a S/ 199.00
+                  AMERICAN COLT JEANS™ · Confección Peruana de Alta Calidad · Envíos a Lima y todo el Perú
                 </span>
               </Link>
             )}
           </div>
         </div>
 
-        {/* FILA 2: Barra Principal Roja Oficial Reluciente American Colt JEANS™ */}
-        <div className="bg-gradient-to-r from-[#91151B] via-[#B91C24] to-[#91151B] text-white">
-          <div className="shell flex h-16 items-center justify-between gap-3 lg:h-[4.5rem] lg:gap-6">
-            {/* Izquierda: Menú móvil + Logo Oficial */}
+        {/* FILA 2: Barra Principal en Rojo Vivo Degradado con Olas de Seda / Telas Tipo Aire en Movimiento */}
+        <div className="relative overflow-hidden bg-flow bg-gradient-to-r from-[#9E0812] via-[#DC1422] to-[#A80A14] text-white border-b border-white/15">
+          {/* CAPAS DE OLAS Y TELAS TIPO AIRE EN MOVIMIENTO (Rojo fuerte oscuro + Rojo vivo + Toque sutil de rojo claro) */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            {/* Ola 1: Tela profunda en Rojo Fuerte Oscuro (#8A060E -> #B80C17) */}
+            <svg
+              viewBox="0 0 1440 120"
+              preserveAspectRatio="none"
+              className="animate-silk-wave absolute -left-[10%] top-0 h-full w-[145%] opacity-85"
+            >
+              <defs>
+                <linearGradient id="coltSilkDeep" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#8A060E" />
+                  <stop offset="45%" stopColor="#C8101E" />
+                  <stop offset="100%" stopColor="#940710" />
+                </linearGradient>
+              </defs>
+              <path
+                fill="url(#coltSilkDeep)"
+                d="M0,25 C280,105 520,-25 840,55 C1120,120 1290,10 1440,60 L1440,120 L0,120 Z"
+              />
+            </svg>
+
+            {/* Ola 2: Tela intermedia en Rojo Vivo Fuerte (#D90429 -> #E61220 -> #B50B16) */}
+            <svg
+              viewBox="0 0 1440 120"
+              preserveAspectRatio="none"
+              className="animate-silk-wave-reverse absolute -left-[15%] top-0 h-full w-[150%] opacity-80"
+            >
+              <defs>
+                <linearGradient id="coltSilkVivid" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#B80C17" />
+                  <stop offset="50%" stopColor="#E61220" />
+                  <stop offset="100%" stopColor="#9E0812" />
+                </linearGradient>
+              </defs>
+              <path
+                fill="url(#coltSilkVivid)"
+                d="M0,75 C320,-15 640,115 980,25 C1210,-25 1350,85 1440,40 L1440,120 L0,120 Z"
+              />
+            </svg>
+
+            {/* Ola 3: Velo de aire con un toque sutil de Rojo Claro Luminoso (#FF4B57) sin blanquear */}
+            <svg
+              viewBox="0 0 1440 120"
+              preserveAspectRatio="none"
+              className="animate-silk-ribbon absolute -left-[8%] top-0 h-full w-[135%] mix-blend-screen opacity-55"
+            >
+              <defs>
+                <linearGradient id="coltSilkLight" x1="0%" y1="50%" x2="100%" y2="50%">
+                  <stop offset="0%" stopColor="#990912" stopOpacity="0" />
+                  <stop offset="35%" stopColor="#FF3B47" stopOpacity="0.45" />
+                  <stop offset="55%" stopColor="#FF525E" stopOpacity="0.55" />
+                  <stop offset="75%" stopColor="#E10615" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#8E0710" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                fill="url(#coltSilkLight)"
+                d="M0,45 C360,115 700,-20 1080,65 C1260,105 1360,25 1440,50 L1440,0 L0,0 Z"
+              />
+            </svg>
+          </div>
+
+          <div className="shell relative z-10 flex h-16 items-center justify-between gap-3 lg:h-[4.5rem] lg:gap-6">
+            {/* Izquierda: Menú móvil + Logo Oficial en su Color Original */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
                 type="button"
@@ -401,19 +534,19 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
               <Link
                 href="/"
                 aria-label="American Colt JEANS — Inicio"
-                className="flex items-center focus-visible:outline-none"
+                className="flex items-center transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-none"
               >
                 <Logo size="md" />
               </Link>
             </div>
 
-            {/* Centro: Buscador ancho en forma de píldora blanca con botón Azul Eléctrico */}
+            {/* Centro: Buscador ancho en forma de píldora blanca con botón en Rojo Fuerte Degradado */}
             <form
               onSubmit={handleSearchSubmit}
               role="search"
-              className="hidden md:flex flex-1 max-w-2xl items-center"
+              className="hidden md:flex flex-1 min-w-0 max-w-xl items-center"
             >
-              <div className="relative flex w-full items-center overflow-hidden rounded-full border-2 border-white/80 bg-white shadow-lg">
+              <div className="relative flex w-full items-center overflow-hidden rounded-full border-2 border-white/85 bg-white shadow-[0_8px_28px_rgba(110,5,12,0.35)] transition-all focus-within:border-white focus-within:ring-2 focus-within:ring-white/40">
                 <input
                   type="search"
                   value={searchQuery}
@@ -425,27 +558,49 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 <button
                   type="submit"
                   aria-label="Buscar productos"
-                  className="mr-1 flex h-9 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] text-white shadow-sm transition-transform hover:scale-105 lg:w-16"
+                  className="bg-flow mr-1 flex h-9 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm transition-all duration-300 hover:scale-105 hover:from-[#1E3A8A] hover:to-[#2563EB] lg:w-16"
                 >
                   <FaMagnifyingGlass className="size-3.5" aria-hidden />
                 </button>
               </div>
             </form>
 
-            {/* Derecha: Mi Ubicación + Favoritos + Cuenta + Bolsa de Compras */}
-            <div className="flex items-center justify-end gap-1 sm:gap-2.5 shrink-0">
+            {/* Derecha: Seguir Pedido + Nuestras Tiendas + Favoritos + Cuenta + Bolsa de Compras */}
+            <div className="flex items-center justify-end gap-1 sm:gap-2 shrink-0">
               <Link
-                href="/atencion-al-cliente#envios"
-                className="hidden xl:flex items-center gap-2 rounded-full px-3 py-1.5 text-left text-white transition-colors hover:bg-white/15"
+                href="/seguir-pedido"
+                data-testid="header-track-order-link"
+                className="hidden lg:flex items-center gap-2 rounded-full border border-white/25 bg-black/15 px-3 py-1.5 text-left text-white backdrop-blur-xs transition-all hover:border-white/50 hover:bg-black/25 xl:px-3.5"
               >
-                <FaLocationDot className="size-4 shrink-0 text-white" aria-hidden />
+                <FaTruckFast className="size-4 shrink-0 text-amber-300" aria-hidden />
                 <span className="flex flex-col leading-tight">
-                  <span className="text-[0.62rem] font-semibold text-white/85">Mi Ubicación</span>
-                  <span className="inline-flex items-center gap-1 text-xs font-extrabold text-white">
-                    Lima, Lima
-                    <FaChevronDown className="size-2.5 opacity-80" aria-hidden />
+                  <span className="text-[0.58rem] font-semibold text-white/90">Rastreo en Vivo</span>
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-extrabold text-white">
+                    Seguir Pedido
                   </span>
                 </span>
+              </Link>
+
+              <Link
+                href="/tiendas"
+                className="hidden lg:flex items-center gap-2 rounded-full border border-white/25 bg-black/15 px-3 py-1.5 text-left text-white backdrop-blur-xs transition-all hover:border-white/50 hover:bg-black/25 xl:px-3.5"
+              >
+                <FaLocationDot className="size-4 shrink-0 text-amber-300" aria-hidden />
+                <span className="flex flex-col leading-tight">
+                  <span className="text-[0.58rem] font-semibold text-white/90">Nuestras Tiendas</span>
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-extrabold text-white">
+                    Recojo y Mapa
+                  </span>
+                </span>
+              </Link>
+
+              <Link
+                href="/seguir-pedido"
+                aria-label="Seguir mi pedido"
+                title="Seguir mi pedido"
+                className="flex lg:hidden size-10 items-center justify-center rounded-full text-amber-300 transition-colors hover:bg-white/15"
+              >
+                <FaTruckFast className="size-4" aria-hidden />
               </Link>
 
               <button
@@ -472,7 +627,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                   />
                   <span
                     data-testid="header-favorites-count"
-                    className="absolute -right-2 -top-1.5 flex min-w-4 h-4 items-center justify-center rounded-full bg-[#0055FF] px-1 font-mono text-[0.6rem] font-black text-white tabular-nums shadow-xs"
+                    className="absolute -right-2 -top-1.5 flex min-w-4 h-4 items-center justify-center rounded-full bg-white px-1 font-mono text-[0.6rem] font-black text-[#C8101E] tabular-nums shadow-xs"
                   >
                     {favoritesCount}
                   </span>
@@ -499,7 +654,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                   <FaBagShopping className="size-4 sm:size-5" aria-hidden />
                   <span
                     data-testid="header-cart-count"
-                    className="absolute -right-2 -top-1.5 flex min-w-4 h-4 items-center justify-center rounded-full bg-[#0055FF] px-1 font-mono text-[0.6rem] font-black text-white tabular-nums shadow-xs"
+                    className="absolute -right-2 -top-1.5 flex min-w-4 h-4 items-center justify-center rounded-full bg-white px-1 font-mono text-[0.6rem] font-black text-[#C8101E] tabular-nums shadow-xs"
                   >
                     {cart.totalUnits}
                   </span>
@@ -509,15 +664,15 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
           </div>
         </div>
 
-        {/* FILA 3: Sub-barra Blanca con Botones que al hacer CLICK despliegan el Panel Lateral Profesional */}
-        <div className="relative hidden border-b border-blue-100 bg-white text-slate-900 lg:block">
+        {/* FILA 3: Sub-barra Blanca Cristalina con Botones de Categorías en Rojo Fuerte Degradado */}
+        <div className="relative hidden border-b border-red-100 bg-white/95 backdrop-blur-md text-slate-900 lg:block">
           <nav
             aria-label="Categorías principales"
             className="shell flex h-12 items-center justify-between gap-4"
           >
             <Link
               href="/atencion-al-cliente"
-              className="flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-wider text-[#0055FF] transition-all hover:bg-[#0055FF] hover:text-white"
+              className="flex items-center gap-2 rounded-xl border border-red-200/80 bg-red-50/70 px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-wider text-[#C8101E] transition-all duration-300 hover:border-transparent hover:bg-gradient-to-r hover:from-[#991B1B] hover:via-[#DC2626] hover:to-[#EF233C] hover:text-white hover:shadow-sm"
             >
               <span className="leading-tight">
                 ATENCIÓN
@@ -528,7 +683,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
             </Link>
 
             {/* Al hacer CLICK en cualquiera de estas opciones se despliega del costado el panel profesional con fondo nublado */}
-            <ul className="flex items-center gap-2 xl:gap-3">
+            <ul className="flex items-center gap-1.5 xl:gap-2.5">
               {DRAWER_CATEGORIES.map((item) => {
                 const isSelected = drawerCategoryId === item.id;
                 return (
@@ -540,10 +695,10 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[0.8rem] font-extrabold tracking-wide transition-all duration-200",
                         isSelected
-                          ? "bg-[#0055FF] text-white shadow-md scale-105"
+                          ? "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-md shadow-red-600/25 scale-105"
                           : item.highlight
-                            ? "bg-red-50 text-[#B91C24] hover:bg-[#B91C24] hover:text-white"
-                            : "text-slate-800 hover:bg-blue-50 hover:text-[#0055FF]",
+                            ? "border border-red-200 bg-red-50 text-[#C8101E] hover:border-transparent hover:bg-gradient-to-r hover:from-[#991B1B] hover:via-[#DC2626] hover:to-[#EF233C] hover:text-white hover:shadow-sm"
+                            : "text-slate-800 hover:bg-red-50/70 hover:text-[#C8101E]",
                       )}
                     >
                       <span>{item.label}</span>
@@ -560,18 +715,18 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
               })}
             </ul>
 
-            {/* Botones Derecha Relucientes con Iconos Font Awesome */}
+            {/* Botones Derecha con Degradado Rojo Fuerte Vivo y Azul Índigo */}
             <div className="flex items-center gap-2">
               <Link
                 href="/mayorista/cotizaciones"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#B91C24] to-[#EF233C] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm transition-transform duration-200 hover:scale-105"
+                className="bg-flow inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm shadow-red-600/25 transition-all duration-200 hover:scale-105 hover:shadow-md"
               >
                 <FaBoxesStacked className="size-3.5" aria-hidden />
                 <span>Mayorista B2B</span>
               </Link>
               <Link
                 href="/catalogo?novedades=1&oferta=50"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm transition-transform duration-200 hover:scale-105"
+                className="bg-flow inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm shadow-blue-600/25 transition-all duration-200 hover:scale-105 hover:shadow-md"
               >
                 <FaPercent className="size-3" aria-hidden />
                 <span>Liquidación 3x2</span>
@@ -579,7 +734,34 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
             </div>
           </nav>
         </div>
-      </header>
+
+        {/* Barra luminosa de progreso de lectura / scroll en la base del header */}
+        <motion.div
+          aria-hidden
+          style={{ scaleX }}
+          className="h-[3px] w-full origin-left bg-gradient-to-r from-amber-300 via-[#EF233C] to-[#2563EB] shadow-[0_0_10px_rgba(239,35,60,0.65)]"
+        />
+      </motion.header>
+
+      {/* Cápsula flotante sutil cuando el header se oculta al bajar, para reabrir menú con un clic */}
+      <AnimatePresence>
+        {headerHidden && !isSideDrawerOpen && !searchOpen && !mobileOpen && (
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: -24, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -24, scale: 0.9 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            onClick={() => setHeaderHidden(false)}
+            aria-label="Mostrar barra de navegación"
+            className="fixed left-1/2 top-2.5 z-40 inline-flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/40 bg-gradient-to-r from-[#991B1B]/95 via-[#DC2626]/95 to-[#EF233C]/95 px-4 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_10px_28px_-6px_rgba(185,28,28,0.55)] backdrop-blur-md transition hover:scale-105"
+          >
+            <span className="size-1.5 animate-pulse rounded-full bg-amber-300" />
+            <span>Menú · American Colt</span>
+            <FaChevronDown className="size-2.5 opacity-90" aria-hidden />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* PANEL LATERAL DESPLEGABLE AL HACER CLICK (Con fondo nublado que al hacer click vuelve a la página) */}
       <AnimatePresence>
@@ -596,21 +778,21 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
               aria-label="Cerrar menú lateral y volver a la página"
             />
 
-            {/* Panel Lateral Izquierdo con Esquinas Redondeadas y Diseño Reluciente */}
+            {/* Panel Lateral Izquierdo con Esquinas Redondeadas y Diseño Moderno */}
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed inset-y-0 left-0 z-10 flex w-full max-w-md flex-col overflow-hidden rounded-r-3xl border-r-2 border-white/40 bg-white shadow-[25px_0_60px_-15px_rgba(0,85,255,0.35)]"
+              className="fixed inset-y-0 left-0 z-10 flex w-full max-w-md flex-col overflow-hidden rounded-r-3xl border-r-2 border-white/40 bg-white shadow-[25px_0_60px_-15px_rgba(185,28,28,0.35)]"
             >
-              {/* Cabecera del Drawer en Azul Eléctrico + Rojo American Colt mostrando únicamente la opción seleccionada */}
-              <div className="relative bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#B91C24] px-6 py-4 text-white">
+              {/* Cabecera del Drawer en Rojo Fuerte Degradado con Olas Sutiles */}
+              <div className="bg-flow relative overflow-hidden bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#B91C1C] px-6 py-4 text-white">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Logo size="sm" />
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#0055FF] shadow-md">
-                      <FaLayerGroup className="size-3 text-[#EF233C]" aria-hidden />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#C8101E] shadow-md">
+                      <FaLayerGroup className="size-3 text-[#DC2626]" aria-hidden />
                       <span>{activeCategoryConfig.label}</span>
                     </span>
                   </div>
@@ -618,7 +800,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                     type="button"
                     onClick={() => setDrawerCategoryId(null)}
                     aria-label="Cerrar panel"
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white transition-transform hover:scale-110 hover:bg-white hover:text-[#B91C24]"
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white transition-transform hover:scale-110 hover:bg-white hover:text-[#C8101E]"
                   >
                     <FaXmark className="size-4" aria-hidden />
                   </button>
@@ -627,9 +809,9 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
 
               {/* Contenido Desplegable del Panel Lateral */}
               <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-                <div className="flex items-center justify-between rounded-2xl bg-blue-50/80 px-4 py-3 border border-blue-100">
+                <div className="flex items-center justify-between rounded-2xl bg-red-50/60 px-4 py-3 border border-red-100">
                   <div>
-                    <span className="font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-[#0055FF]">
+                    <span className="font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-[#C8101E]">
                       EXPLORANDO SECCIÓN
                     </span>
                     <h2 className="font-sans text-xl font-black uppercase tracking-tight text-slate-900">
@@ -640,7 +822,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                   <Link
                     href={activeCategoryConfig.allHref}
                     onClick={() => setDrawerCategoryId(null)}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#0055FF] px-3.5 py-2 text-[0.7rem] font-extrabold uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-105 hover:bg-[#B91C24]"
+                    className="bg-flow inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3.5 py-2 text-[0.7rem] font-extrabold uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-105"
                   >
                     <span>Ver Todo</span>
                     <FaArrowRight className="size-3" aria-hidden />
@@ -654,21 +836,21 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                     return (
                       <div
                         key={group.id}
-                        className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all hover:border-blue-300"
+                        className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all hover:border-red-300"
                       >
                         <button
                           type="button"
                           onClick={() => toggleAccordion(group.id)}
                           aria-expanded={isOpen}
-                          className="flex w-full items-center justify-between bg-slate-50/80 px-4 py-3.5 text-left transition-colors hover:bg-blue-50/50"
+                          className="flex w-full items-center justify-between bg-slate-50/80 px-4 py-3.5 text-left transition-colors hover:bg-red-50/50"
                         >
                           <div className="flex items-center gap-2">
-                            <FaLayerGroup className="size-3.5 text-[#0055FF]" aria-hidden />
+                            <FaLayerGroup className="size-3.5 text-[#DC2626]" aria-hidden />
                             <span className="font-sans text-xs font-black uppercase tracking-wide text-slate-900 sm:text-sm">
                               {group.title}
                             </span>
                             {group.badge && (
-                              <span className="rounded-full bg-[#EF233C] px-2 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-white">
+                              <span className="rounded-full bg-gradient-to-r from-[#B91C1C] to-[#DC2626] px-2 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-white">
                                 {group.badge}
                               </span>
                             )}
@@ -676,7 +858,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                           <FaChevronDown
                             className={cn(
                               "size-3.5 text-slate-500 transition-transform duration-200",
-                              isOpen && "rotate-180 text-[#0055FF]",
+                              isOpen && "rotate-180 text-[#DC2626]",
                             )}
                             aria-hidden
                           />
@@ -696,17 +878,17 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                                   <Link
                                     href={subItem.href}
                                     onClick={() => setDrawerCategoryId(null)}
-                                    className="group/link flex items-center justify-between rounded-xl px-2.5 py-2.5 text-xs font-bold text-slate-700 transition-all hover:bg-blue-50 hover:pl-4 hover:text-[#0055FF] sm:text-sm"
+                                    className="group/link flex items-center justify-between rounded-xl px-2.5 py-2.5 text-xs font-bold text-slate-700 transition-all hover:bg-red-50/80 hover:pl-4 hover:text-[#C8101E] sm:text-sm"
                                   >
                                     <span>{subItem.label}</span>
                                     <div className="flex items-center gap-2">
                                       {subItem.tag && (
-                                        <span className="rounded-full bg-blue-100 px-2 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-[#0055FF]">
+                                        <span className="rounded-full bg-red-50 px-2 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-[#C8101E]">
                                           {subItem.tag}
                                         </span>
                                       )}
                                       <FaArrowRight
-                                        className="size-3 text-slate-400 transition-transform group-hover/link:translate-x-1 group-hover/link:text-[#0055FF]"
+                                        className="size-3 text-slate-400 transition-transform group-hover/link:translate-x-1 group-hover/link:text-[#C8101E]"
                                         aria-hidden
                                       />
                                     </div>
@@ -725,7 +907,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 <Link
                   href={activeCategoryConfig.banner.href}
                   onClick={() => setDrawerCategoryId(null)}
-                  className="group relative block overflow-hidden rounded-2xl border-2 border-blue-200 bg-[#0055FF] p-5 text-white shadow-lg"
+                  className="group relative block overflow-hidden rounded-2xl border border-red-200 bg-[#991B1B] p-5 text-white shadow-lg"
                 >
                   <Image
                     src={activeCategoryConfig.banner.image.src}
@@ -739,17 +921,17 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                   />
                   <div
                     aria-hidden
-                    className="absolute inset-0 bg-gradient-to-r from-[#0055FF]/90 via-[#0055FF]/65 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-[#991B1B]/90 via-[#DC2626]/70 to-transparent"
                   />
                   <div className="relative z-10 max-w-[85%]">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase text-[#C8101E]">
                       <FaTag className="size-2.5" aria-hidden />
                       {activeCategoryConfig.banner.tag}
                     </span>
                     <p className="mt-2 font-sans text-base font-black uppercase leading-tight">
                       {activeCategoryConfig.banner.title}
                     </p>
-                    <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase text-[#0055FF]">
+                    <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase text-[#C8101E]">
                       <span>Entrar a la Oferta</span>
                       <FaArrowRight className="size-3" aria-hidden />
                     </span>
@@ -762,7 +944,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 <Link
                   href={activeCategoryConfig.allHref}
                   onClick={() => setDrawerCategoryId(null)}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] text-xs font-extrabold uppercase tracking-widest text-white shadow-md transition-transform hover:scale-[1.02]"
+                  className="bg-flow flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-xs font-extrabold uppercase tracking-widest text-white shadow-md transition-transform hover:scale-[1.02]"
                 >
                   <span>Entrar a {activeCategoryConfig.label} Completo</span>
                   <FaArrowRight className="size-3.5" aria-hidden />

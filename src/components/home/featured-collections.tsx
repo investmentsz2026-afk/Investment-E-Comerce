@@ -2,17 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Layers } from "lucide-react";
+import { ArrowUpRight, Layers } from "lucide-react";
 import { InfiniteCardSlider } from "@/components/ui/infinite-card-slider";
-
-const categoryLinks = [
-  { label: "Jeans Denim", href: "/catalogo/denim?audiencia=hombre" },
-  { label: "Pantalones Drill", href: "/catalogo/pantalones?audiencia=hombre" },
-  { label: "Bermuda Balance 770", href: "/producto/bermuda-drill-balance-770" },
-  { label: "Camisas Zair & Kendall", href: "/catalogo/camisas?audiencia=hombre" },
-  { label: "Polos Piqué Mark", href: "/catalogo/polos?audiencia=hombre" },
-  { label: "Ventas por Mayor B2B", href: "/mayorista" },
-] as const;
 
 const COLLECTIONS_SLIDER = [
   {
@@ -76,7 +67,7 @@ export function FeaturedCollections() {
     <section id="colecciones" aria-labelledby="colecciones-title" className="overflow-hidden bg-paper py-10 lg:py-14">
       <div className="shell">
         <div className="flex flex-col items-center text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0055FF] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
+          <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
             <Layers className="size-3.5 text-amber-300" aria-hidden />
             <span>CATÁLOGO OFICIAL AMERICAN COLT JEANS™</span>
           </span>
@@ -84,7 +75,7 @@ export function FeaturedCollections() {
             id="colecciones-title"
             className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl"
           >
-            ¡DESCUBRE NUESTRAS <span className="text-[#0055FF]">COLECCIONES!</span>
+            ¡DESCUBRE NUESTRAS <span className="bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] bg-clip-text text-transparent">COLECCIONES!</span>
           </h2>
         </div>
 
@@ -117,10 +108,10 @@ export function FeaturedCollections() {
                 />
                 <span
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-[#0055FF]/90 via-slate-950/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#1E3A8A]/25 to-transparent"
                 />
 
-                <span className="absolute left-3.5 top-3.5 rounded-full bg-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-widest text-paper shadow-md">
+                <span className="bg-flow absolute left-3.5 top-3.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-widest text-paper shadow-md">
                   {col.tag}
                 </span>
 
@@ -136,7 +127,7 @@ export function FeaturedCollections() {
                       Explorar Línea
                     </span>
                   </span>
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-paper text-[#0055FF] shadow-md transition-all duration-300 group-hover:bg-[#EF233C] group-hover:text-paper">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-paper text-[#1E40AF] shadow-md transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper">
                     <ArrowUpRight className="size-4" aria-hidden />
                   </span>
                 </span>
@@ -145,27 +136,6 @@ export function FeaturedCollections() {
           />
         </div>
 
-        {/* Botones rápidos de nuestras categorías reales */}
-        <div className="mt-6 rounded-2xl border border-blue-100 bg-bone p-4 shadow-xs">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <p className="font-mono text-xs font-extrabold uppercase tracking-wider text-[#0055FF] shrink-0">
-              Ir directo a categoría:
-            </p>
-            <ul className="flex flex-wrap gap-2">
-              {categoryLinks.map((cat) => (
-                <li key={cat.label}>
-                  <Link
-                    href={cat.href}
-                    className="inline-flex items-center gap-1 rounded-xl border border-blue-200 bg-paper px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0055FF] shadow-2xs transition-all hover:border-cochinilla hover:bg-cochinilla hover:text-paper"
-                  >
-                    <span>{cat.label}</span>
-                    <ArrowRight className="size-3" aria-hidden />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </div>
     </section>
   );

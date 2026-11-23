@@ -20,6 +20,7 @@ import {
   isUserAuthorizedForWholesale,
   type LinePricingResult,
 } from "@/server/pricing/engine";
+import { parsePromoDescription } from "@/lib/promo-display";
 
 const GUEST_CART_COOKIE_NAME = "investments_cart";
 const GUEST_CART_MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 días
@@ -439,6 +440,11 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
     }
   }
 
+  // Excluir campañas marcadas solo como anuncio visual ([CARRITO:NO]) para no alterar precios automáticamente sin autorización explícita
+  const discountPromotions = activePromotions.filter(
+    (p) => parsePromoDescription(p.description, p.code).applyToCart,
+  );
+
   // Sumar cantidades acumuladas por producto (para escalas mayoristas multi-talla / multi-color)
   const productQuantityTotals = new Map<number, number>();
   for (const row of rawRows) {
@@ -463,7 +469,7 @@ export async function getCartSnapshot(): Promise<CartSnapshot> {
       productGroupQuantity: groupQty,
       isProductWholesaleEnabled: product.isWholesale,
       user,
-      promotions: activePromotions,
+      promotions: discountPromotions,
       productId: product.id,
       categoryId: product.categoryId,
       now,

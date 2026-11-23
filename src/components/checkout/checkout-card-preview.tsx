@@ -83,7 +83,7 @@ export function CheckoutCardPreview({
         >
           {/* Textura sutil y reflejo de luz */}
           <div className="absolute -top-16 -right-16 size-48 rounded-full bg-white/5 blur-xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 size-48 rounded-full bg-[#801323]/20 blur-xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 size-48 rounded-full bg-[#DC2626]/20 blur-xl pointer-events-none" />
 
           {/* Fila superior: Chip + Contactless + Marca */}
           <div className="relative z-10 flex items-center justify-between">

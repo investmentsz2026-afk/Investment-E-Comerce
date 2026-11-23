@@ -3,17 +3,17 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
-import type { Product, ProductBadge } from "@/types/catalog";
+import { Clock, Heart, ShoppingBag } from "lucide-react";
+import type { ImageAsset, Product, ProductBadge } from "@/types/catalog";
 import { formatPEN } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 
 const badgeStyles: Record<ProductBadge, { label: string; className: string }> = {
-  nuevo: { label: "Nuevo", className: "bg-[#0055FF] text-white" },
-  "edicion-limitada": { label: "Edición Limitada", className: "bg-[#0055FF] text-white" },
-  mayorista: { label: "Mayorista B2B", className: "bg-[#EF233C] text-white" },
-  esencial: { label: "Básico Ring", className: "bg-[#0055FF] text-white" },
+  nuevo: { label: "Nuevo", className: "bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white" },
+  "edicion-limitada": { label: "Edición Limitada", className: "bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white" },
+  mayorista: { label: "Mayorista B2B", className: "bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white" },
+  esencial: { label: "Básico Ring", className: "bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white" },
 };
 
 interface ProductCardProps {
@@ -23,7 +23,25 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, eager = false }: ProductCardProps) {
-  const [colorIndex, setColorIndex] = useState(0);
+  const [colorIndex, setColorIndex] = useState(() => {
+    const portadaSrc =
+      typeof product.image.src === "string" ? product.image.src : null;
+    if (portadaSrc && product.colorImages) {
+      const matchedIdx = product.colors.findIndex(
+        (c) => product.colorImages?.[c.name]?.primary?.src === portadaSrc,
+      );
+      if (matchedIdx >= 0) return matchedIdx;
+    }
+    return 0;
+  });
+  const [displayedAssets, setDisplayedAssets] = useState<{
+    primary: ImageAsset;
+    hover?: ImageAsset;
+  }>(() => ({
+    primary: product.image,
+    hover: product.hoverImage,
+  }));
+  const [missingColorNotice, setMissingColorNotice] = useState<string | null>(null);
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(product.slug);
 
@@ -36,6 +54,30 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
 
   const productHref = `/producto/${product.slug}`;
   const skuCode = String(product.id).replace(/^prod-/, "507090").toUpperCase();
+
+  const handleSelectColor = (index: number) => {
+    setColorIndex(index);
+    const chosen = product.colors[index];
+    if (!chosen) return;
+
+    const colorSet = product.colorImages?.[chosen.name];
+    if (colorSet?.primary) {
+      setDisplayedAssets({
+        primary: colorSet.primary,
+        hover: colorSet.hover,
+      });
+      setMissingColorNotice(null);
+    } else if (colorSet?.hover) {
+      setDisplayedAssets({
+        primary: colorSet.hover,
+        hover: undefined,
+      });
+      setMissingColorNotice(null);
+    } else {
+      // Mantiene las imágenes actuales que sí estaban visibles y muestra aviso amigable
+      setMissingColorNotice(chosen.name);
+    }
+  };
 
   return (
     <article
@@ -51,20 +93,26 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
           aria-label={`Ver detalle de ${product.name}`}
         >
           {(() => {
-            const primarySrc = product.image.src;
+            const primarySrc = displayedAssets.primary.src;
             const autoCloseupSrc =
               typeof primarySrc === "string" && primarySrc.endsWith("-model.png")
                 ? primarySrc.replace("-model.png", "-closeup.png")
                 : null;
-            const hoverSrc = product.hoverImage?.src ?? autoCloseupSrc;
-            const hoverAlt = product.hoverImage?.alt ?? `Vista cercana de ${product.name}`;
+            const hoverSrc = displayedAssets.hover?.src ?? autoCloseupSrc;
+            const hoverAlt =
+              displayedAssets.hover?.alt ?? `Vista cercana de ${product.name}`;
+            const isPrimaryApiMedia =
+              typeof primarySrc === "string" && primarySrc.startsWith("/api/media/");
+            const isHoverApiMedia =
+              typeof hoverSrc === "string" && hoverSrc.startsWith("/api/media/");
 
             return (
               <>
                 <Image
                   src={primarySrc}
-                  alt={product.image.alt}
+                  alt={displayedAssets.primary.alt}
                   fill
+                  unoptimized={isPrimaryApiMedia}
                   loading={eager ? "eager" : "lazy"}
                   sizes="(min-width: 1280px) 24vw, (min-width: 768px) 32vw, 48vw"
                   placeholder={typeof primarySrc === "string" ? "empty" : "blur"}
@@ -80,6 +128,7 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
                     src={hoverSrc}
                     alt={hoverAlt}
                     fill
+                    unoptimized={isHoverApiMedia}
                     loading="lazy"
                     sizes="(min-width: 1280px) 24vw, (min-width: 768px) 32vw, 48vw"
                     placeholder={typeof hoverSrc === "string" ? "empty" : "blur"}
@@ -109,21 +158,21 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
           className={cn(
             "absolute left-2.5 top-2.5 z-20 flex size-8 sm:size-9 items-center justify-center rounded-full shadow-md transition-transform duration-200 hover:scale-110 active:scale-90",
             favorited
-              ? "bg-[#EF233C] text-white"
-              : "bg-white/95 text-slate-800 hover:bg-white hover:text-[#EF233C]",
+              ? "bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white"
+              : "bg-white/95 text-slate-800 hover:bg-white hover:text-[#DC2626]",
           )}
         >
           <Heart className={cn("size-4", favorited && "fill-current")} aria-hidden />
         </button>
 
-        {/* Insignias relucientes arriba a la derecha: "Envío 24Hrs" + Círculo de Descuento % */}
+        {/* Insignias arriba a la derecha: "Envío 24Hrs" + Círculo de Descuento % */}
         <div className="pointer-events-none absolute right-2 top-2.5 z-10 flex flex-col items-end gap-1.5 sm:right-2.5 sm:top-3">
-          <span className="rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-2.5 py-1 text-[0.6rem] font-extrabold tracking-tight text-white shadow-md sm:px-3 sm:text-[0.66rem]">
+          <span className="rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-2.5 py-1 text-[0.6rem] font-extrabold tracking-tight text-white shadow-md sm:px-3 sm:text-[0.66rem]">
             Envío 24Hrs
           </span>
 
           {discount ? (
-            <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#EF233C] to-[#91151B] font-mono text-[0.65rem] font-black text-white shadow-md sm:size-9 sm:text-xs">
+            <span className="bg-flow flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] font-mono text-[0.65rem] font-black text-white shadow-md shadow-rose-500/25 sm:size-9 sm:text-xs">
               -{discount}%
             </span>
           ) : badge ? (
@@ -144,25 +193,44 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
           </span>
         ) : null}
 
+        {/* Aviso flotante cuando el color seleccionado aún no tiene fotos cargadas */}
+        {missingColorNotice ? (
+          <div
+            role="status"
+            className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex items-center justify-center gap-1.5 rounded-xl border border-amber-300/70 bg-slate-950/85 px-2.5 py-1.5 text-center text-[0.62rem] font-bold leading-tight text-amber-100 shadow-lg backdrop-blur-md transition-opacity duration-200 group-hover/product:opacity-0"
+          >
+            <Clock className="size-3 shrink-0 text-amber-300" aria-hidden />
+            <span className="line-clamp-2">
+              Foto en color {missingColorNotice} en proceso de subida
+            </span>
+          </div>
+        ) : null}
+
         {/* Barra inferior redondeada "Compra Rápida" al pasar el cursor */}
         <Link
           href={productHref}
-          className="absolute inset-x-2 bottom-2 z-10 flex h-10 translate-y-[130%] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] text-xs font-extrabold tracking-wide text-white shadow-lg transition-transform duration-300 ease-out group-focus-within/product:translate-y-0 group-hover/product:translate-y-0 hover:from-[#EF233C] hover:to-[#B91C24]"
+          className="bg-flow absolute inset-x-2 bottom-2 z-10 flex h-10 translate-y-[130%] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] text-xs font-extrabold tracking-wide text-white shadow-lg transition-all duration-300 ease-out group-focus-within/product:translate-y-0 group-hover/product:translate-y-0 hover:from-[#DC2626] hover:via-[#B91C1C] hover:to-[#EF233C]"
         >
           <ShoppingBag className="size-3.5" aria-hidden />
           <span>Compra Rápida</span>
         </Link>
       </div>
 
-      {/* Información centrada estilo Pionier con colores relucientes */}
+      {/* Información centrada con tipografía limpia y colores modernos */}
       <div className="mt-3 flex flex-col items-center px-2 text-center">
+        {product.category ? (
+          <span className="mb-1 inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-wider text-[#DC2626] border border-red-100">
+            {product.category}
+          </span>
+        ) : null}
+
         <h3
           id={`${product.id}-name`}
           className="line-clamp-1 w-full text-xs font-extrabold uppercase tracking-tight text-slate-900 sm:text-[0.82rem]"
         >
           <Link
             href={productHref}
-            className="transition-colors hover:text-[#0055FF] focus-visible:outline-none focus-visible:underline"
+            className="transition-colors hover:text-[#1E40AF] focus-visible:outline-none focus-visible:underline"
           >
             {product.name}
           </Link>
@@ -174,7 +242,7 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
 
         {/* Precio actual + Precio anterior tachado */}
         <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-2">
-          <p className="text-sm font-black tabular-nums text-[#0055FF] sm:text-[1rem]">
+          <p className="text-sm font-black tabular-nums text-[#1E40AF] sm:text-[1rem]">
             {formatPEN(product.price)}
           </p>
           {product.compareAtPrice ? (
@@ -207,21 +275,27 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setColorIndex(i);
+                handleSelectColor(i);
               }}
               className={cn(
                 "size-3.5 rounded-full ring-1 ring-offset-1 ring-offset-white transition-transform duration-200 hover:scale-110",
-                i === colorIndex ? "ring-[#0055FF] scale-110" : "ring-slate-300",
+                i === colorIndex ? "ring-[#2563EB] scale-110" : "ring-slate-300",
               )}
               style={{ backgroundColor: c.swatch }}
             />
           ))}
         </div>
 
+        {missingColorNotice ? (
+          <p className="mt-1.5 rounded-lg bg-amber-50 px-2 py-0.5 text-[0.62rem] font-semibold text-amber-800 border border-amber-200/80">
+            Color {missingColorNotice}: imagen en proceso de subida
+          </p>
+        ) : null}
+
         {/* Etiqueta B2B Mayorista Redondeada */}
         {product.wholesale ? (
-          <div className="mt-2.5 w-full rounded-xl border border-blue-100 bg-blue-50/70 px-2.5 py-1 text-[0.65rem] font-bold text-[#0055FF]">
-            Por mayor: <span className="font-black tabular-nums text-[#B91C24]">{formatPEN(product.wholesale.unitPrice)}</span>{" "}
+          <div className="mt-2.5 w-full rounded-xl border border-slate-200/80 bg-slate-50/90 px-2.5 py-1 text-[0.65rem] font-bold text-[#1E40AF]">
+            Por mayor: <span className="font-black tabular-nums text-[#DC2626]">{formatPEN(product.wholesale.unitPrice)}</span>{" "}
             <span className="text-slate-600">(mín. {product.wholesale.minQuantity} uds.)</span>
           </div>
         ) : null}

@@ -27,9 +27,22 @@ export function InfiniteCardSlider<T>({
   desktopCols = 4,
   className,
 }: InfiniteCardSliderProps<T>) {
-  const count = items.length;
-  // Triplicamos la lista para que después de la última tarjeta aparezca inmediatamente la primera
-  const extendedItems = count > 0 ? [...items, ...items, ...items] : [];
+  const originalCount = items.length;
+
+  // Aseguramos un colchón suficiente de tarjetas para que el bucle continuo nunca tenga huecos
+  // visibles en los bordes, incluso si hay pocas tarjetas (ej. 2, 3 o 5 productos).
+  const loopPool = (() => {
+    if (originalCount === 0) return [];
+    let pool = [...items];
+    while (pool.length < 8) {
+      pool = [...pool, ...items];
+    }
+    return pool;
+  })();
+
+  const count = loopPool.length;
+  // Triplicamos el pool para que después de la última tarjeta aparezca inmediatamente la primera
+  const extendedItems = count > 0 ? [...loopPool, ...loopPool, ...loopPool] : [];
 
   const [currentIndex, setCurrentIndex] = useState(count);
   const [enableTransition, setEnableTransition] = useState(true);
@@ -102,7 +115,10 @@ export function InfiniteCardSlider<T>({
 
   const slideWidthPercent = 100 / visibleCols;
   const translateXPercent = -(currentIndex * slideWidthPercent);
-  const activeDotIndex = ((currentIndex % count) + count) % count;
+  const activeDotIndex =
+    originalCount > 0
+      ? ((currentIndex % originalCount) + originalCount) % originalCount
+      : 0;
 
   return (
     <div

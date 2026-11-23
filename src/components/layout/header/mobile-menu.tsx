@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Heart, UserRound, X } from "lucide-react";
+import { ArrowRight, Heart, MapPin, Truck, UserRound, X } from "lucide-react";
 import { mainNav } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/brand/logo";
@@ -108,6 +108,28 @@ function MobileMenuSheet({ onClose }: { onClose: () => void }) {
         </motion.ul>
 
         <div className="shell mt-8 space-y-3 pb-10">
+          <Link
+            href="/seguir-pedido"
+            onClick={onClose}
+            className="flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm font-extrabold text-[#1E3A8A]"
+          >
+            <span className="flex items-center gap-2.5">
+              <Truck className="size-4 text-[#2563EB]" aria-hidden />
+              Seguir mi Pedido (Rastreo en Vivo)
+            </span>
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
+          <Link
+            href="/tiendas"
+            onClick={onClose}
+            className="flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-extrabold text-[#991B1B]"
+          >
+            <span className="flex items-center gap-2.5">
+              <MapPin className="size-4 text-[#DC2626]" aria-hidden />
+              Nuestras Tiendas de Recojo (Mapa)
+            </span>
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
           <Link
             href="/mayorista"
             onClick={onClose}

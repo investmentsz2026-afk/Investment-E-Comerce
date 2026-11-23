@@ -10,6 +10,7 @@ import { Interactive3DShowcase } from "@/components/home/interactive-3d-showcase
 import { WholesaleSection } from "@/components/home/wholesale-section";
 import { getFeaturedProducts } from "@/server/queries/products";
 import { getActivePublicPromotions } from "@/server/queries/promotions";
+import { getActivePublicShowcaseData } from "@/server/queries/lookbook";
 
 /** Datos dinámicos de Neon: la ruta se renderiza en servidor por petición. */
 export const instant = false;
@@ -35,10 +36,13 @@ const structuredData = {
 };
 
 export default async function HomePage() {
-  const [featuredProducts, activePromotions] = await Promise.all([
-    getFeaturedProducts(11),
+  const [featuredProducts, activePromotions, showcaseData] = await Promise.all([
+    getFeaturedProducts(10),
     getActivePublicPromotions(),
+    getActivePublicShowcaseData(),
   ]);
+
+  const brandSlides = showcaseData.slides.filter((s) => s.slot === "brand");
 
   return (
     <>
@@ -46,15 +50,24 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
       />
-      <Hero />
+      <Hero slides={showcaseData.heroSlides} />
       <BrandMarquee />
-      <PromoBannersSection promotions={activePromotions} />
+      <PromoBannersSection
+        promotions={activePromotions}
+        lines={showcaseData.homeLines}
+      />
       <FeaturedProducts products={featuredProducts} />
       <Interactive3DShowcase />
+      <WholesaleSection
+        lookbookSlides={showcaseData.slides}
+        showcaseConfig={showcaseData.config}
+      />
       <ModalitySelector />
       <FeaturedCollections />
-      <Manifesto />
-      <WholesaleSection />
+      <Manifesto
+        brandSlides={brandSlides}
+        brandConfig={showcaseData.brandConfig}
+      />
     </>
   );
 }

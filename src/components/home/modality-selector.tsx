@@ -60,15 +60,15 @@ export function ModalitySelector() {
     <section id="modalidades" aria-labelledby="modalidades-title" className="bg-bone py-10 lg:py-14">
       <div className="shell">
         <div className="flex flex-col items-center text-center">
-          <span className="inline-block rounded-full bg-gradient-to-r from-[#0055FF] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
+          <span className="bg-flow inline-block rounded-full bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
             DOS MODALIDADES DE COMPRA EN UN SOLO LUGAR
           </span>
           <h2
             id="modalidades-title"
             className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl"
           >
-            COMPRA POR <span className="text-[#0055FF]">UNIDAD</span> O POR{" "}
-            <span className="text-cochinilla">MAYOR B2B</span>
+            COMPRA POR <span className="bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] bg-clip-text text-transparent">UNIDAD</span> O POR{" "}
+            <span className="bg-gradient-to-r from-[#DC2626] to-[#B91C1C] bg-clip-text text-transparent">MAYOR B2B</span>
           </h2>
         </div>
 
@@ -78,7 +78,7 @@ export function ModalitySelector() {
             return (
               <article
                 key={modality.id}
-                className="group relative isolate flex min-h-[390px] flex-col justify-between overflow-hidden rounded-3xl bg-[#0055FF] p-6 text-paper shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:p-8"
+                className="group relative isolate flex min-h-[390px] flex-col justify-between overflow-hidden rounded-3xl bg-[#0F172A] p-6 text-paper shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:p-8"
               >
                 <Image
                   src={modality.image.src}
@@ -93,21 +93,21 @@ export function ModalitySelector() {
                   className={cn(
                     "absolute inset-0 -z-10",
                     isBlue
-                      ? "bg-gradient-to-t from-[#0055FF]/95 via-[#1D4ED8]/70 to-[#0055FF]/15"
-                      : "bg-gradient-to-t from-[#91151B]/95 via-cochinilla/75 to-[#0055FF]/20",
+                      ? "bg-gradient-to-t from-[#0F172A]/95 via-[#1E3A8A]/75 to-[#1E3A8A]/15"
+                      : "bg-gradient-to-t from-[#0F172A]/95 via-[#1E293B]/80 to-[#DC2626]/15",
                   )}
                 />
 
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-wider text-[#0055FF] shadow-md">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md">
                     {modality.id === "menor" ? (
-                      <ShoppingBag className="size-3.5 text-cochinilla" aria-hidden />
+                      <ShoppingBag className="size-3.5 text-[#DC2626]" aria-hidden />
                     ) : (
-                      <Boxes className="size-3.5 text-cochinilla" aria-hidden />
+                      <Boxes className="size-3.5 text-[#DC2626]" aria-hidden />
                     )}
                     {modality.badge}
                   </span>
-                  <span className="rounded-full bg-[#EF233C] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase text-paper shadow-md">
+                  <span className="bg-flow rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase text-paper shadow-md">
                     {modality.subtitle}
                   </span>
                 </div>
@@ -123,7 +123,7 @@ export function ModalitySelector() {
                   <ul className="mt-4 space-y-1.5">
                     {modality.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2 text-xs font-semibold text-paper">
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-paper text-[#0055FF]">
+                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-paper text-[#1E40AF]">
                           <Check className="size-3 stroke-[3]" aria-hidden />
                         </span>
                         <span>{feature}</span>
@@ -134,14 +134,14 @@ export function ModalitySelector() {
                   <div className="mt-6 flex flex-wrap items-center gap-3">
                     <Link
                       href={modality.cta.href}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-paper px-6 text-xs font-extrabold uppercase tracking-wider text-[#0055FF] shadow-lg transition-transform hover:scale-105 hover:bg-[#EF233C] hover:text-paper"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-paper px-6 text-xs font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-[#DC2626] hover:to-[#B91C1C] hover:text-paper"
                     >
                       <span>{modality.cta.label}</span>
                       <ArrowRight className="size-4" aria-hidden />
                     </Link>
                     <Link
                       href={modality.secondaryCta.href}
-                      className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-paper bg-white/15 px-5 text-xs font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#0055FF]"
+                      className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-paper bg-white/15 px-5 text-xs font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#1E40AF]"
                     >
                       {modality.secondaryCta.label}
                     </Link>

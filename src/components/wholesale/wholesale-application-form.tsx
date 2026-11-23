@@ -531,7 +531,7 @@ export function WholesaleApplicationForm({
           <button
             type="submit"
             disabled={isPending}
-            className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#B91C24] px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-600/30 transition-all duration-300 hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
+            className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#DC2626] px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-600/30 transition-all duration-300 hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
           >
             {isPending ? (
               <>

@@ -6,14 +6,13 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight, Clock, Layers, SlidersHorizontal, X } from "lucide-react";
 import { FaPercent, FaTag } from "react-icons/fa6";
 import type { CatalogProduct, AvailableFilters, CategoryRecord } from "@/types/catalog";
+import type { PublicPromotionItem } from "@/lib/promo-display";
 import { CatalogGrid } from "@/components/catalog/catalog-grid";
 import { CatalogSort } from "@/components/catalog/catalog-sort";
 import { CatalogPagination } from "@/components/catalog/catalog-pagination";
 import { CatalogFilters, MobileFilterDrawer } from "@/components/catalog/catalog-filters";
 import { CatalogEmpty } from "@/components/catalog/catalog-empty";
 import { CategoryNav } from "./category-nav";
-
-const ACTIVE_CATALOG_CATEGORY_SLUGS = new Set(["denim", "pantalones", "camisas", "polos"]);
 
 interface CatalogContentProps {
   products: CatalogProduct[];
@@ -22,6 +21,8 @@ interface CatalogContentProps {
   totalPages: number;
   available: AvailableFilters;
   categories: CategoryRecord[];
+  promotions?: PublicPromotionItem[];
+  currentCategoryId?: number;
   title?: string;
 }
 
@@ -33,6 +34,8 @@ export function CatalogContent({
   totalPages,
   available,
   categories,
+  promotions = [],
+  currentCategoryId,
   title = "Shop American Colt",
 }: CatalogContentProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -42,14 +45,59 @@ export function CatalogContent({
   const isWomenSelected = activeAudience === "mujer";
   const isPromoFilterActive = Boolean(activeOfferPct) || searchParams.get("novedades") === "1";
 
-  // Mostrar únicamente las categorías reales que forman parte del catálogo oficial
-  const officialCategories = categories.filter((c) => ACTIVE_CATALOG_CATEGORY_SLUGS.has(c.slug));
-  const visibleCategories = officialCategories.length > 0 ? officialCategories : categories;
+  // Mostrar todas las categorías activas configuradas en /admin/categorias
+  const visibleCategories = categories;
+
+  // Anuncios dirigidos al Catálogo o a la Categoría actual desde /admin/promociones
+  const catalogBanners = promotions.filter((p) => {
+    if (!p.showInCatalogBanner) return false;
+    if (currentCategoryId !== undefined) {
+      return p.categoryId === null || p.categoryId === currentCategoryId;
+    }
+    return true;
+  });
 
   return (
     <>
       {/* Categorías horizontales rápidas (solo las del catálogo real) */}
       {visibleCategories.length > 0 && <CategoryNav categories={visibleCategories} />}
+
+      {/* Banners de campañas asignadas a Catálogo / Categoría desde /admin/promociones */}
+      {!isPromoFilterActive && catalogBanners.length > 0 && (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {catalogBanners.slice(0, 2).map((promo, i) => (
+            <Link
+              key={promo.id}
+              href={promo.ctaHref || "/catalogo"}
+              className={
+                i % 2 === 0
+                  ? "bg-flow group flex items-center justify-between gap-4 rounded-2xl border border-red-200/60 bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-5 py-3.5 text-white shadow-md transition-transform hover:-translate-y-0.5"
+                  : "bg-flow group flex items-center justify-between gap-4 rounded-2xl border border-blue-200/60 bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] px-5 py-3.5 text-white shadow-md transition-transform hover:-translate-y-0.5"
+              }
+            >
+              <div className="min-w-0 space-y-0.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded-full bg-white px-2 py-0.5 font-mono text-[0.58rem] font-black uppercase text-[#DC2626]">
+                    -{promo.discountPercent}% OFF
+                  </span>
+                  {promo.categoryName && (
+                    <span className="rounded-full bg-white/20 px-2 py-0.5 font-mono text-[0.58rem] font-bold uppercase text-white">
+                      {promo.categoryName}
+                    </span>
+                  )}
+                </div>
+                <p className="truncate font-sans text-sm font-black uppercase tracking-tight">
+                  {promo.name}
+                </p>
+                <p className="line-clamp-1 text-xs text-white/90">
+                  {promo.cleanDescription}
+                </p>
+              </div>
+              <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" aria-hidden />
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Banner reluciente cuando el usuario entra haciendo clic en Oferta 3x2 / Descuento */}
       {isPromoFilterActive && (
@@ -118,7 +166,7 @@ export function CatalogContent({
               <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0055FF] to-[#1D4ED8] text-white shadow-md">
                 <Clock className="size-8" aria-hidden />
               </div>
-              <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-[#B91C24]">
+              <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-[#DC2626]">
                 <FaTag className="size-3" aria-hidden />
                 <span>PRÓXIMAMENTE EN AMERICAN COLT JEANS™</span>
               </span>
@@ -139,7 +187,7 @@ export function CatalogContent({
                 </Link>
                 <Link
                   href="/mayorista/cotizaciones"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-[#B91C24] bg-white px-6 text-xs font-extrabold uppercase tracking-wider text-[#B91C24] transition-colors hover:bg-[#B91C24] hover:text-white"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-[#DC2626] bg-white px-6 text-xs font-extrabold uppercase tracking-wider text-[#DC2626] transition-colors hover:bg-[#DC2626] hover:text-white"
                 >
                   <span>Cotizar Lotes por Mayor</span>
                 </Link>

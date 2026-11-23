@@ -119,7 +119,7 @@ export default async function AdminDashboardPage({
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/productos/nuevo"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-[#801323] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#6b0f1c] active:scale-[0.98] transition-all"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[#DC2626] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#B91C1C] active:scale-[0.98] transition-all"
           >
             <Plus className="size-4" />
             <span>Nuevo producto</span>
@@ -150,7 +150,7 @@ export default async function AdminDashboardPage({
               type="date"
               name="dateFrom"
               defaultValue={params.dateFrom || ""}
-              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#801323] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#DC2626] focus:outline-none transition-colors"
             />
           </div>
 
@@ -163,7 +163,7 @@ export default async function AdminDashboardPage({
               type="date"
               name="dateTo"
               defaultValue={params.dateTo || ""}
-              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#801323] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#DC2626] focus:outline-none transition-colors"
             />
           </div>
 
@@ -175,7 +175,7 @@ export default async function AdminDashboardPage({
             <select
               name="channel"
               defaultValue={channelFilter}
-              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#801323] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#DC2626] focus:outline-none transition-colors"
             >
               <option value="all">Todos los canales (B2C + B2B)</option>
               <option value="retail">B2C Minorista</option>
@@ -191,7 +191,7 @@ export default async function AdminDashboardPage({
             <select
               name="status"
               defaultValue={params.status || "all"}
-              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#801323] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50/50 px-3 py-2 text-xs text-neutral-800 focus:bg-white focus:border-[#DC2626] focus:outline-none transition-colors"
             >
               <option value="all">Todos los estados</option>
               <option value="paid">Pagados</option>
@@ -207,7 +207,7 @@ export default async function AdminDashboardPage({
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#801323] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#6b0f1c] active:scale-[0.98] transition-all"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#DC2626] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#B91C1C] active:scale-[0.98] transition-all"
             >
               <Filter className="size-3.5" />
               <span>Filtrar</span>
@@ -252,7 +252,7 @@ export default async function AdminDashboardPage({
             <span className="text-[0.68rem] font-extrabold uppercase tracking-wider text-neutral-500">
               Últimos 7 días
             </span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-[#801323] border border-rose-100">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-[#DC2626] border border-rose-100">
               <Calendar className="size-4" />
             </div>
           </div>
@@ -325,7 +325,7 @@ export default async function AdminDashboardPage({
 
             {/* Canal B2B */}
             <div className="rounded-xl border border-neutral-100 bg-neutral-50/60 p-3.5 space-y-1">
-              <span className="inline-block rounded-md bg-rose-50 border border-rose-200 px-2 py-0.5 text-[0.62rem] font-extrabold text-[#801323]">
+              <span className="inline-block rounded-md bg-rose-50 border border-rose-200 px-2 py-0.5 text-[0.62rem] font-extrabold text-[#DC2626]">
                 B2B
               </span>
               <p className="text-lg font-black text-neutral-900 pt-0.5">
@@ -385,7 +385,7 @@ export default async function AdminDashboardPage({
           </div>
           <Link
             href="/admin/pedidos"
-            className="text-xs font-bold text-[#801323] hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-[#DC2626] hover:underline flex items-center gap-1"
           >
             <span>Ver todos</span>
             <ArrowRight className="size-3.5" />
@@ -425,7 +425,7 @@ export default async function AdminDashboardPage({
                       <td className="py-3.5 px-5 font-mono font-bold text-neutral-900">
                         <Link
                           href={`/admin/pedidos`}
-                          className="hover:text-[#801323] hover:underline"
+                          className="hover:text-[#DC2626] hover:underline"
                         >
                           {order.orderNumber}
                         </Link>
@@ -472,7 +472,7 @@ export default async function AdminDashboardPage({
                   className="flex items-center justify-between rounded-xl border border-neutral-100 bg-neutral-50/50 p-3 hover:bg-neutral-50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="flex size-6 items-center justify-center rounded-full bg-rose-100 text-[#801323] text-xs font-black shrink-0">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-rose-100 text-[#DC2626] text-xs font-black shrink-0">
                       {idx + 1}
                     </span>
                     <div className="min-w-0">
@@ -501,7 +501,7 @@ export default async function AdminDashboardPage({
             </h2>
             <Link
               href="/admin/inventario"
-              className="text-xs font-bold text-[#801323] hover:underline"
+              className="text-xs font-bold text-[#DC2626] hover:underline"
             >
               Ver inventario
             </Link>

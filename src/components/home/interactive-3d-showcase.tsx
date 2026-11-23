@@ -242,7 +242,7 @@ function Tilt3DProductCard({
       className={cn(
         "group/tilt relative flex flex-col overflow-hidden rounded-xl border-2 p-1.5 text-left transition-all duration-300 will-change-transform",
         isSelected
-          ? "border-[#EF233C] bg-gradient-to-b from-blue-50 via-white to-blue-50 shadow-[0_10px_25px_-5px_rgba(239,35,60,0.5)] ring-2 ring-[#EF233C]/40"
+          ? "border-[#B91C1C] bg-gradient-to-b from-blue-50 via-white to-rose-50/50 shadow-[0_10px_25px_-5px_rgba(225,29,72,0.45)] ring-2 ring-[#B91C1C]/40"
           : "border-white/25 bg-white/95 shadow-sm hover:border-cyan-300 hover:bg-white hover:shadow-lg",
       )}
     >
@@ -277,7 +277,7 @@ function Tilt3DProductCard({
           style={{ transform: "translateZ(18px)" }}
           className={cn(
             "absolute left-1.5 top-1.5 z-10 rounded-full px-1.5 py-0.5 font-mono text-[0.46rem] font-extrabold uppercase tracking-wider text-white shadow-xs",
-            isSelected ? "bg-[#EF233C]" : "bg-[#0055FF]",
+            isSelected ? "bg-gradient-to-r from-[#DC2626] to-[#B91C1C]" : "bg-[#1E40AF]",
           )}
         >
           {item.code.replace("MOD. ", "")}
@@ -291,12 +291,12 @@ function Tilt3DProductCard({
       </div>
 
       <div className="mt-1.5 px-0.5">
-        <p className="truncate font-sans text-[0.62rem] font-black uppercase leading-tight text-slate-900 group-hover/tilt:text-[#0055FF]">
+        <p className="truncate font-sans text-[0.62rem] font-black uppercase leading-tight text-slate-900 group-hover/tilt:text-[#1E40AF]">
           {item.name}
         </p>
         <div className="mt-0.5 flex items-center justify-between gap-1">
-          <span className="font-mono text-[0.62rem] font-black text-[#0055FF]">{item.retailPrice}</span>
-          <span className="truncate rounded bg-red-50 px-1 py-0.2 font-mono text-[0.48rem] font-extrabold text-[#B91C24]">
+          <span className="font-mono text-[0.62rem] font-black text-[#1E40AF]">{item.retailPrice}</span>
+          <span className="truncate rounded bg-rose-50 px-1 py-0.2 font-mono text-[0.48rem] font-extrabold text-[#DC2626]">
             M: {item.wholesalePrice}
           </span>
         </div>
@@ -349,7 +349,7 @@ export function Interactive3DShowcase() {
             className="mt-1 font-sans text-lg font-black uppercase tracking-tight text-white sm:text-xl lg:text-2xl"
           >
             EXPLORA EL CALCE EN <span className="text-cyan-300">3D</span> Y{" "}
-            <span className="inline-block rounded-lg bg-gradient-to-r from-[#EF233C] to-[#B91C24] px-2.5 py-0.5 text-white">
+            <span className="bg-flow inline-block rounded-lg bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 text-white">
               RAYOS-X DE DETALLE
             </span>
           </h2>
@@ -384,7 +384,7 @@ export function Interactive3DShowcase() {
                   className={cn(
                     "flex flex-1 items-center justify-center gap-1 rounded-lg py-1.5 text-[0.58rem] font-extrabold uppercase tracking-wider transition-all",
                     viewMode === "closeup"
-                      ? "bg-gradient-to-r from-[#EF233C] to-[#B91C24] text-white shadow-sm"
+                      ? "bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white shadow-sm"
                       : "text-slate-300 hover:text-white",
                   )}
                 >
@@ -656,7 +656,7 @@ export function Interactive3DShowcase() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={current.href}
-                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#EF233C] to-[#B91C24] px-4 text-[0.65rem] font-black uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105"
+                    className="bg-flow inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 text-[0.65rem] font-black uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105"
                   >
                     <span>Comprar {current.code}</span>
                     <ArrowRight className="size-3.5" aria-hidden />

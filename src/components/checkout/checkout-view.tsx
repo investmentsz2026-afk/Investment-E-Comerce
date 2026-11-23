@@ -563,7 +563,7 @@ export function CheckoutView({
       <div className="text-neutral-900 animate-in fade-in duration-300">
         <div className="flex items-center justify-between border-b border-neutral-200/90 pb-4 mb-6">
           <Link href="/" className="text-lg font-black tracking-tighter text-neutral-900">
-            AMERICAN COLT<span className="text-[#801323]">.</span>
+            AMERICAN COLT<span className="text-[#DC2626]">.</span>
           </Link>
           <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-emerald-600" />
@@ -597,7 +597,7 @@ export function CheckoutView({
             href="/"
             className="text-base sm:text-lg font-black tracking-tighter text-neutral-900 transition-opacity hover:opacity-80"
           >
-            AMERICAN COLT<span className="text-[#801323]">.</span>
+            AMERICAN COLT<span className="text-[#DC2626]">.</span>
           </Link>
           <span className="hidden sm:inline-block rounded-full bg-neutral-100 px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-neutral-600">
             JEANS™ PERÚ
@@ -643,7 +643,7 @@ export function CheckoutView({
               <div className="space-y-5">
                 <div className="border-b border-neutral-100 pb-3">
                   <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <MapPin className="size-5 text-[#801323]" />
+                    <MapPin className="size-5 text-[#DC2626]" />
                     <span>1. Entrega</span>
                   </h2>
                   <p className="mt-0.5 text-xs text-neutral-500">
@@ -671,13 +671,13 @@ export function CheckoutView({
                       className={cn(
                         "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "delivery"
-                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Truck className={cn("size-4", deliveryMethod === "delivery" ? "text-[#801323]" : "text-neutral-500")} />
-                        {deliveryMethod === "delivery" && <Check className="size-3.5 text-[#801323]" />}
+                        <Truck className={cn("size-4", deliveryMethod === "delivery" ? "text-[#DC2626]" : "text-neutral-500")} />
+                        {deliveryMethod === "delivery" && <Check className="size-3.5 text-[#DC2626]" />}
                       </div>
                       <span className="font-bold text-xs text-neutral-900 block">Envío a Domicilio</span>
                       <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Lima Metropolitana y Provincias</span>
@@ -690,13 +690,13 @@ export function CheckoutView({
                       className={cn(
                         "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "express"
-                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Zap className={cn("size-4", deliveryMethod === "express" ? "text-[#801323]" : "text-neutral-500")} />
-                        {deliveryMethod === "express" && <Check className="size-3.5 text-[#801323]" />}
+                        <Zap className={cn("size-4", deliveryMethod === "express" ? "text-[#DC2626]" : "text-neutral-500")} />
+                        {deliveryMethod === "express" && <Check className="size-3.5 text-[#DC2626]" />}
                       </div>
                       <span className="font-bold text-xs text-neutral-900 block">Envío Express</span>
                       <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Agencia Shalom / Olva a todo el Perú</span>
@@ -709,12 +709,12 @@ export function CheckoutView({
                       className={cn(
                         "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "store_pickup"
-                          ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                          ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Store className={cn("size-4", deliveryMethod === "store_pickup" ? "text-[#801323]" : "text-neutral-500")} />
+                        <Store className={cn("size-4", deliveryMethod === "store_pickup" ? "text-[#DC2626]" : "text-neutral-500")} />
                         <span className="rounded bg-emerald-100 px-1 py-0.2 text-[0.6rem] font-bold text-emerald-800">
                           Gratis
                         </span>
@@ -737,7 +737,7 @@ export function CheckoutView({
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
                       placeholder="Ej: Jhosep Colchado"
-                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                     />
                   </div>
 
@@ -751,7 +751,7 @@ export function CheckoutView({
                       value={recipientPhone}
                       onChange={(e) => setRecipientPhone(e.target.value)}
                       placeholder="987 654 321"
-                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -762,7 +762,7 @@ export function CheckoutView({
                   <div className="rounded-xl border border-neutral-200 bg-[#FAF8F5] p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                        <Store className="size-4 text-[#801323]" />
+                        <Store className="size-4 text-[#DC2626]" />
                         Tienda seleccionada para retiro gratuito
                       </span>
                       <button
@@ -785,7 +785,7 @@ export function CheckoutView({
                           </span>
                         </div>
                         <p className="text-xs text-neutral-700 flex items-start gap-1.5">
-                          <MapPin className="size-3.5 text-[#801323] shrink-0 mt-0.5" />
+                          <MapPin className="size-3.5 text-[#DC2626] shrink-0 mt-0.5" />
                           <span>{selectedStore.address} — {selectedStore.district}, {selectedStore.department}</span>
                         </p>
                         {selectedStore.reference && (
@@ -823,7 +823,7 @@ export function CheckoutView({
                               setAddressMode("saved");
                               if (defaultAddress) handleSelectSavedAddress(defaultAddress.id);
                             }}
-                            className="accent-[#801323]"
+                            className="accent-[#DC2626]"
                           />
                           <span>Usar dirección guardada</span>
                         </label>
@@ -833,7 +833,7 @@ export function CheckoutView({
                             name="addressMode"
                             checked={addressMode === "new"}
                             onChange={() => setAddressMode("new")}
-                            className="accent-[#801323]"
+                            className="accent-[#DC2626]"
                           />
                           <span>Nueva dirección</span>
                         </label>
@@ -851,13 +851,13 @@ export function CheckoutView({
                               className={cn(
                                 "rounded-xl border p-3 cursor-pointer transition-all text-xs",
                                 isSelected
-                                  ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                                  ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                                   : "border-neutral-200 bg-white hover:border-neutral-300",
                               )}
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span className="font-extrabold text-neutral-900">{addr.title}</span>
-                                {isSelected && <Check className="size-3.5 text-[#801323]" />}
+                                {isSelected && <Check className="size-3.5 text-[#DC2626]" />}
                               </div>
                               <p className="text-neutral-600 line-clamp-1">{addr.addressLine1}</p>
                               <p className="text-[0.68rem] text-neutral-400">
@@ -879,7 +879,7 @@ export function CheckoutView({
                             <select
                               value={department}
                               onChange={(e) => handleDepartmentChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {departments.map((d) => (
                                 <option key={d} value={d}>
@@ -896,7 +896,7 @@ export function CheckoutView({
                             <select
                               value={province}
                               onChange={(e) => handleProvinceChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {provinces.map((p) => (
                                 <option key={p} value={p}>
@@ -913,7 +913,7 @@ export function CheckoutView({
                             <select
                               value={district}
                               onChange={(e) => handleDistrictChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {districts.map((dst) => (
                                 <option key={dst} value={dst}>
@@ -935,7 +935,7 @@ export function CheckoutView({
                             value={addressLine1}
                             onChange={(e) => setAddressLine1(e.target.value)}
                             placeholder="Ej: Av. Conquistadores 450, Dpto. 302"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
@@ -949,7 +949,7 @@ export function CheckoutView({
                             value={reference}
                             onChange={(e) => setReference(e.target.value)}
                             placeholder="Ej: Frente al parque, edificio de ladrillo visto, recepción 24h"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
@@ -959,7 +959,7 @@ export function CheckoutView({
                             type="checkbox"
                             checked={saveNewAddressToBook}
                             onChange={(e) => setSaveNewAddressToBook(e.target.checked)}
-                            className="rounded border-neutral-300 text-[#801323] focus:ring-[#801323]"
+                            className="rounded border-neutral-300 text-[#DC2626] focus:ring-[#DC2626]"
                           />
                           <span className="text-xs text-neutral-700 font-medium">
                             Guardar esta dirección en mi libreta para futuras compras
@@ -978,7 +978,7 @@ export function CheckoutView({
                       ) : shippingCalc.isAvailable ? (
                         <div className="flex items-center justify-between">
                           <span className="flex items-center gap-1.5 text-neutral-800 font-semibold">
-                            <Truck className="size-4 text-[#801323]" />
+                            <Truck className="size-4 text-[#DC2626]" />
                             {shippingCalc.isFreeShippingApplied ? "Envío gratis aplicado" : shippingCalc.zoneName}
                           </span>
                           <span className="font-extrabold text-neutral-900">
@@ -999,7 +999,7 @@ export function CheckoutView({
                   <button
                     type="button"
                     onClick={handleProceedToStep2}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#801323]/20 hover:bg-[#6b0f1c] active:scale-[0.99] transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
                   >
                     <span>Continuar al comprobante</span>
                     <ArrowRight className="size-4" />
@@ -1047,7 +1047,7 @@ export function CheckoutView({
               <div className="space-y-5">
                 <div className="border-b border-neutral-100 pb-3">
                   <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <Receipt className="size-5 text-[#801323]" />
+                    <Receipt className="size-5 text-[#DC2626]" />
                     <span>2. Comprobante</span>
                   </h2>
                   <p className="mt-0.5 text-xs text-neutral-500">
@@ -1108,7 +1108,7 @@ export function CheckoutView({
                         <select
                           value={billingDocType}
                           onChange={(e) => setBillingDocType(e.target.value as "DNI" | "CE")}
-                          className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         >
                           <option value="DNI">DNI (8 dígitos)</option>
                           <option value="CE">Carné de Extranjería</option>
@@ -1125,7 +1125,7 @@ export function CheckoutView({
                           value={billingDocNumber}
                           onChange={(e) => setBillingDocNumber(e.target.value)}
                           placeholder="Ej: 12345678"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1140,7 +1140,7 @@ export function CheckoutView({
                         value={billingCustomerName}
                         onChange={(e) => setBillingCustomerName(e.target.value)}
                         placeholder="Ej: Jhosep Colchado"
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1170,7 +1170,7 @@ export function CheckoutView({
                           value={billingDocNumber}
                           onChange={(e) => setBillingDocNumber(e.target.value)}
                           placeholder="Ej: 20601234567"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1185,7 +1185,7 @@ export function CheckoutView({
                         value={billingCustomerName}
                         onChange={(e) => setBillingCustomerName(e.target.value)}
                         placeholder="Ej: TEXTILES Y MODA DEL PERU S.A.C."
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs uppercase text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs uppercase text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
 
@@ -1199,7 +1199,7 @@ export function CheckoutView({
                         value={billingFiscalAddress}
                         onChange={(e) => setBillingFiscalAddress(e.target.value)}
                         placeholder="Ej: Av. Gamarra 1043, La Victoria, Lima"
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1219,7 +1219,7 @@ export function CheckoutView({
                   <button
                     type="button"
                     onClick={handleProceedToStep3}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#801323]/20 hover:bg-[#6b0f1c] active:scale-[0.99] transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
                   >
                     <span>Continuar al método de pago</span>
                     <ArrowRight className="size-4" />
@@ -1274,7 +1274,7 @@ export function CheckoutView({
               <div className="space-y-6">
                 <div className="border-b border-neutral-100 pb-3">
                   <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <CreditCard className="size-5 text-[#801323]" />
+                    <CreditCard className="size-5 text-[#DC2626]" />
                     <span>3. Método de pago</span>
                   </h2>
                   <p className="mt-0.5 text-xs text-neutral-500">
@@ -1298,12 +1298,12 @@ export function CheckoutView({
                     className={cn(
                       "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
                       paymentType === "card"
-                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                         : "border-neutral-200 bg-white hover:border-neutral-300",
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <CreditCard className={cn("size-5", paymentType === "card" ? "text-[#801323]" : "text-neutral-500")} />
+                      <CreditCard className={cn("size-5", paymentType === "card" ? "text-[#DC2626]" : "text-neutral-500")} />
                       <span className="rounded bg-blue-50 px-2 py-0.5 text-[0.6rem] font-bold text-[#0055FF]">
                         Visa, Mastercard, Amex
                       </span>
@@ -1323,7 +1323,7 @@ export function CheckoutView({
                     className={cn(
                       "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
                       paymentType === "transfer"
-                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                         : "border-neutral-200 bg-white hover:border-neutral-300",
                     )}
                   >
@@ -1385,7 +1385,7 @@ export function CheckoutView({
                         <button
                           type="button"
                           onClick={() => handleFillTestCard("approve")}
-                          className="inline-flex items-center gap-1 text-[0.68rem] font-bold text-[#801323] bg-white border border-[#801323]/30 px-2.5 py-1 rounded-lg hover:bg-[#801323]/5 transition-colors"
+                          className="inline-flex items-center gap-1 text-[0.68rem] font-bold text-[#DC2626] bg-white border border-[#DC2626]/30 px-2.5 py-1 rounded-lg hover:bg-[#DC2626]/5 transition-colors"
                         >
                           <Sparkles className="size-3 text-amber-500" />
                           <span>Llenar tarjeta Visa de prueba</span>
@@ -1439,7 +1439,7 @@ export function CheckoutView({
                             onChange={(e) => setCardNumber(formatCardNumberInput(e.target.value))}
                             onFocus={() => setIsCardFlipped(false)}
                             placeholder="4557 •••• •••• ••••"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 tracking-wider focus:border-[#801323] focus:outline-none pl-10"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 tracking-wider focus:border-[#DC2626] focus:outline-none pl-10"
                           />
                           <CreditCard className="size-4 text-neutral-400 absolute left-3.5 top-3" />
                         </div>
@@ -1457,7 +1457,7 @@ export function CheckoutView({
                           onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
                           onFocus={() => setIsCardFlipped(false)}
                           placeholder="JHOSEP COLCHADO"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs uppercase text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs uppercase text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
 
@@ -1475,7 +1475,7 @@ export function CheckoutView({
                             onChange={(e) => setCardExp(formatExpInput(e.target.value))}
                             onFocus={() => setIsCardFlipped(false)}
                             placeholder="12/28"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
@@ -1494,7 +1494,7 @@ export function CheckoutView({
                               onFocus={() => setIsCardFlipped(true)}
                               onBlur={() => setIsCardFlipped(false)}
                               placeholder="123"
-                              className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             />
                             <Lock className="size-3 text-neutral-400 absolute right-3 top-3.5" />
                           </div>
@@ -1512,7 +1512,7 @@ export function CheckoutView({
                             onChange={(e) => setCardDni(e.target.value.replace(/\D/g, ""))}
                             onFocus={() => setIsCardFlipped(false)}
                             placeholder="12345678"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#801323] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
                       </div>
@@ -1617,7 +1617,7 @@ export function CheckoutView({
                           value={operationCode}
                           onChange={(e) => setOperationCode(e.target.value)}
                           placeholder="Ej: 849201 ó OP-948291"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#801323] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
 
@@ -1626,7 +1626,7 @@ export function CheckoutView({
                         <label className="block text-xs font-bold text-neutral-700 mb-1">
                           Foto del Comprobante o Voucher (Opcional para agilizar despacho)
                         </label>
-                        <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 p-4 text-center cursor-pointer hover:border-[#801323] bg-neutral-50 transition-colors">
+                        <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 p-4 text-center cursor-pointer hover:border-[#DC2626] bg-neutral-50 transition-colors">
                           <UploadCloud className="size-6 text-neutral-400 mb-1" />
                           <span className="text-xs font-bold text-neutral-700">
                             {voucherFileName ?? "Haz clic para subir foto del voucher"}
@@ -1675,7 +1675,7 @@ export function CheckoutView({
                     value={customerNotes}
                     onChange={(e) => setCustomerNotes(e.target.value)}
                     placeholder="Indicaciones especiales de horario, empaque o referencia adicional..."
-                    className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#801323] focus:outline-none"
+                    className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                   />
                 </div>
 
@@ -1694,7 +1694,7 @@ export function CheckoutView({
                     type="button"
                     onClick={handleConfirmOrder}
                     disabled={isPending || isProcessingPayment}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-8 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-[#801323]/25 hover:bg-[#6b0f1c] active:scale-[0.99] disabled:opacity-50 transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-8 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-[#DC2626]/25 hover:bg-[#B91C1C] active:scale-[0.99] disabled:opacity-50 transition-all"
                   >
                     {isPending || isProcessingPayment ? (
                       <>
@@ -1761,6 +1761,7 @@ export function CheckoutView({
                       src={line.imageUrl}
                       alt={line.productName}
                       fill
+                      unoptimized={line.imageUrl.startsWith("/api/media/")}
                       sizes="56px"
                       className="object-cover"
                     />
@@ -1860,7 +1861,7 @@ export function CheckoutView({
           <div className="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
               <div className="flex items-center gap-2">
-                <Store className="size-5 text-[#801323]" />
+                <Store className="size-5 text-[#DC2626]" />
                 <h3 className="text-base font-extrabold text-neutral-900">
                   Selecciona la Tienda Oficial de Recojo
                 </h3>
@@ -1896,9 +1897,9 @@ export function CheckoutView({
                       );
                     }}
                     className={cn(
-                      "rounded-2xl border p-4 cursor-pointer transition-all hover:border-[#801323]",
+                      "rounded-2xl border p-4 cursor-pointer transition-all hover:border-[#DC2626]",
                       isSelected
-                        ? "border-[#801323] bg-[#801323]/5 ring-1 ring-[#801323]"
+                        ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                         : "border-neutral-200 bg-white",
                     )}
                   >
@@ -1907,7 +1908,7 @@ export function CheckoutView({
                         {st.name}
                       </strong>
                       {isSelected ? (
-                        <span className="inline-flex items-center gap-1 text-[0.65rem] font-bold text-[#801323]">
+                        <span className="inline-flex items-center gap-1 text-[0.65rem] font-bold text-[#DC2626]">
                           <Check className="size-3.5" />
                           Seleccionada
                         </span>
@@ -1919,7 +1920,7 @@ export function CheckoutView({
                     </div>
 
                     <p className="text-xs text-neutral-700 flex items-start gap-1.5">
-                      <MapPin className="size-3.5 text-[#801323] shrink-0 mt-0.5" />
+                      <MapPin className="size-3.5 text-[#DC2626] shrink-0 mt-0.5" />
                       <span>{st.address} ({st.district}, {st.department})</span>
                     </p>
 

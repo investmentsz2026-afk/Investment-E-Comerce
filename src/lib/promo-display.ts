@@ -2,6 +2,7 @@ export type PromoPlacement =
   | "top_bar"
   | "popup"
   | "home_banner"
+  | "catalog_banner"
   | "all"
   | "catalog_only";
 
@@ -9,12 +10,16 @@ export interface ParsedPromoMeta {
   placement: PromoPlacement;
   cleanDescription: string;
   ctaHref: string;
+  applyToCart: boolean;
+  imageUrl: string | null;
   showInTopBar: boolean;
   showInPopup: boolean;
   showInHomeBanner: boolean;
+  showInCatalogBanner: boolean;
 }
 
-const PLACEMENT_REGEX = /^\[UBICACION:(TOP_BAR|POPUP|HOME_BANNER|ALL|CATALOG_ONLY)\](?:\[LINK:([^\]]+)\])?\s*/i;
+const PLACEMENT_REGEX =
+  /^\[UBICACION:(TOP_BAR|POPUP|HOME_BANNER|CATALOG_BANNER|ALL|CATALOG_ONLY)\](?:\[LINK:([^\]]+)\])?(?:\[CARRITO:(SI|NO)\])?(?:\[IMG:([^\]]+)\])?\s*/i;
 
 export function stripEmojis(text: string): string {
   return text
@@ -27,10 +32,17 @@ export function encodePromoDescription(
   placement: PromoPlacement,
   cleanDescription: string,
   ctaHref?: string,
+  applyToCart = true,
+  imageUrl?: string | null,
 ): string {
   const tag = `[UBICACION:${placement.toUpperCase()}]`;
   const linkTag = ctaHref && ctaHref.trim() ? `[LINK:${ctaHref.trim()}]` : "";
-  return `${tag}${linkTag} ${cleanDescription.trim()}`.trim();
+  const cartTag = applyToCart ? "" : "[CARRITO:NO]";
+  const cleanImg =
+    imageUrl && imageUrl.trim() && !imageUrl.includes("]")
+      ? `[IMG:${imageUrl.trim()}]`
+      : "";
+  return `${tag}${linkTag}${cartTag}${cleanImg} ${cleanDescription.trim()}`.trim();
 }
 
 export function parsePromoDescription(
@@ -42,6 +54,8 @@ export function parsePromoDescription(
 
   let placement: PromoPlacement = "all";
   let ctaHref = "/catalogo";
+  let applyToCart = true;
+  let imageUrl: string | null = null;
   let cleanDescription = raw;
 
   if (match) {
@@ -50,6 +64,7 @@ export function parsePromoDescription(
       rawType === "top_bar" ||
       rawType === "popup" ||
       rawType === "home_banner" ||
+      rawType === "catalog_banner" ||
       rawType === "all" ||
       rawType === "catalog_only"
     ) {
@@ -57,6 +72,12 @@ export function parsePromoDescription(
     }
     if (match[2]) {
       ctaHref = match[2].trim();
+    }
+    if (match[3] && match[3].toUpperCase() === "NO") {
+      applyToCart = false;
+    }
+    if (match[4]) {
+      imageUrl = match[4].trim() || null;
     }
     cleanDescription = raw.slice(match[0].length).trim();
   } else if (code) {
@@ -68,7 +89,6 @@ export function parsePromoDescription(
     } else if (upperCode.includes("BANNER")) {
       placement = "home_banner";
     } else {
-      // Por defecto, las promociones activas se muestran en todas las ubicaciones promocionales
       placement = "all";
     }
   }
@@ -77,9 +97,12 @@ export function parsePromoDescription(
     placement,
     cleanDescription: stripEmojis(cleanDescription),
     ctaHref,
+    applyToCart,
+    imageUrl,
     showInTopBar: placement === "top_bar" || placement === "all",
     showInPopup: placement === "popup" || placement === "all",
     showInHomeBanner: placement === "home_banner" || placement === "all",
+    showInCatalogBanner: placement === "catalog_banner" || placement === "all",
   };
 }
 
@@ -90,11 +113,17 @@ export interface PublicPromotionItem {
   description: string | null;
   cleanDescription: string;
   discountPercent: number;
+  categoryId: number | null;
+  categorySlug: string | null;
+  categoryName: string | null;
   channelTarget: "retail" | "wholesale";
   placement: PromoPlacement;
   ctaHref: string;
+  applyToCart: boolean;
+  imageUrl: string | null;
   showInTopBar: boolean;
   showInPopup: boolean;
   showInHomeBanner: boolean;
+  showInCatalogBanner: boolean;
   endsAtIso: string;
 }

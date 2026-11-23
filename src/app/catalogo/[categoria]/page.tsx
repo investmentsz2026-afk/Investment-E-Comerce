@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { siteConfig } from "@/config/site";
-import { getCategoryBySlug, getCategoriesWithProducts } from "@/server/queries/categories";
+import { getCategoryBySlug, getCategories } from "@/server/queries/categories";
 import { getProducts, getAvailableFilters } from "@/server/queries/products";
+import { getActivePublicPromotions } from "@/server/queries/promotions";
 import { parseCatalogParams, type RawSearchParams } from "@/lib/catalog-params";
 import { CatalogBreadcrumbs } from "@/components/catalog/catalog-breadcrumbs";
 import { CatalogContent } from "../catalog-content";
@@ -41,10 +42,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const filters = parseCatalogParams(sp, { categoria });
 
-  const [result, available, categories] = await Promise.all([
+  const [result, available, categories, promotions] = await Promise.all([
     getProducts(filters),
     getAvailableFilters(categoria),
-    getCategoriesWithProducts(),
+    getCategories(),
+    getActivePublicPromotions(),
   ]);
 
   return (
@@ -67,6 +69,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           totalPages={result.totalPages}
           available={available}
           categories={categories}
+          promotions={promotions}
+          currentCategoryId={category.id}
           title={`Shop ${category.name}`}
         />
       </div>

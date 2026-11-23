@@ -47,10 +47,17 @@ const productRelations = {
 /** Convierte un ProductRecord (con relaciones) al formato CatalogProduct/Product para tarjetas. */
 export function toCardProduct(row: ProductRecord): CatalogProduct {
   const variants = activeVariants(row.variants);
-  const primaryImage = row.images.find((i) => i.isPrimary) ?? row.images[0];
+  const generalImages = row.images.filter((i) => !i.colorName || !i.colorName.trim());
+  const basePool = generalImages.length > 0 ? generalImages : row.images;
+
+  const primaryImage =
+    basePool.find((i) => i.imageType === "portada") ??
+    basePool.find((i) => i.isPrimary) ??
+    basePool[0];
   const secondaryImage =
-    row.images.find((i) => i.id !== primaryImage?.id && i.url.includes("-closeup")) ??
-    row.images.find((i) => i.id !== primaryImage?.id);
+    basePool.find((i) => i.id !== primaryImage?.id && i.imageType === "cerca") ??
+    basePool.find((i) => i.id !== primaryImage?.id && i.url.includes("-closeup")) ??
+    basePool.find((i) => i.id !== primaryImage?.id);
   const retailPrice = row.prices.find((p) => p.type === "retail");
   const wholesalePrice = row.prices
     .filter((p) => p.type === "wholesale")
@@ -64,6 +71,33 @@ export function toCardProduct(row: ProductRecord): CatalogProduct {
     }
   }
   const colors = Array.from(colorMap.entries()).map(([name, swatch]) => ({ name, swatch }));
+
+  // Mapear imágenes específicas por cada color (portada y de cerca)
+  const colorImages: Record<string, { primary?: { src: string; alt: string }; hover?: { src: string; alt: string } }> = {};
+  for (const c of colors) {
+    const keyLower = c.name.trim().toLowerCase();
+    const matching = row.images.filter(
+      (i) => i.colorName && i.colorName.trim().toLowerCase() === keyLower,
+    );
+    if (matching.length > 0) {
+      const cPrimary =
+        matching.find((i) => i.imageType === "portada") ??
+        matching.find((i) => i.isPrimary) ??
+        matching[0];
+      const cHover =
+        matching.find((i) => i.id !== cPrimary?.id && i.imageType === "cerca") ??
+        matching.find((i) => i.id !== cPrimary?.id);
+
+      colorImages[c.name] = {
+        primary: cPrimary
+          ? { src: cPrimary.url, alt: cPrimary.alt || `${row.name} — ${c.name}` }
+          : undefined,
+        hover: cHover
+          ? { src: cHover.url, alt: cHover.alt || `Detalle ${row.name} — ${c.name}` }
+          : undefined,
+      };
+    }
+  }
 
   // Tallas únicas con unidades disponibles, en orden lógico
   const sizeSet = new Set<string>();
@@ -103,6 +137,7 @@ export function toCardProduct(row: ProductRecord): CatalogProduct {
           alt: secondaryImage.alt || `Detalle de prenda ${row.name}`,
         }
       : undefined,
+    colorImages: Object.keys(colorImages).length > 0 ? colorImages : undefined,
     wholesale: wholesalePrice
       ? { minQuantity: wholesalePrice.minQuantity, unitPrice: wholesalePrice.amount }
       : undefined,
@@ -144,7 +179,12 @@ async function buildConditions(filters: CatalogFilters): Promise<SQL[] | null> {
       where: and(eq(schema.categories.slug, filters.categoria), eq(schema.categories.isActive, true)),
     });
     if (!cat) return null; // categoría inexistente → sin resultados
-    conditions.push(eq(schema.products.categoryId, cat.id));
+    const childCats = await db
+      .select({ id: schema.categories.id })
+      .from(schema.categories)
+      .where(and(eq(schema.categories.parentId, cat.id), eq(schema.categories.isActive, true)));
+    const matchingCatIds = [cat.id, ...childCats.map((c) => c.id)];
+    conditions.push(inArray(schema.products.categoryId, matchingCatIds));
   }
 
   if (filters.audiencia) conditions.push(eq(schema.products.audience, filters.audiencia));
@@ -238,13 +278,17 @@ export async function getProducts(filters: CatalogFilters = {}): Promise<Paginat
   return { items: records.map(toCardProduct), total, page, pageSize: size, totalPages };
 }
 
-/** Obtener productos destacados para el home (limitado). */
-export async function getFeaturedProducts(limit = 8): Promise<CatalogProduct[]> {
+/**
+ * Obtener los productos más recientes para el home ("¡LO MÁS NUEVO!").
+ * Ordenados estrictamente por fecha de creación descendente (los más nuevos creados en el admin primero)
+ * y desempate por ID descendente. Solo productos activos.
+ */
+export async function getFeaturedProducts(limit = 10): Promise<CatalogProduct[]> {
   const db = getDb();
   const rows = (await db.query.products.findMany({
     where: eq(schema.products.status, "active"),
     with: productRelations,
-    orderBy: [desc(schema.products.isNew), asc(schema.products.sortOrder)],
+    orderBy: [desc(schema.products.createdAt), desc(schema.products.id)],
     limit,
   })) as unknown as ProductRecord[];
   return rows.map(toCardProduct);
@@ -298,7 +342,15 @@ export async function getAvailableFilters(categorySlug?: string): Promise<Availa
     const cat = await db.query.categories.findFirst({
       where: eq(schema.categories.slug, categorySlug),
     });
-    if (cat) conditions.push(eq(schema.products.categoryId, cat.id));
+    if (cat) {
+      const childCats = await db
+        .select({ id: schema.categories.id })
+        .from(schema.categories)
+        .where(and(eq(schema.categories.parentId, cat.id), eq(schema.categories.isActive, true)));
+      conditions.push(
+        inArray(schema.products.categoryId, [cat.id, ...childCats.map((c) => c.id)]),
+      );
+    }
   }
 
   const rows = await db.query.products.findMany({

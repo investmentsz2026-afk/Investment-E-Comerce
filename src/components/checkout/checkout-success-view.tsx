@@ -116,7 +116,7 @@ export function CheckoutSuccessView({
         {/* Tarjeta 1: Modalidad de Entrega */}
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 pb-2">
-            {isPickup ? <Store className="size-4 text-[#801323]" /> : <Truck className="size-4 text-[#801323]" />}
+            {isPickup ? <Store className="size-4 text-[#DC2626]" /> : <Truck className="size-4 text-[#DC2626]" />}
             <span>Modalidad de Entrega</span>
           </div>
 
@@ -131,7 +131,7 @@ export function CheckoutSuccessView({
             </div>
 
             <p className="text-neutral-700 flex items-start gap-1.5 pt-1">
-              <MapPin className="size-3.5 text-[#801323] shrink-0 mt-0.5" />
+              <MapPin className="size-3.5 text-[#DC2626] shrink-0 mt-0.5" />
               <span>
                 {isPickup
                   ? `${order.pickupStoreName ?? "Tienda Oficial"} — ${order.pickupStoreAddress ?? ""}`
@@ -148,7 +148,7 @@ export function CheckoutSuccessView({
         {/* Tarjeta 2: Pago y Comprobante */}
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 pb-2">
-            <Receipt className="size-4 text-[#801323]" />
+            <Receipt className="size-4 text-[#DC2626]" />
             <span>Pago y Comprobante</span>
           </div>
 
@@ -217,7 +217,7 @@ export function CheckoutSuccessView({
 
         <div className="border-t border-neutral-200 pt-3 flex items-center justify-between text-base font-extrabold text-neutral-900">
           <span>Total Pagado (PEN)</span>
-          <span className="text-xl font-black text-[#801323]">
+          <span className="text-xl font-black text-[#DC2626]">
             {formatPEN(order.totalAmount)}
           </span>
         </div>

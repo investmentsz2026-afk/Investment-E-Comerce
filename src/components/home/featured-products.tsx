@@ -26,11 +26,10 @@ interface FeaturedProductsProps {
 export function FeaturedProducts({ products: initialProducts }: FeaturedProductsProps = {}) {
   const [filter, setFilter] = useState<Filter>("todo");
   const officialDemoProducts = demoProducts.filter((p) => p.id.startsWith("colt-"));
-  const baseProducts: readonly (Product | CatalogProduct)[] =
-    initialProducts && initialProducts.length > 0 ? initialProducts : officialDemoProducts;
-
+  // Si la base de datos devuelve productos (los 10 más nuevos creados en el panel de admin),
+  // se muestran exclusivamente los productos reales del catálogo sin inyectar productos demo por código.
   const allProducts: readonly (Product | CatalogProduct)[] =
-    baseProducts.length >= 6 ? baseProducts : [...baseProducts, ...officialDemoProducts].slice(0, 11);
+    initialProducts && initialProducts.length > 0 ? initialProducts : officialDemoProducts;
 
   const visible = allProducts.filter((p) => {
     if (filter === "todo") return true;
@@ -50,8 +49,8 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
         {/* BLOQUE 1: Carrusel Infinito 1 por 1 "¡LO MÁS NUEVO!" */}
         <div>
           <div className="flex flex-col items-center text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-4 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-white shadow-md">
-              <FaTag className="size-3 text-white" aria-hidden />
+            <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] px-4 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-white shadow-md">
+              <FaTag className="size-3 text-cyan-300" aria-hidden />
               <span>COLECCIÓN AMERICAN COLT JEANS™ · PASA EL MOUSE PARA VER SOLO LA PRENDA</span>
             </span>
 
@@ -59,7 +58,7 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
               id="destacados-title"
               className="mt-2.5 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl lg:text-4xl"
             >
-              ¡LO MÁS <span className="text-[#0055FF]">NUEVO!</span>
+              ¡LO MÁS <span className="bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] bg-clip-text text-transparent">NUEVO!</span>
             </h2>
 
             {/* Pestañas centradas enfocadas en nuestro catálogo oficial */}
@@ -80,8 +79,8 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
                     className={cn(
                       "rounded-full px-5 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
                       active
-                        ? "bg-gradient-to-r from-[#EF233C] to-[#B91C24] text-white shadow-md scale-105"
-                        : "border border-blue-100 bg-blue-50/70 text-[#0055FF] hover:border-[#0055FF] hover:bg-[#0055FF] hover:text-white",
+                        ? "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-md shadow-rose-500/20 scale-105"
+                        : "border border-slate-200 bg-slate-50/90 text-slate-700 hover:border-blue-300 hover:bg-gradient-to-r hover:from-[#1E3A8A] hover:to-[#2563EB] hover:text-white",
                     )}
                   >
                     {f.label}
@@ -106,16 +105,16 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
           </div>
         </div>
 
-        {/* BLOQUE 2: Segundo Carrusel 1x1 Redondeado (`rounded-3xl`) y Reluciente */}
-        <div className="rounded-3xl border-2 border-blue-100 bg-gradient-to-b from-blue-50/80 via-white to-blue-50/60 p-5 shadow-lg sm:p-7 lg:p-8">
-          <div className="flex flex-col items-start justify-between gap-3 border-b border-blue-100 pb-4 sm:flex-row sm:items-center">
+        {/* BLOQUE 2: Segundo Carrusel 1x1 Redondeado (`rounded-3xl`) con Degradado Suave */}
+        <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 via-white to-blue-50/40 p-5 shadow-lg sm:p-7 lg:p-8">
+          <div className="flex flex-col items-start justify-between gap-3 border-b border-slate-200/80 pb-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#EF233C] to-[#B91C24] text-white shadow-md">
+              <span className="bg-flow flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-md shadow-rose-500/20">
                 <FaPercent className="size-4 text-white" aria-hidden />
               </span>
               <div>
                 <h3 className="font-sans text-lg font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
-                  ¡OFERTAS 3x2 Y <span className="text-[#0055FF]">MÁS VENDIDOS!</span>
+                  ¡OFERTAS 3x2 Y <span className="bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] bg-clip-text text-transparent">MÁS VENDIDOS!</span>
                 </h3>
                 <p className="text-xs font-medium text-slate-500">
                   Pasa el cursor sobre cualquier tarjeta para ver el detalle cercano de la prenda sola
@@ -126,14 +125,14 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href="/catalogo?novedades=1&oferta=50"
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105"
+                className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-md shadow-blue-500/20 transition-transform hover:scale-105"
               >
                 <span>Ver Todas las Ofertas</span>
                 <FaArrowRight className="size-3" aria-hidden />
               </Link>
               <Link
                 href="/mayorista/cotizaciones"
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#EF233C] to-[#B91C24] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105"
+                className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-md shadow-rose-500/20 transition-transform hover:scale-105"
               >
                 <span>Cotizar por Mayor</span>
               </Link>

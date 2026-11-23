@@ -8,11 +8,11 @@ const values = [
   "PAGOS SEGUROS CON YAPE, PLIN Y TARJETAS",
 ] as const;
 
-/** Cinta promocional reluciente en Azul Eléctrico Oficial (#0055FF) con estrellas. */
+/** Cinta promocional con degradado animado elegante en Índigo-Zafiro. */
 export function BrandMarquee() {
   return (
     <div
-      className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#0055FF] py-3 text-paper shadow-sm"
+      className="bg-flow bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1D4ED8] py-3 text-paper shadow-sm border-y border-white/10"
       aria-label="Valores de American Colt Jeans"
     >
       <Marquee

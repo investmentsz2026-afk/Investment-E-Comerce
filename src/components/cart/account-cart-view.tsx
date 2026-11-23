@@ -89,7 +89,7 @@ export function AccountCartView() {
               />
               <polygon
                 points="50,54 110,54 105,108 44,108"
-                stroke="#801323"
+                stroke="#DC2626"
                 strokeWidth="2"
                 strokeDasharray="4 3"
                 fill="none"
@@ -106,7 +106,7 @@ export function AccountCartView() {
           <div className="mt-6">
             <Link
               href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-7 py-3 text-xs font-bold text-white shadow-md shadow-[#801323]/25 transition-all active:scale-95"
+              className="bg-flow inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] px-7 py-3 text-xs font-bold text-white shadow-md shadow-blue-900/20 transition-all active:scale-95"
             >
               <span>Explorar catálogo</span>
               <FaArrowRight className="size-3" />
@@ -172,6 +172,7 @@ export function AccountCartView() {
                       src={item.imageUrl ?? "/placeholder.jpg"}
                       alt={item.productName}
                       fill
+                      unoptimized={Boolean(item.imageUrl?.startsWith("/api/media/"))}
                       sizes="80px"
                       className="object-cover"
                     />
@@ -269,7 +270,7 @@ export function AccountCartView() {
                         type="button"
                         disabled={isUpdating}
                         onClick={() => removeItem(item.variantId)}
-                        className="text-slate-400 hover:text-[#801323] transition-colors p-1"
+                        className="text-slate-400 hover:text-[#DC2626] transition-colors p-1"
                         aria-label={`Eliminar ${item.productName}`}
                       >
                         <FaTrashCan className="size-3.5" />
@@ -335,7 +336,7 @@ export function AccountCartView() {
             <div className="pt-2 space-y-2.5">
               <Link
                 href="/checkout"
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#801323] hover:bg-[#6b0f1c] px-6 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#801323]/25 transition-all active:scale-95"
+                className="bg-flow flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] px-6 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-900/20 transition-all active:scale-95"
               >
                 <span>Proceder al Pago Seguro</span>
                 <FaArrowRight className="size-3.5" />

@@ -58,7 +58,7 @@ export default async function AdminInicioPage() {
             viewBox="0 0 500 300"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="size-full stroke-[#801323]"
+            className="size-full stroke-[#DC2626]"
           >
             <path
               d="M 50,0 Q 200,180 500,80"
@@ -74,7 +74,7 @@ export default async function AdminInicioPage() {
         </div>
 
         <div className="relative z-10 max-w-xl space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#801323]/10 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-widest text-[#801323]">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#DC2626]/10 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-widest text-[#DC2626]">
             <Sparkles className="size-3" />
             <span>Panel Oficial de Control</span>
           </div>
@@ -90,7 +90,7 @@ export default async function AdminInicioPage() {
           <div className="pt-2">
             <Link
               href="/admin/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#801323] px-6 py-3 text-xs font-extrabold tracking-wide text-white shadow-md shadow-[#801323]/25 hover:bg-[#6b0f1c] hover:shadow-lg transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 text-xs font-extrabold tracking-wide text-white shadow-md shadow-[#DC2626]/25 hover:bg-[#B91C1C] hover:shadow-lg transition-all active:scale-[0.98]"
             >
               <span>Ir al Dashboard</span>
               <ArrowRight className="size-4" />
@@ -114,10 +114,10 @@ export default async function AdminInicioPage() {
           {/* Tarjeta 1: Pedidos por despachar */}
           <Link
             href="/admin/pedidos?status=paid"
-            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-rose-50 text-[#801323] border border-rose-100 group-hover:bg-[#801323] group-hover:text-white transition-colors duration-200 shrink-0">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-rose-50 text-[#DC2626] border border-rose-100 group-hover:bg-[#DC2626] group-hover:text-white transition-colors duration-200 shrink-0">
                 <Package className="size-5" />
               </div>
               <div className="min-w-0">
@@ -129,13 +129,13 @@ export default async function AdminInicioPage() {
                 </p>
               </div>
             </div>
-            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#801323] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#DC2626] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
           </Link>
 
           {/* Tarjeta 2: Solicitudes B2B pendientes */}
           <Link
             href="/admin/solicitudes"
-            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -150,13 +150,13 @@ export default async function AdminInicioPage() {
                 </p>
               </div>
             </div>
-            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#801323] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#DC2626] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
           </Link>
 
           {/* Tarjeta 3: Comprobantes / Cotizaciones pendientes */}
           <Link
             href="/admin/pedidos"
-            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+            className="group relative flex items-center justify-between rounded-2xl border border-neutral-200/90 bg-white p-4 sm:p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -171,7 +171,7 @@ export default async function AdminInicioPage() {
                 </p>
               </div>
             </div>
-            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#801323] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+            <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#DC2626] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
           </Link>
         </div>
       </section>
@@ -191,12 +191,12 @@ export default async function AdminInicioPage() {
           {/* 1. Nuevo producto */}
           <Link
             href="/admin/productos/nuevo"
-            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
+            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
           >
-            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#801323] border border-rose-100 group-hover:bg-[#801323] group-hover:text-white transition-all duration-200 mb-3">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#DC2626] border border-rose-100 group-hover:bg-[#DC2626] group-hover:text-white transition-all duration-200 mb-3">
               <Plus className="size-6" />
             </div>
-            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#801323] transition-colors">
+            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#DC2626] transition-colors">
               Nuevo producto
             </p>
             <p className="text-[0.65rem] text-neutral-400 mt-0.5">Crear prenda en catálogo</p>
@@ -205,12 +205,12 @@ export default async function AdminInicioPage() {
           {/* 2. Ajustar stock */}
           <Link
             href="/admin/inventario"
-            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
+            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
           >
-            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#801323] border border-rose-100 group-hover:bg-[#801323] group-hover:text-white transition-all duration-200 mb-3">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#DC2626] border border-rose-100 group-hover:bg-[#DC2626] group-hover:text-white transition-all duration-200 mb-3">
               <Layers className="size-6" />
             </div>
-            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#801323] transition-colors">
+            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#DC2626] transition-colors">
               Ajustar stock
             </p>
             <p className="text-[0.65rem] text-neutral-400 mt-0.5">Kardex y disponibilidad</p>
@@ -219,12 +219,12 @@ export default async function AdminInicioPage() {
           {/* 3. Gestionar pedidos */}
           <Link
             href="/admin/pedidos"
-            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
+            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
           >
-            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#801323] border border-rose-100 group-hover:bg-[#801323] group-hover:text-white transition-all duration-200 mb-3">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#DC2626] border border-rose-100 group-hover:bg-[#DC2626] group-hover:text-white transition-all duration-200 mb-3">
               <Package className="size-6" />
             </div>
-            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#801323] transition-colors">
+            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#DC2626] transition-colors">
               Gestionar pedidos
             </p>
             <p className="text-[0.65rem] text-neutral-400 mt-0.5">Envíos y estados de pago</p>
@@ -233,12 +233,12 @@ export default async function AdminInicioPage() {
           {/* 4. Revisar solicitudes B2B */}
           <Link
             href="/admin/solicitudes"
-            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#801323]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
+            className="group rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#DC2626]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 block text-center"
           >
-            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#801323] border border-rose-100 group-hover:bg-[#801323] group-hover:text-white transition-colors duration-200 mb-3">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-[#DC2626] border border-rose-100 group-hover:bg-[#DC2626] group-hover:text-white transition-colors duration-200 mb-3">
               <Users className="size-6" />
             </div>
-            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#801323] transition-colors">
+            <p className="text-xs font-bold text-neutral-900 group-hover:text-[#DC2626] transition-colors">
               Revisar solicitudes B2B
             </p>
             <p className="text-[0.65rem] text-neutral-400 mt-0.5">Empresas mayoristas</p>
@@ -265,7 +265,7 @@ export default async function AdminInicioPage() {
             <span>{salesGlobal.todayOrders} pedidos confirmados</span>
             <Link
               href="/admin/dashboard"
-              className="text-[#801323] font-bold hover:underline inline-flex items-center gap-1"
+              className="text-[#DC2626] font-bold hover:underline inline-flex items-center gap-1"
             >
               <span>Ver reporte</span>
               <ArrowRight className="size-3" />
@@ -279,7 +279,7 @@ export default async function AdminInicioPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
               Salud de Inventario
             </span>
-            <div className="size-8 rounded-lg bg-rose-50 text-[#801323] flex items-center justify-center">
+            <div className="size-8 rounded-lg bg-rose-50 text-[#DC2626] flex items-center justify-center">
               <Layers className="size-4" />
             </div>
           </div>
@@ -295,7 +295,7 @@ export default async function AdminInicioPage() {
             </span>
             <Link
               href="/admin/inventario"
-              className="text-[#801323] font-bold hover:underline inline-flex items-center gap-1"
+              className="text-[#DC2626] font-bold hover:underline inline-flex items-center gap-1"
             >
               <span>Ver kardex</span>
               <ArrowRight className="size-3" />
@@ -322,7 +322,7 @@ export default async function AdminInicioPage() {
             </span>
             <Link
               href="/admin/solicitudes"
-              className="text-[#801323] font-bold hover:underline inline-flex items-center gap-1"
+              className="text-[#DC2626] font-bold hover:underline inline-flex items-center gap-1"
             >
               <span>Gestionar</span>
               <ArrowRight className="size-3" />

@@ -218,7 +218,7 @@ export function NewsletterForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="group/send inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#B91C24] px-5 font-sans text-xs font-black uppercase tracking-wider text-white shadow-md shadow-red-500/25 transition-all duration-300 hover:scale-[1.02] hover:from-[#0055FF] hover:via-[#1D4ED8] hover:to-[#1E40AF] hover:shadow-blue-500/30 disabled:opacity-50"
+            className="bg-flow group/send inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-5 font-sans text-xs font-black uppercase tracking-wider text-white shadow-md shadow-rose-500/25 transition-all duration-300 hover:scale-[1.02] hover:from-[#1E3A8A] hover:via-[#2563EB] hover:to-[#3B82F6] hover:shadow-blue-500/30 disabled:opacity-50"
           >
             {isPending ? (
               <>

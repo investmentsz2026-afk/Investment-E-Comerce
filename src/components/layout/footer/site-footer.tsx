@@ -59,7 +59,7 @@ const columns: readonly { title: string; links: readonly NavLink[] }[] = [
       link("Envíos y entregas 24Hrs", "/atencion-al-cliente#envios"),
       link("Cambios y devoluciones", "/politicas#cambios"),
       link("Guía de tallas", "/atencion-al-cliente#tallas"),
-      link("Seguimiento de pedido", "/cuenta/pedidos"),
+      link("Seguimiento de pedido", "/seguir-pedido"),
     ],
   },
   {
@@ -103,18 +103,18 @@ export function SiteFooter() {
   return (
     <footer
       aria-labelledby="footer-title"
-      className="overflow-hidden border-t-4 border-[#0055FF] bg-bone pb-24 pt-12 text-ink lg:pb-10 lg:pt-16"
+      className="overflow-hidden border-t-4 border-[#1E3A8A] bg-bone pb-24 pt-12 text-ink lg:pb-10 lg:pt-16"
     >
       <h2 id="footer-title" className="sr-only">
         Información de American Colt JEANS™
       </h2>
 
       <div className="shell space-y-10">
-        {/* 1. Banner Compacto de Suscripción VIP (No llena toda la pantalla + Campos de Nombre, Apellido, Celular y Correo) */}
-        <div className="mx-auto max-w-5xl rounded-2xl border-2 border-blue-400/30 bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#0F3299] p-4 text-paper shadow-[0_18px_45px_-12px_rgba(0,85,255,0.45)] sm:p-5">
+        {/* 1. Banner Compacto de Suscripción VIP con Degradado Animado Elegante */}
+        <div className="bg-flow mx-auto max-w-5xl rounded-2xl border border-blue-400/30 bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] p-4 text-paper shadow-[0_18px_45px_-12px_rgba(30,58,138,0.45)] sm:p-5">
           <div className="grid items-center gap-4 lg:grid-cols-12 lg:gap-5">
             <div className="lg:col-span-5">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EF233C] px-3 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-widest text-paper shadow-xs">
+              <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-widest text-paper shadow-xs">
                 <FaTag className="size-2.5" aria-hidden />
                 <span>CLUB VIP AMERICAN COLT JEANS™</span>
               </span>

@@ -388,7 +388,7 @@ export function Auth3DExperience({
                     type="button"
                     onClick={() => switchMode("wholesale")}
                     className={`relative flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 ${mode === "wholesale"
-                      ? "bg-gradient-to-r from-[#EF233C] to-[#B91C24] text-white shadow-lg shadow-red-500/30"
+                      ? "bg-gradient-to-r from-[#EF233C] to-[#DC2626] text-white shadow-lg shadow-red-500/30"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
                       }`}
                   >
@@ -841,7 +841,7 @@ export function Auth3DExperience({
                       <div className="space-y-2.5 pt-2">
                         <Link
                           href="/mayorista/registro"
-                          className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#B91C24] px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-600/30 transition-all hover:brightness-110 active:scale-[0.99]"
+                          className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#EF233C] via-[#D90429] to-[#DC2626] px-6 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-600/30 transition-all hover:brightness-110 active:scale-[0.99]"
                         >
                           <span>Solicitar cuenta mayorista con RUC</span>
                           <FaArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden />
