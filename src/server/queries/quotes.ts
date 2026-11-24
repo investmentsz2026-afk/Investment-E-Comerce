@@ -140,7 +140,8 @@ export async function getApprovedCompanyForUser(userId: number) {
 }
 
 /**
- * Obtiene el catálogo de productos y variantes activas disponibles para armar una solicitud de cotización B2B.
+ * Obtiene el catálogo de productos habilitados para venta mayorista (`isWholesale = true`)
+ * y sus variantes activas disponibles para armar una solicitud de cotización B2B.
  */
 export async function getWholesaleCatalogSelectorItems() {
   const db = getDb();
@@ -148,7 +149,7 @@ export async function getWholesaleCatalogSelectorItems() {
   const activeProducts = await db
     .select()
     .from(products)
-    .where(eq(products.status, "active"))
+    .where(and(eq(products.status, "active"), eq(products.isWholesale, true)))
     .orderBy(asc(products.sortOrder), asc(products.name));
 
   if (activeProducts.length === 0) return [];

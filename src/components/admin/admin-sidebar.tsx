@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import {
   BarChart3,
+  Boxes,
   ChevronRight,
   ExternalLink,
   FileText,
@@ -68,6 +69,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
     accent: "bg-blue-600",
     items: [
       { href: "/admin/productos", label: "Productos", icon: Package },
+      { href: "/admin/mayoristas", label: "Productos Mayoristas", icon: Boxes },
       { href: "/admin/categorias", label: "Categorías", icon: LayoutGrid },
       { href: "/admin/promociones", label: "Promociones", icon: Percent },
       { href: "/admin/contenido", label: "Contenido E-Commerce", icon: Sparkles },

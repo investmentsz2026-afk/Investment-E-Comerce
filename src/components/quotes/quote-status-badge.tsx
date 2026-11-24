@@ -7,37 +7,37 @@ const STATUS_CONFIG: Record<
 > = {
   submitted: {
     label: "Enviada",
-    badgeClass: "border-sky-300 bg-sky-50 text-sky-900",
-    description: "Solicitud recibida por el departamento comercial de INVESTMENTS.",
+    badgeClass: "border-sky-200 bg-sky-50 text-sky-700",
+    description: "Solicitud recibida por el departamento comercial de American Colt JEANS™.",
   },
   under_review: {
     label: "En revisión",
-    badgeClass: "border-amber-300 bg-amber-50 text-amber-900",
+    badgeClass: "border-amber-200 bg-amber-50 text-amber-800",
     description: "Ejecutivo comercial evaluando disponibilidad de stock y tarifas por volumen.",
   },
   quoted: {
     label: "Cotización preparada",
-    badgeClass: "border-emerald-400 bg-emerald-100 text-emerald-950 font-semibold",
+    badgeClass: "border-emerald-300 bg-emerald-50 text-emerald-800",
     description: "Propuesta económica emitida y lista para tu revisión y decisión.",
   },
   accepted: {
     label: "Aceptada por cliente",
-    badgeClass: "border-ink bg-ink text-paper",
+    badgeClass: "border-slate-900 bg-slate-900 text-white",
     description: "Condiciones aceptadas. Lista para coordinación de facturación y despacho.",
   },
   rejected: {
     label: "Rechazada",
-    badgeClass: "border-rose-300 bg-rose-50 text-rose-900",
+    badgeClass: "border-rose-200 bg-rose-50 text-rose-700",
     description: "La propuesta o solicitud fue desestimada.",
   },
   expired: {
     label: "Vencida",
-    badgeClass: "border-taupe-300 bg-taupe-100 text-taupe-700",
+    badgeClass: "border-slate-200 bg-slate-100 text-slate-600",
     description: "La fecha límite de validez de la propuesta económica ha expirado.",
   },
   cancelled: {
     label: "Cancelada",
-    badgeClass: "border-taupe-300 bg-taupe-100 text-taupe-600",
+    badgeClass: "border-slate-200 bg-slate-100 text-slate-500",
     description: "Solicitud cancelada por la empresa solicitante.",
   },
 };
@@ -66,4 +66,3 @@ export function QuoteStatusBadge({
     </span>
   );
 }
-

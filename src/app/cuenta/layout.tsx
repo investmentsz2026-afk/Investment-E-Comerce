@@ -113,7 +113,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
 
               {(user.role === "business_approved" || user.role === "admin") && (
                 <AccountNavTab
-                  href="/mayorista/cotizaciones"
+                  href="/cuenta/cotizaciones"
                   icon={<FaFileInvoice className="size-3.5" />}
                   label="Cotizaciones B2B"
                 />
@@ -128,7 +128,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
                 />
               ) : (
                 <AccountNavTab
-                  href="/mayorista/solicitud"
+                  href="/cuenta/mayorista"
                   icon={<FaBuilding className="size-3.5" />}
                   label="Estado Mayorista"
                 />

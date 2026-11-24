@@ -80,7 +80,7 @@ export default async function AccountPage() {
               </div>
             </div>
             <Link
-              href="/mayorista/solicitud"
+              href="/cuenta/mayorista"
               className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-amber-300 bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-50"
             >
               <span>Ver Estado</span>
@@ -193,7 +193,7 @@ export default async function AccountPage() {
 
             <div className="mt-4">
               <Link
-                href="/mayorista/cotizaciones"
+                href="/cuenta/cotizaciones"
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 hover:bg-slate-50"
               >
                 <span>Gestionar Cotizaciones B2B</span>

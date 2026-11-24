@@ -11,6 +11,8 @@ const PAGE_NAMES: Record<string, string> = {
   "/cuenta/direcciones": "Direcciones",
   "/cuenta/seguridad": "Seguridad",
   "/cuenta/pedidos": "Mis pedidos",
+  "/cuenta/cotizaciones": "Cotizaciones B2B",
+  "/cuenta/mayorista": "Estado Mayorista",
 };
 
 export function AccountBreadcrumb() {
@@ -20,6 +22,8 @@ export function AccountBreadcrumb() {
   if (!currentPageName) {
     if (pathname.startsWith("/cuenta/pedidos/")) {
       currentPageName = "Detalle de pedido";
+    } else if (pathname.startsWith("/cuenta/cotizaciones/")) {
+      currentPageName = "Detalle de cotización";
     } else {
       currentPageName = "Mi cuenta";
     }

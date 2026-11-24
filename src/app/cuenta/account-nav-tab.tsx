@@ -14,7 +14,10 @@ interface AccountNavTabProps {
 
 export function AccountNavTab({ href, icon, label, badge }: AccountNavTabProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive =
+    href === "/cuenta"
+      ? pathname === "/cuenta"
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Link

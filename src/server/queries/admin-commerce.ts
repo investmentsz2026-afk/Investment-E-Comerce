@@ -943,3 +943,65 @@ export async function getAdminCustomerDetail(userId: number) {
     },
   };
 }
+
+/**
+ * Listado completo de productos para el gestor de selección de Productos Mayoristas (/admin/mayoristas).
+ */
+export async function getAdminWholesaleProductsData() {
+  await requireAdmin();
+  const db = getDb();
+
+  const [allProducts, allCategories, allVariants, allPrices, allImages] = await Promise.all([
+    db
+      .select()
+      .from(products)
+      .orderBy(desc(products.isWholesale), asc(products.sortOrder), desc(products.id)),
+    db.select().from(categories).orderBy(asc(categories.sortOrder), asc(categories.name)),
+    db.select().from(productVariants),
+    db.select().from(productPrices).orderBy(asc(productPrices.minQuantity)),
+    db.select().from(productImages).orderBy(asc(productImages.sortOrder)),
+  ]);
+
+  const categoryMap = new Map(allCategories.map((c) => [c.id, c.name]));
+
+  const items = allProducts.map((prod) => {
+    const pVariants = allVariants.filter((v) => v.productId === prod.id && v.isActive);
+    const totalStock = pVariants.reduce((acc, v) => acc + v.stock, 0);
+    const pPrices = allPrices.filter((pr) => pr.productId === prod.id);
+    const retailRow = pPrices.find((pr) => pr.type === "retail") ?? null;
+    const wholesaleTiers = pPrices
+      .filter((pr) => pr.type === "wholesale")
+      .map((t) => ({
+        id: t.id,
+        minQuantity: t.minQuantity,
+        maxQuantity: t.maxQuantity,
+        amount: t.amount,
+      }));
+    const pImages = allImages.filter((im) => im.productId === prod.id);
+    const primaryImage =
+      pImages.find((im) => im.imageType === "portada") ??
+      pImages.find((im) => im.isPrimary) ??
+      pImages[0] ??
+      null;
+
+    return {
+      id: prod.id,
+      name: prod.name,
+      slug: prod.slug,
+      categoryId: prod.categoryId,
+      categoryName: categoryMap.get(prod.categoryId) ?? "Sin categoría",
+      status: prod.status,
+      isWholesale: prod.isWholesale,
+      retailAmount: retailRow?.amount ?? 0,
+      wholesaleTiers,
+      totalStock,
+      variantsCount: pVariants.length,
+      primaryImageUrl: primaryImage?.url ?? "/placeholder.jpg",
+    };
+  });
+
+  return {
+    items,
+    categories: allCategories.map((c) => ({ id: c.id, name: c.name })),
+  };
+}

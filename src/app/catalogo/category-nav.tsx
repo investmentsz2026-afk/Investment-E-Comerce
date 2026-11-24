@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { FaBoxesStacked } from "react-icons/fa6";
 import type { CategoryRecord } from "@/types/catalog";
 import { cn } from "@/lib/utils";
 
@@ -9,9 +10,13 @@ interface CategoryNavProps {
   categories: CategoryRecord[];
 }
 
-/** Navegación horizontal de categorías con scroll en mobile. */
+/** Navegación horizontal de categorías con acceso directo a Mayoristas B2B y scroll en mobile. */
 export function CategoryNav({ categories }: CategoryNavProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isWholesaleActive =
+    searchParams.get("mayorista") === "1" || searchParams.get("modalidad") === "mayorista";
+  const isAllActive = pathname === "/catalogo" && !isWholesaleActive;
 
   return (
     <nav aria-label="Categorías" className="no-scrollbar w-full max-w-full overflow-x-auto py-2">
@@ -21,7 +26,7 @@ export function CategoryNav({ categories }: CategoryNavProps) {
             href="/catalogo"
             className={cn(
               "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
-              pathname === "/catalogo"
+              isAllActive
                 ? "border-[#DC2626] bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm shadow-red-500/25"
                 : "border-slate-200 bg-white text-slate-600 hover:border-[#DC2626]/50 hover:bg-red-50/50 hover:text-[#DC2626]",
             )}
@@ -29,9 +34,25 @@ export function CategoryNav({ categories }: CategoryNavProps) {
             Todo
           </Link>
         </li>
+        <li>
+          <Link
+            href="/catalogo?mayorista=1"
+            className={cn(
+              "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-4 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
+              isWholesaleActive
+                ? "border-[#1D4ED8] bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] text-white shadow-sm shadow-blue-500/25"
+                : "border-blue-200 bg-blue-50/70 text-[#1D4ED8] hover:border-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white",
+            )}
+          >
+            <FaBoxesStacked className="size-3.5" aria-hidden />
+            <span>Mayoristas</span>
+          </Link>
+        </li>
         {categories.map((cat) => {
-          const href = `/catalogo/${cat.slug}`;
-          const isActive = pathname === href;
+          const href = isWholesaleActive
+            ? `/catalogo/${cat.slug}?mayorista=1`
+            : `/catalogo/${cat.slug}`;
+          const isActive = pathname === `/catalogo/${cat.slug}`;
           return (
             <li key={cat.id}>
               <Link

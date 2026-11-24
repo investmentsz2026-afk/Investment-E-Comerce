@@ -28,7 +28,8 @@ export function CatalogFilters({ available, categories = [], className }: Catalo
   const activeSizes = searchParams.getAll("talla");
   const activeColors = searchParams.getAll("color");
   const activeNovedades = searchParams.get("novedades") === "1";
-  const activeMayorista = searchParams.get("mayorista") === "1";
+  const activeMayorista =
+    searchParams.get("mayorista") === "1" || searchParams.get("modalidad") === "mayorista";
   const activeDisponible = searchParams.get("disponible") === "1";
   const activePrecioMin = searchParams.get("precio_min");
   const activePrecioMax = searchParams.get("precio_max");
@@ -118,15 +119,41 @@ export function CatalogFilters({ available, categories = [], className }: Catalo
                 <span
                   className={cn(
                     "flex size-4 items-center justify-center rounded-xs border",
-                    pathname === "/catalogo"
+                    pathname === "/catalogo" && !activeMayorista
                       ? "border-cochinilla bg-cochinilla text-paper"
                       : "border-ink/25 bg-paper group-hover:border-cochinilla",
                   )}
                 >
-                  {pathname === "/catalogo" && <Check className="size-3 stroke-[3]" aria-hidden />}
+                  {pathname === "/catalogo" && !activeMayorista && (
+                    <Check className="size-3 stroke-[3]" aria-hidden />
+                  )}
                 </span>
-                <span className={cn(pathname === "/catalogo" && "font-extrabold text-cochinilla")}>
+                <span
+                  className={cn(
+                    pathname === "/catalogo" && !activeMayorista && "font-extrabold text-cochinilla",
+                  )}
+                >
                   Todas las Prendas
+                </span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/catalogo?mayorista=1"
+                className="group flex items-center gap-3 text-xs font-medium text-[#1D4ED8] transition-colors hover:text-[#DC2626]"
+              >
+                <span
+                  className={cn(
+                    "flex size-4 items-center justify-center rounded-xs border",
+                    activeMayorista
+                      ? "border-[#1D4ED8] bg-[#1D4ED8] text-white"
+                      : "border-blue-300 bg-blue-50 group-hover:border-[#1D4ED8]",
+                  )}
+                >
+                  {activeMayorista && <Check className="size-3 stroke-[3]" aria-hidden />}
+                </span>
+                <span className={cn("font-bold", activeMayorista && "font-extrabold")}>
+                  Mayoristas B2B
                 </span>
               </Link>
             </li>
@@ -216,7 +243,18 @@ export function CatalogFilters({ available, categories = [], className }: Catalo
             <input
               type="checkbox"
               checked={activeMayorista}
-              onChange={() => updateParams("mayorista", activeMayorista ? null : "1")}
+              onChange={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete("pagina");
+                params.delete("modalidad");
+                if (activeMayorista) {
+                  params.delete("mayorista");
+                } else {
+                  params.set("mayorista", "1");
+                }
+                const query = params.toString();
+                router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
+              }}
               className="size-4 cursor-pointer accent-cochinilla"
             />
             <span className="text-xs font-medium text-ink">Disponible por Mayor B2B</span>

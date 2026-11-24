@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,14 @@ import {
   Loader2,
   ShoppingBag,
   Building2,
+  BadgePercent,
+  MapPin,
+  Send,
+  Sparkles,
+  Search,
+  ChevronDown,
+  Check,
+  X,
 } from "lucide-react";
 import { FaBoxesStacked, FaLayerGroup } from "react-icons/fa6";
 import { submitWholesaleQuoteAction } from "@/server/actions/quotes";
@@ -56,9 +64,19 @@ interface WholesaleQuoteBuilderProps {
   isUserAuthorized?: boolean;
   isAuthenticated?: boolean;
   userRole?: string | null;
+  /** Ruta base para ver el detalle de una cotización recién enviada. */
+  quoteDetailBasePath?: string;
 }
 
 const QUOTE_DRAFT_KEY = "investments_quote_draft_v1";
+
+function normalizeSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 
 function getInitialDraft(
   variantInfoMap: Map<number, unknown>,
@@ -121,10 +139,10 @@ export function WholesaleQuoteBuilder({
   isUserAuthorized = false,
   isAuthenticated = false,
   userRole = null,
+  quoteDetailBasePath = "/mayorista/cotizaciones",
 }: WholesaleQuoteBuilderProps) {
   const router = useRouter();
 
-  // Mapear variantes para búsqueda rápida
   const variantInfoMap = useMemo(() => {
     const map = new Map<
       number,
@@ -163,6 +181,50 @@ export function WholesaleQuoteBuilder({
   );
   const [addNotes, setAddNotes] = useState<string>("");
 
+  // Estado para los comboboxes buscables de modelo y variante
+  const [productOpen, setProductOpen] = useState(false);
+  const [productQuery, setProductQuery] = useState("");
+  const [variantOpen, setVariantOpen] = useState(false);
+  const [variantQuery, setVariantQuery] = useState("");
+
+  const productBoxRef = useRef<HTMLDivElement>(null);
+  const variantBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      const target = e.target as Node;
+      if (productBoxRef.current && !productBoxRef.current.contains(target)) {
+        setProductOpen(false);
+      }
+      if (variantBoxRef.current && !variantBoxRef.current.contains(target)) {
+        setVariantOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    const q = normalizeSearch(productQuery);
+    if (!q) return catalogProducts;
+    return catalogProducts.filter((p) => {
+      const haystack = normalizeSearch(`${p.name} ${p.slug}`);
+      return haystack.includes(q);
+    });
+  }, [catalogProducts, productQuery]);
+
+  const filteredVariants = useMemo(() => {
+    const all = currentProduct?.variants ?? [];
+    const q = normalizeSearch(variantQuery);
+    if (!q) return all;
+    return all.filter((v) => {
+      const haystack = normalizeSearch(
+        `${v.colorName ?? ""} ${v.size ?? ""} talla ${v.size ?? ""} ${v.sku}`,
+      );
+      return haystack.includes(q);
+    });
+  }, [currentProduct, variantQuery]);
+
   const [initialDraft] = useState(() =>
     getInitialDraft(variantInfoMap, initialLines, defaultDeliveryCity),
   );
@@ -181,7 +243,6 @@ export function WholesaleQuoteBuilder({
     quoteNumber: string;
   } | null>(null);
 
-  // Persistir cambios en localStorage
   useEffect(() => {
     try {
       if (typeof window === "undefined" || successQuote) return;
@@ -203,7 +264,6 @@ export function WholesaleQuoteBuilder({
     }
   }, [lines, commercialNeeds, customerNotes, deliveryCity, successQuote]);
 
-  // Cuando cambia el producto seleccionado, actualizar la primera variante y su cantidad mínima sugerida
   const handleProductChange = (prodId: number) => {
     setSelectedProductId(prodId);
     const prod = catalogProducts.find((p) => p.id === prodId);
@@ -211,6 +271,15 @@ export function WholesaleQuoteBuilder({
       setSelectedVariantId(prod.variants[0]?.id ?? 0);
       setAddQuantity(prod.wholesaleTiers[0]?.minQuantity ?? 12);
     }
+    setProductQuery("");
+    setProductOpen(false);
+    setVariantQuery("");
+  };
+
+  const handleVariantSelect = (variantId: number) => {
+    setSelectedVariantId(variantId);
+    setVariantQuery("");
+    setVariantOpen(false);
   };
 
   const handleAddLine = () => {
@@ -260,9 +329,7 @@ export function WholesaleQuoteBuilder({
     setLines((prev) => prev.filter((l) => l.variantId !== variantId));
   };
 
-  // Calcular subtotales referenciales usando las reglas de volumen del catálogo
   const summaryLines = useMemo(() => {
-    // Agrupar cantidades por producto
     const qtyByProduct = new Map<number, number>();
     for (const line of lines) {
       const info = variantInfoMap.get(line.variantId);
@@ -313,6 +380,18 @@ export function WholesaleQuoteBuilder({
     () => summaryLines.reduce((acc, l) => acc + l.subtotal, 0),
     [summaryLines],
   );
+
+  const selectedVariantObj = useMemo(
+    () =>
+      currentProduct?.variants.find((v) => v.id === selectedVariantId) ??
+      currentProduct?.variants[0] ??
+      null,
+    [currentProduct, selectedVariantId],
+  );
+
+  const selectedVariantDisplayLabel = selectedVariantObj
+    ? `${selectedVariantObj.colorName ?? "Único"} · Talla ${selectedVariantObj.size ?? "Única"} (${selectedVariantObj.sku})`
+    : "Selecciona color y talla";
 
   const handleSubmitQuote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -370,26 +449,28 @@ export function WholesaleQuoteBuilder({
 
   if (successQuote) {
     return (
-      <div className="border border-emerald-400 bg-emerald-50/70 p-8 text-emerald-950">
-        <div className="flex items-start gap-4">
-          <CheckCircle2 className="mt-1 size-6 shrink-0 text-emerald-700" aria-hidden />
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-emerald-800">
+      <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60 p-8 shadow-sm sm:p-10">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md">
+            <CheckCircle2 className="size-7" aria-hidden />
+          </div>
+          <div className="flex-1">
+            <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-emerald-800">
               Solicitud de Cotización Registrada
-            </p>
-            <h3 className="mt-1 font-display text-2xl text-ink">
-              Expediente <span className="font-mono">{successQuote.quoteNumber}</span> enviado con éxito.
+            </span>
+            <h3 className="mt-3 font-sans text-2xl font-black tracking-tight text-slate-900">
+              Expediente <span className="font-mono text-[#2563EB]">{successQuote.quoteNumber}</span> enviado con éxito
             </h3>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-emerald-900">
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
               Nuestro equipo de ventas corporativas revisará las cantidades, disponibilidad de producción y condiciones especiales solicitadas. Recibirás una propuesta económica formal con precios unitarios garantizados y fecha de vigencia.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
-                href={`/mayorista/cotizaciones/${successQuote.quoteId}`}
-                className="inline-flex h-11 items-center justify-center gap-2 bg-ink px-6 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper transition-colors hover:bg-cochinilla"
+                href={`${quoteDetailBasePath}/${successQuote.quoteId}`}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-[#EF233C]"
               >
-                Ver detalle de la cotización {successQuote.quoteNumber}
-                <ArrowRight className="size-3.5" aria-hidden />
+                Ver detalle de {successQuote.quoteNumber}
+                <ArrowRight className="size-4" aria-hidden />
               </Link>
               <button
                 type="button"
@@ -399,7 +480,7 @@ export function WholesaleQuoteBuilder({
                   setCommercialNeeds("");
                   setCustomerNotes("");
                 }}
-                className="inline-flex h-11 items-center justify-center border border-ink/20 bg-paper px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-ink hover:border-ink"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-xs font-bold uppercase tracking-wider text-slate-700 transition-colors hover:border-slate-900 hover:text-slate-900"
               >
                 Crear otra solicitud
               </button>
@@ -411,31 +492,35 @@ export function WholesaleQuoteBuilder({
   }
 
   return (
-    <form onSubmit={handleSubmitQuote} className="space-y-8">
+    <form onSubmit={handleSubmitQuote} className="space-y-7">
       {!isUserAuthorized && (
-        <div className="border border-cochinilla/20 bg-cochinilla/5 p-5 text-ink">
-          <div className="flex items-start gap-3">
-            <FaBoxesStacked className="mt-0.5 size-5 shrink-0 text-cochinilla" aria-hidden />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-ink">
-                Modo Borrador de Cotización B2B
-              </p>
-              <p className="mt-1 text-xs text-taupe-700 leading-relaxed">
-                Puedes seleccionar libremente prendas, tallas, colores y cantidades. Tu borrador se guarda automáticamente en este navegador. Para procesar la solicitud económica oficial, se requiere una cuenta empresarial con RUC activo.
-              </p>
+        <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/80 via-white to-red-50/40 p-5 shadow-xs">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3.5">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+                <FaBoxesStacked className="size-4" aria-hidden />
+              </div>
+              <div>
+                <p className="text-sm font-extrabold text-slate-900">
+                  Modo Borrador de Cotización B2B
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+                  Selecciona prendas, tallas, colores y cantidades con libertad. Tu borrador se guarda automáticamente en este navegador; para procesar la cotización formal necesitarás una cuenta empresarial con RUC.
+                </p>
+              </div>
             </div>
-            <div className="hidden sm:flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
               {!isAuthenticated ? (
                 <Link
                   href="/iniciar-sesion?next=/mayorista/cotizaciones"
-                  className="bg-ink px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-paper hover:bg-cochinilla transition-colors"
+                  className="inline-flex h-9 items-center justify-center rounded-full bg-slate-900 px-4 text-[0.68rem] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#EF233C]"
                 >
                   Iniciar sesión
                 </Link>
               ) : null}
               <Link
                 href="/mayorista/registro"
-                className="border border-ink/20 px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-ink hover:border-ink transition-colors"
+                className="inline-flex h-9 items-center justify-center rounded-full border border-slate-300 bg-white px-4 text-[0.68rem] font-bold uppercase tracking-wider text-slate-800 transition-colors hover:border-slate-900"
               >
                 Registrar empresa
               </Link>
@@ -445,29 +530,34 @@ export function WholesaleQuoteBuilder({
       )}
 
       {showAuthGate && !isUserAuthorized && (
-        <div className="border-2 border-cochinilla bg-paper p-6 shadow-md" role="alert">
-          <div className="flex items-start gap-3.5">
-            <Building2 className="mt-0.5 size-6 shrink-0 text-cochinilla" aria-hidden />
+        <div
+          className="rounded-3xl border-2 border-[#EF233C]/40 bg-white p-6 shadow-lg sm:p-8"
+          role="alert"
+        >
+          <div className="flex items-start gap-4">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-[#EF233C]">
+              <Building2 className="size-6" aria-hidden />
+            </div>
             <div className="flex-1">
-              <h4 className="font-display text-xl text-ink">
+              <h4 className="font-sans text-xl font-black text-slate-900">
                 {isAuthenticated
                   ? userRole === "business_pending"
                     ? "Tu empresa está en evaluación comercial"
                     : "Se requiere cuenta empresarial con RUC para cotizar"
                   : "Inicia sesión o registra tu empresa para enviar esta cotización"}
               </h4>
-              <p className="mt-2 text-xs leading-relaxed text-taupe-700">
+              <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm">
                 {isAuthenticated
                   ? userRole === "business_pending"
                     ? "Hemos guardado tus prendas seleccionadas. Nuestro equipo está validando tu RUC; podrás enviar la cotización inmediatamente una vez aprobada tu cuenta."
                     : "Tu cuenta actual es de cliente minorista. Tus prendas seleccionadas se han guardado en tu borrador. Completa el registro de tu RUC para enviar la propuesta formal."
                   : "Tus productos, tallas y notas se han guardado en tu navegador. Para emitir una cotización con validez tributaria y precios por escala, accede con tu cuenta o registra tu empresa."}
               </p>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
+              <div className="mt-5 flex flex-wrap items-center gap-3">
                 {!isAuthenticated && (
                   <Link
                     href="/iniciar-sesion?next=/mayorista/cotizaciones"
-                    className="inline-flex h-10 items-center justify-center gap-2 bg-ink px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla transition-colors"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-slate-900 px-5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#2563EB]"
                   >
                     Iniciar sesión
                     <ArrowRight className="size-3.5" />
@@ -476,7 +566,7 @@ export function WholesaleQuoteBuilder({
                 {(!isAuthenticated || userRole === "customer") && (
                   <Link
                     href="/mayorista/registro"
-                    className="inline-flex h-10 items-center justify-center gap-2 bg-cochinilla px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-cochinilla-deep transition-colors"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#EF233C] px-5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#D90429]"
                   >
                     Registrar mi empresa (RUC)
                     <ArrowRight className="size-3.5" />
@@ -485,7 +575,7 @@ export function WholesaleQuoteBuilder({
                 {userRole === "business_pending" && (
                   <Link
                     href="/mayorista/solicitud"
-                    className="inline-flex h-10 items-center justify-center gap-2 bg-amber-800 px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper hover:bg-amber-900 transition-colors"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-amber-500 px-5 text-xs font-bold uppercase tracking-wider text-slate-950 transition-colors hover:bg-amber-400"
                   >
                     Consultar estado de solicitud
                     <ArrowRight className="size-3.5" />
@@ -494,7 +584,7 @@ export function WholesaleQuoteBuilder({
                 <button
                   type="button"
                   onClick={() => setShowAuthGate(false)}
-                  className="text-xs text-taupe-500 hover:text-ink underline ml-2"
+                  className="ml-1 text-xs font-semibold text-slate-500 underline hover:text-slate-900"
                 >
                   Seguir editando borrador
                 </button>
@@ -507,78 +597,352 @@ export function WholesaleQuoteBuilder({
       {errorMessage && (
         <div
           role="alert"
-          className="flex items-start gap-2.5 border-l-2 border-cochinilla bg-cochinilla/10 p-4 text-xs text-cochinilla"
+          className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50/90 p-4 text-xs font-semibold text-[#D90429]"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Selector de productos y variantes del catálogo */}
-      <div className="border border-ink/15 bg-[#fbfaf7] p-4 sm:p-8">
-        <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+      {/* Paso 1: Selector buscable de productos y variantes */}
+      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
           <div>
-            <p className="eyebrow text-cochinilla">Paso 1 · Selección de Prendas y Variantes</p>
-            <h3 className="mt-1 font-display text-2xl text-ink">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#EF233C]">
+              Paso 1 · Selección de Prendas
+            </span>
+            <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
               Añadir modelos y tallas al lote
             </h3>
           </div>
-          <FaLayerGroup className="size-5 text-cochinilla" aria-hidden />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-[#2563EB]">
+            <FaLayerGroup className="size-5" aria-hidden />
+          </div>
         </div>
 
+        {/* Vista previa rápida del modelo elegido + escalas B2B clicables */}
+        {currentProduct && (
+          <div className="mt-6 flex flex-col gap-5 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                <Image
+                  src={currentProduct.imageUrl}
+                  alt={currentProduct.name}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <Link
+                  href={`/producto/${currentProduct.slug}`}
+                  className="text-sm font-extrabold text-slate-900 transition-colors hover:text-[#2563EB]"
+                >
+                  {currentProduct.name}
+                </Link>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                  <span>Precio catálogo: {formatPEN(currentProduct.retailPrice)}</span>
+                  {selectedVariantObj && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 font-mono text-[0.68rem] text-slate-700">
+                      {selectedVariantObj.colorSwatch && (
+                        <span
+                          className="size-2.5 rounded-full border border-slate-300"
+                          style={{ backgroundColor: selectedVariantObj.colorSwatch }}
+                        />
+                      )}
+                      Stock ref: {selectedVariantObj.stock} uds.
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {currentProduct.wholesaleTiers.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-500">
+                  <BadgePercent className="size-3.5 text-emerald-600" aria-hidden />
+                  Escalas B2B:
+                </span>
+                {currentProduct.wholesaleTiers.map((tier) => (
+                  <button
+                    key={tier.minQuantity}
+                    type="button"
+                    onClick={() => setAddQuantity(tier.minQuantity)}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-xs font-bold transition-all",
+                      addQuantity >= tier.minQuantity
+                        ? "border-emerald-300 bg-emerald-100 text-emerald-900 shadow-xs"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-400",
+                    )}
+                  >
+                    {tier.minQuantity}+ uds · {formatPEN(tier.amount)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-12">
-          {/* Producto */}
-          <div className="md:col-span-5">
+          {/* Buscador de Modelo */}
+          <div ref={productBoxRef} className="relative md:col-span-5">
             <label
               htmlFor="quote-product-select"
-              className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="block text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
-              Modelo del catálogo
+              Modelo del catálogo (escribe para buscar)
             </label>
-            <select
-              id="quote-product-select"
-              value={selectedProductId}
-              onChange={(e) => handleProductChange(Number(e.target.value))}
-              className="mt-2 block h-11 w-full border border-ink/20 bg-paper px-3 text-sm text-ink focus:border-ink focus:outline-none"
-            >
-              {catalogProducts.map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.name}{" "}
-                  {prod.wholesaleTiers[0]
-                    ? `(Mayorista: ${formatPEN(prod.wholesaleTiers[0].amount)} desde ${prod.wholesaleTiers[0].minQuantity} uds.)`
-                    : `(Base: ${formatPEN(prod.retailPrice)})`}
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-2">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
+                aria-hidden
+              />
+              <input
+                id="quote-product-select"
+                type="text"
+                role="combobox"
+                aria-expanded={productOpen}
+                aria-controls="quote-product-listbox"
+                autoComplete="off"
+                value={productOpen ? productQuery : (currentProduct?.name ?? "")}
+                placeholder={
+                  currentProduct
+                    ? `Buscar modelo... (Actual: ${currentProduct.name})`
+                    : "Buscar modelo por nombre..."
+                }
+                onFocus={() => {
+                  setProductQuery("");
+                  setProductOpen(true);
+                  setVariantOpen(false);
+                }}
+                onChange={(e) => {
+                  setProductQuery(e.target.value);
+                  if (!productOpen) setProductOpen(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (filteredProducts[0]) {
+                      handleProductChange(filteredProducts[0].id);
+                    }
+                  } else if (e.key === "Escape") {
+                    setProductOpen(false);
+                  }
+                }}
+                className="block h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pr-16 pl-10 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
+              />
+              <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-0.5">
+                {productOpen && productQuery && (
+                  <button
+                    type="button"
+                    aria-label="Limpiar búsqueda de modelo"
+                    onClick={() => setProductQuery("")}
+                    className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  aria-label="Mostrar lista de modelos"
+                  onClick={() => {
+                    if (!productOpen) setProductQuery("");
+                    setProductOpen((prev) => !prev);
+                    setVariantOpen(false);
+                  }}
+                  className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-200/60 hover:text-slate-800"
+                >
+                  <ChevronDown
+                    className={cn("size-4 transition-transform", productOpen && "rotate-180")}
+                  />
+                </button>
+              </div>
+
+              {productOpen && (
+                <div
+                  id="quote-product-listbox"
+                  role="listbox"
+                  className="absolute z-40 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl"
+                >
+                  {filteredProducts.length === 0 ? (
+                    <p className="px-3 py-5 text-center text-xs text-slate-500">
+                      No encontramos modelos con &ldquo;{productQuery}&rdquo;.
+                    </p>
+                  ) : (
+                    filteredProducts.map((prod) => {
+                      const isSelected = prod.id === currentProduct?.id;
+                      const wholesale = prod.wholesaleTiers[0];
+                      return (
+                        <button
+                          key={prod.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => handleProductChange(prod.id)}
+                          className={cn(
+                            "flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors",
+                            isSelected
+                              ? "bg-blue-50 text-[#0F172A]"
+                              : "hover:bg-slate-50 text-slate-800",
+                          )}
+                        >
+                          <div className="relative aspect-[3/4] w-9 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                            <Image
+                              src={prod.imageUrl}
+                              alt={prod.name}
+                              fill
+                              sizes="36px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-bold text-slate-900">
+                              {prod.name}
+                            </p>
+                            <p className="text-[0.68rem] text-slate-500">
+                              {wholesale
+                                ? `Mayorista: ${formatPEN(wholesale.amount)} (${wholesale.minQuantity}+ uds.)`
+                                : `Base: ${formatPEN(prod.retailPrice)}`}
+                            </p>
+                          </div>
+                          {isSelected && (
+                            <Check className="size-4 shrink-0 text-[#2563EB]" aria-hidden />
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Variante (Talla × Color) */}
-          <div className="md:col-span-4">
+          {/* Buscador de Color y Talla (SKU) */}
+          <div ref={variantBoxRef} className="relative md:col-span-4">
             <label
               htmlFor="quote-variant-select"
-              className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="block text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
-              Color y Talla (SKU)
+              Color y Talla / SKU (escribe para filtrar)
             </label>
-            <select
-              id="quote-variant-select"
-              value={selectedVariantId}
-              onChange={(e) => setSelectedVariantId(Number(e.target.value))}
-              className="mt-2 block h-11 w-full border border-ink/20 bg-paper px-3 font-mono text-xs text-ink focus:border-ink focus:outline-none"
-            >
-              {currentProduct?.variants.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.colorName ?? "Único"} · Talla {v.size ?? "Única"} ({v.sku}) — Stock ref: {v.stock}
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-2">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
+                aria-hidden
+              />
+              <input
+                id="quote-variant-select"
+                type="text"
+                role="combobox"
+                aria-expanded={variantOpen}
+                aria-controls="quote-variant-listbox"
+                autoComplete="off"
+                value={variantOpen ? variantQuery : selectedVariantDisplayLabel}
+                placeholder="Ej: Negro, 32, Camello, SKU..."
+                onFocus={() => {
+                  setVariantQuery("");
+                  setVariantOpen(true);
+                  setProductOpen(false);
+                }}
+                onChange={(e) => {
+                  setVariantQuery(e.target.value);
+                  if (!variantOpen) setVariantOpen(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (filteredVariants[0]) {
+                      handleVariantSelect(filteredVariants[0].id);
+                    }
+                  } else if (e.key === "Escape") {
+                    setVariantOpen(false);
+                  }
+                }}
+                className="block h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pr-16 pl-10 font-mono text-xs font-semibold text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
+              />
+              <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-0.5">
+                {variantOpen && variantQuery && (
+                  <button
+                    type="button"
+                    aria-label="Limpiar búsqueda de talla o color"
+                    onClick={() => setVariantQuery("")}
+                    className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  aria-label="Mostrar tallas y colores"
+                  onClick={() => {
+                    if (!variantOpen) setVariantQuery("");
+                    setVariantOpen((prev) => !prev);
+                    setProductOpen(false);
+                  }}
+                  className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-200/60 hover:text-slate-800"
+                >
+                  <ChevronDown
+                    className={cn("size-4 transition-transform", variantOpen && "rotate-180")}
+                  />
+                </button>
+              </div>
+
+              {variantOpen && (
+                <div
+                  id="quote-variant-listbox"
+                  role="listbox"
+                  className="absolute z-40 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl"
+                >
+                  {filteredVariants.length === 0 ? (
+                    <p className="px-3 py-5 text-center text-xs text-slate-500">
+                      Sin variantes para &ldquo;{variantQuery}&rdquo;.
+                    </p>
+                  ) : (
+                    filteredVariants.map((v) => {
+                      const isSelected = v.id === selectedVariantObj?.id;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => handleVariantSelect(v.id)}
+                          className={cn(
+                            "flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2 text-left transition-colors",
+                            isSelected ? "bg-blue-50 text-slate-900" : "hover:bg-slate-50 text-slate-800",
+                          )}
+                        >
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <span
+                              className="size-3.5 shrink-0 rounded-full border border-slate-300"
+                              style={{ backgroundColor: v.colorSwatch ?? "#CBD5E1" }}
+                            />
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-bold text-slate-900">
+                                {v.colorName ?? "Único"} · Talla {v.size ?? "Única"}
+                              </p>
+                              <p className="truncate font-mono text-[0.65rem] text-slate-500">
+                                {v.sku} · Stock: {v.stock}
+                              </p>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <Check className="size-4 shrink-0 text-[#2563EB]" aria-hidden />
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Cantidad */}
           <div className="md:col-span-3">
             <label
               htmlFor="quote-qty-input"
-              className="block text-[0.7rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="block text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
               Cantidad (unidades)
             </label>
@@ -589,7 +953,7 @@ export function WholesaleQuoteBuilder({
               max={50000}
               value={addQuantity}
               onChange={(e) => setAddQuantity(Number(e.target.value))}
-              className="mt-2 block h-11 w-full border border-ink/20 bg-paper px-3 font-mono text-sm tabular-nums text-ink focus:border-ink focus:outline-none"
+              className="mt-2 block h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 font-mono text-sm font-bold tabular-nums text-slate-900 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
             />
           </div>
         </div>
@@ -600,48 +964,61 @@ export function WholesaleQuoteBuilder({
             value={addNotes}
             onChange={(e) => setAddNotes(e.target.value)}
             placeholder="Observación opcional para esta variante (ej: empaque individual, bordado corporativo)..."
-            className="h-10 flex-1 border border-ink/15 bg-paper px-3.5 text-xs text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none"
+            className="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50/60 px-4 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
           />
           <button
             type="button"
             onClick={handleAddLine}
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-ink px-5 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-paper transition-colors hover:bg-cochinilla"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#EF233C] px-6 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-[#D90429]"
           >
-            <Plus className="size-3.5" aria-hidden />
+            <Plus className="size-4" aria-hidden />
             Agregar variante al lote
           </button>
         </div>
       </div>
 
-      {/* Tabla de líneas incluidas en la cotización */}
-      <div className="border border-ink/15 bg-paper p-4 sm:p-8">
-        <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+      {/* Paso 2: Resumen del lote */}
+      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
           <div>
-            <p className="eyebrow text-taupe-500">Paso 2 · Resumen de Prendas a Cotizar</p>
-            <h3 className="mt-1 font-display text-2xl text-ink">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#2563EB]">
+              Paso 2 · Resumen de Prendas
+            </span>
+            <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
               Detalle por variante ({summaryLines.length}{" "}
               {summaryLines.length === 1 ? "línea" : "líneas"} · {totalUnits} uds.)
             </h3>
           </div>
+          {summaryLines.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3.5 py-1.5 font-mono text-xs font-bold text-slate-800">
+              <Sparkles className="size-3.5 text-[#2563EB]" aria-hidden />
+              Total estimado: {formatPEN(estimatedSubtotal)}
+            </span>
+          )}
         </div>
 
         {summaryLines.length === 0 ? (
           <div className="py-12 text-center">
-            <ShoppingBag className="mx-auto size-8 text-taupe-400" aria-hidden />
-            <p className="mt-3 text-sm text-taupe-600">
-              Aún no has añadido variantes al lote de cotización. Usa el selector superior para agregar tallas y colores.
+            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <ShoppingBag className="size-6" aria-hidden />
+            </div>
+            <p className="mt-4 text-sm font-bold text-slate-800">
+              Aún no has añadido variantes al lote
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              Usa el buscador superior para seleccionar modelos, colores y tallas a tu cotización.
             </p>
           </div>
         ) : (
-          <div className="mt-4 divide-y divide-ink/10">
+          <div className="mt-5 space-y-3">
             {summaryLines.map((line) => (
               <div
                 key={line.variantId}
                 data-testid={`quote-builder-line-${line.variant.sku}`}
-                className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center"
               >
                 <div className="flex items-center gap-4">
-                  <div className="relative aspect-[3/4] w-14 shrink-0 overflow-hidden bg-taupe-100">
+                  <div className="relative aspect-[3/4] w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                     <Image
                       src={line.product.imageUrl}
                       alt={line.product.name}
@@ -651,24 +1028,26 @@ export function WholesaleQuoteBuilder({
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-ink">{line.product.name}</p>
-                    <p className="font-mono text-xs text-taupe-500">
+                    <p className="text-sm font-bold text-slate-900">{line.product.name}</p>
+                    <p className="mt-0.5 font-mono text-xs text-slate-500">
                       SKU: {line.variant.sku} · Color: {line.variant.colorName ?? "Único"} · Talla:{" "}
                       {line.variant.size ?? "Única"}
                     </p>
                     {line.itemNotes && (
-                      <p className="mt-0.5 text-xs italic text-taupe-600">Nota: {line.itemNotes}</p>
+                      <p className="mt-1 text-xs italic text-slate-600">
+                        Nota: {line.itemNotes}
+                      </p>
                     )}
                     <span
                       className={cn(
-                        "mt-1 inline-block px-2 py-0.5 font-mono text-[0.6rem] uppercase",
+                        "mt-1.5 inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[0.65rem] font-bold uppercase",
                         line.appliedTierMin
-                          ? "bg-emerald-100 text-emerald-900"
-                          : "bg-sand/60 text-taupe-700",
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-slate-200/80 text-slate-700",
                       )}
                     >
                       {line.appliedTierMin
-                        ? `Tarifa ref. B2B (≥ ${line.appliedTierMin} uds.): ${formatPEN(line.unitPrice)}/ud.`
+                        ? `Tarifa B2B (≥ ${line.appliedTierMin} uds.): ${formatPEN(line.unitPrice)}/ud.`
                         : `Precio base ref.: ${formatPEN(line.unitPrice)}/ud.`}
                     </span>
                   </div>
@@ -688,22 +1067,22 @@ export function WholesaleQuoteBuilder({
                       onChange={(e) =>
                         handleUpdateLineQuantity(line.variantId, Number(e.target.value))
                       }
-                      className="h-9 w-24 border border-ink/20 bg-paper px-2 text-center font-mono text-xs tabular-nums text-ink"
+                      className="h-10 w-24 rounded-xl border border-slate-200 bg-white px-2 text-center font-mono text-xs font-bold tabular-nums text-slate-900 focus:border-[#2563EB] focus:outline-none"
                     />
                   </div>
 
-                  <div className="min-w-20 sm:min-w-28 text-right">
-                    <p className="font-mono text-sm font-semibold tabular-nums text-ink">
+                  <div className="min-w-24 text-right sm:min-w-28">
+                    <p className="font-mono text-sm font-extrabold tabular-nums text-slate-900">
                       {formatPEN(line.subtotal)}
                     </p>
-                    <p className="text-[0.65rem] text-taupe-500">Subtotal ref.</p>
+                    <p className="text-[0.65rem] font-medium text-slate-500">Subtotal ref.</p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleRemoveLine(line.variantId)}
                     aria-label={`Quitar ${line.variant.sku}`}
-                    className="p-1.5 text-taupe-400 hover:text-cochinilla"
+                    className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-[#EF233C]"
                   >
                     <Trash2 className="size-4" aria-hidden />
                   </button>
@@ -711,11 +1090,16 @@ export function WholesaleQuoteBuilder({
               </div>
             ))}
 
-            <div className="flex items-baseline justify-between pt-5">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-taupe-600">
-                Valor referencial del lote solicitado
-              </span>
-              <span className="font-display text-2xl tabular-nums text-ink">
+            <div className="mt-5 flex flex-col justify-between gap-2 rounded-2xl bg-gradient-to-r from-[#0F172A] to-[#1E293B] p-5 text-white sm:flex-row sm:items-center">
+              <div>
+                <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-slate-300">
+                  Valor referencial del lote solicitado
+                </p>
+                <p className="text-xs text-slate-400">
+                  {totalUnits} {totalUnits === 1 ? "unidad en total" : "unidades en total"} · Sujeto a propuesta formal B2B
+                </p>
+              </div>
+              <span className="font-sans text-2xl font-black tabular-nums text-white sm:text-3xl">
                 {formatPEN(estimatedSubtotal)}
               </span>
             </div>
@@ -723,18 +1107,22 @@ export function WholesaleQuoteBuilder({
         )}
       </div>
 
-      {/* Necesidades comerciales y envío */}
-      <div className="border border-ink/15 bg-[#fbfaf7] p-4 sm:p-8">
-        <p className="eyebrow text-cochinilla">Paso 3 · Condiciones Comerciales y Envío</p>
-        <h3 className="mt-1 font-display text-2xl text-ink">
-          Requerimientos del pedido corporativo
-        </h3>
+      {/* Paso 3: Condiciones comerciales y despacho */}
+      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
+        <div className="border-b border-slate-100 pb-5">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-emerald-700">
+            Paso 3 · Condiciones y Despacho
+          </span>
+          <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
+            Requerimientos del pedido corporativo
+          </h3>
+        </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label
               htmlFor="quote-commercial-needs"
-              className="block text-[0.72rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="block text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
               Necesidades comerciales y objetivo del pedido *
             </label>
@@ -746,15 +1134,16 @@ export function WholesaleQuoteBuilder({
               value={commercialNeeds}
               onChange={(e) => setCommercialNeeds(e.target.value)}
               placeholder="Indica si requieres tarifa especial por volumen superior, cronograma de entregas parciales, facturación a crédito corporativo o personalización textil..."
-              className="mt-2 block w-full border border-ink/20 bg-paper p-3.5 text-sm text-ink placeholder:text-taupe-400 focus:border-ink focus:outline-none"
+              className="mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
             />
           </div>
 
           <div>
             <label
               htmlFor="quote-delivery-city"
-              className="block text-[0.72rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="flex items-center gap-1.5 text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
+              <MapPin className="size-3.5 text-[#EF233C]" aria-hidden />
               Ciudad / Destino de despacho
             </label>
             <input
@@ -764,14 +1153,14 @@ export function WholesaleQuoteBuilder({
               value={deliveryCity}
               onChange={(e) => setDeliveryCity(e.target.value)}
               placeholder="Lima, Arequipa, Trujillo..."
-              className="mt-2 block h-11 w-full border border-ink/20 bg-paper px-3.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="mt-2 block h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm text-slate-900 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
             />
           </div>
 
           <div>
             <label
               htmlFor="quote-customer-notes"
-              className="block text-[0.72rem] font-medium uppercase tracking-[0.14em] text-ink"
+              className="block text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-slate-700"
             >
               Observaciones adicionales (opcional)
             </label>
@@ -782,20 +1171,20 @@ export function WholesaleQuoteBuilder({
               value={customerNotes}
               onChange={(e) => setCustomerNotes(e.target.value)}
               placeholder="Horario de recepción de almacén, contacto logístico..."
-              className="mt-2 block h-11 w-full border border-ink/20 bg-paper px-3.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="mt-2 block h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm text-slate-900 transition-colors focus:border-[#2563EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/15"
             />
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col items-start justify-between gap-4 border-t border-ink/10 pt-6 sm:flex-row sm:items-center">
-          <p className="max-w-xl text-xs leading-relaxed text-taupe-600">
-            Nota: El envío de una solicitud de cotización no constituye un cobro automático ni compromete reserva definitiva de inventario hasta la emisión y aceptación de la propuesta formal.
+        <div className="mt-6 flex flex-col items-start justify-between gap-4 border-t border-slate-100 pt-6 sm:flex-row sm:items-center">
+          <p className="max-w-xl text-xs leading-relaxed text-slate-500">
+            Nota: El envío de una solicitud de cotización no genera cobro automático ni compromete reserva de inventario hasta la emisión y aceptación de la propuesta formal.
           </p>
 
           <button
             type="submit"
             disabled={isSubmitting || summaryLines.length === 0}
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 bg-ink px-8 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-paper transition-colors hover:bg-cochinilla disabled:opacity-50"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-slate-900 px-8 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#EF233C] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -804,12 +1193,12 @@ export function WholesaleQuoteBuilder({
               </>
             ) : isUserAuthorized ? (
               <>
-                <FileText className="size-4" aria-hidden />
+                <Send className="size-4" aria-hidden />
                 Enviar solicitud de cotización B2B
               </>
             ) : (
               <>
-                <Building2 className="size-4" aria-hidden />
+                <FileText className="size-4" aria-hidden />
                 Guardar borrador y enviar cotización
               </>
             )}
@@ -819,4 +1208,3 @@ export function WholesaleQuoteBuilder({
     </form>
   );
 }
-

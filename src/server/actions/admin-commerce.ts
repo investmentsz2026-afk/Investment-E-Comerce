@@ -1087,3 +1087,198 @@ export async function adminSetCustomerActiveStateAction(input: {
       : `La cuenta de ${targetUser.firstName} ${targetUser.lastName} fue suspendida y sus sesiones activas se cerraron.`,
   };
 }
+
+function revalidateWholesaleCatalogPaths() {
+  revalidatePath("/admin/mayoristas");
+  revalidatePath("/admin/productos");
+  revalidatePath("/mayorista");
+  revalidatePath("/catalogo");
+  revalidatePath("/mayorista/cotizaciones");
+  revalidatePath("/cuenta/cotizaciones");
+  revalidatePath("/");
+}
+
+async function ensureDefaultWholesaleTierForProduct(
+  db: ReturnType<typeof getDb>,
+  productId: number,
+  retailAmount: number,
+) {
+  const existing = await db
+    .select({ id: productPrices.id })
+    .from(productPrices)
+    .where(and(eq(productPrices.productId, productId), eq(productPrices.type, "wholesale")))
+    .limit(1);
+
+  if (existing.length > 0) return false;
+
+  const fallbackAmount =
+    retailAmount > 0 ? Math.max(100, Math.round(retailAmount * 0.8)) : 9900;
+
+  await db.insert(productPrices).values({
+    productId,
+    type: "wholesale",
+    amount: fallbackAmount,
+    compareAtAmount: null,
+    minQuantity: 12,
+    maxQuantity: null,
+  });
+  return true;
+}
+
+/**
+ * Activa/desactiva un producto como Producto Mayorista B2B y opcionalmente
+ * actualiza su escala principal (cantidad mínima y precio mayorista en soles).
+ */
+export async function adminUpdateWholesaleProductAction(input: {
+  productId: number;
+  isWholesale: boolean;
+  minQuantity?: number;
+  wholesalePriceSoles?: number;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  const db = getDb();
+
+  const productId = Number(input.productId);
+  if (!Number.isInteger(productId) || productId <= 0) {
+    return { success: false, error: "Producto no válido." };
+  }
+
+  const [prod] = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, productId))
+    .limit(1);
+
+  if (!prod) {
+    return { success: false, error: "El producto indicado no existe." };
+  }
+
+  const prices = await db
+    .select()
+    .from(productPrices)
+    .where(eq(productPrices.productId, productId));
+  const retailRow = prices.find((p) => p.type === "retail");
+  const retailAmount = retailRow?.amount ?? 0;
+
+  const nextWholesale = Boolean(input.isWholesale);
+  const hasInlineTier =
+    input.minQuantity !== undefined && input.wholesalePriceSoles !== undefined;
+
+  if (hasInlineTier) {
+    const cleanMinQty = Math.trunc(Number(input.minQuantity));
+    const solesNum = Number(input.wholesalePriceSoles);
+    const amountCents = Math.round(solesNum * 100);
+
+    if (!Number.isInteger(cleanMinQty) || cleanMinQty < 2 || cleanMinQty > 50000) {
+      return {
+        success: false,
+        error: "La cantidad mínima mayorista debe ser un entero entre 2 y 50,000 unidades.",
+      };
+    }
+    if (!Number.isFinite(solesNum) || amountCents <= 0 || amountCents > 100_000_000) {
+      return {
+        success: false,
+        error: "El precio mayorista debe ser mayor a S/ 0.00.",
+      };
+    }
+
+    await db
+      .delete(productPrices)
+      .where(and(eq(productPrices.productId, productId), eq(productPrices.type, "wholesale")));
+
+    await db.insert(productPrices).values({
+      productId,
+      type: "wholesale",
+      amount: amountCents,
+      compareAtAmount: null,
+      minQuantity: cleanMinQty,
+      maxQuantity: null,
+    });
+  } else if (nextWholesale) {
+    await ensureDefaultWholesaleTierForProduct(db, productId, retailAmount);
+  }
+
+  await db
+    .update(products)
+    .set({
+      isWholesale: nextWholesale,
+      updatedAt: new Date(),
+    })
+    .where(eq(products.id, productId));
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "product",
+    targetId: productId,
+    details: `Producto "${prod.name}" ${nextWholesale ? "HABILITADO para compras mayoristas B2B" : "RETIRADO de compras mayoristas B2B"}.`,
+  });
+
+  revalidateWholesaleCatalogPaths();
+
+  return {
+    success: true,
+    entityId: productId,
+    message: nextWholesale
+      ? `"${prod.name}" ahora está disponible en Mayoristas y Cotizaciones B2B.`
+      : `"${prod.name}" fue retirado de la sección Mayoristas.`,
+  };
+}
+
+/**
+ * Habilita o deshabilita múltiples productos en lote para compras mayoristas B2B.
+ */
+export async function adminBulkUpdateWholesaleProductsAction(input: {
+  productIds: number[];
+  isWholesale: boolean;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  const db = getDb();
+
+  const ids = Array.from(
+    new Set(input.productIds.map((id) => Number(id)).filter((id) => Number.isInteger(id) && id > 0)),
+  );
+
+  if (ids.length === 0) {
+    return { success: false, error: "Selecciona al menos un producto." };
+  }
+
+  const nextWholesale = Boolean(input.isWholesale);
+
+  await db
+    .update(products)
+    .set({
+      isWholesale: nextWholesale,
+      updatedAt: new Date(),
+    })
+    .where(inArray(products.id, ids));
+
+  if (nextWholesale) {
+    const retailPrices = await db
+      .select()
+      .from(productPrices)
+      .where(and(inArray(productPrices.productId, ids), eq(productPrices.type, "retail")));
+    const retailByProd = new Map(retailPrices.map((p) => [p.productId, p.amount]));
+
+    for (const pid of ids) {
+      await ensureDefaultWholesaleTierForProduct(db, pid, retailByProd.get(pid) ?? 0);
+    }
+  }
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "product",
+    targetId: ids[0],
+    details: `Actualización masiva de ${ids.length} producto(s): ${nextWholesale ? "HABILITADOS" : "RETIRADOS"} en Mayoristas B2B.`,
+  });
+
+  revalidateWholesaleCatalogPaths();
+
+  return {
+    success: true,
+    message: nextWholesale
+      ? `${ids.length} producto(s) habilitados para compras mayoristas B2B.`
+      : `${ids.length} producto(s) retirados de compras mayoristas B2B.`,
+  };
+}

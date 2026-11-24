@@ -131,20 +131,29 @@ export function ModalitySelector() {
                     ))}
                   </ul>
 
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <div className="mt-6 flex flex-wrap items-center gap-2.5">
                     <Link
                       href={modality.cta.href}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-paper px-6 text-xs font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-[#DC2626] hover:to-[#B91C1C] hover:text-paper"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-paper px-5 text-xs font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-[#DC2626] hover:to-[#B91C1C] hover:text-paper"
                     >
                       <span>{modality.cta.label}</span>
                       <ArrowRight className="size-4" aria-hidden />
                     </Link>
                     <Link
                       href={modality.secondaryCta.href}
-                      className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-paper bg-white/15 px-5 text-xs font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#1E40AF]"
+                      className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-paper bg-white/15 px-4 text-xs font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#1E40AF]"
                     >
                       {modality.secondaryCta.label}
                     </Link>
+                    {modality.id === "mayor" && (
+                      <Link
+                        href="/catalogo?mayorista=1"
+                        className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#EF233C] px-4 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#D90429]"
+                      >
+                        <span>Ver Prendas Mayoristas</span>
+                        <ArrowRight className="size-3.5" aria-hidden />
+                      </Link>
+                    )}
                   </div>
                 </div>
               </article>

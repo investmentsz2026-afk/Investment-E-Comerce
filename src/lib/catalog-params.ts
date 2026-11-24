@@ -66,7 +66,7 @@ export function parseCatalogParams(sp: RawSearchParams, base: Partial<CatalogFil
     orden: parseSort(first(sp.orden)),
     pagina: parsePage(sp.pagina),
     novedades: first(sp.novedades) === "1",
-    mayorista: first(sp.mayorista) === "1",
+    mayorista: first(sp.mayorista) === "1" || first(sp.modalidad) === "mayorista",
     disponible: first(sp.disponible) === "1",
     tallas: list(sp.talla),
     colores: list(sp.color),
