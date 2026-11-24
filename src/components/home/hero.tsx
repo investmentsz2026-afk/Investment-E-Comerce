@@ -47,10 +47,10 @@ const DEFAULT_HERO_FALLBACK: readonly HeroSlideItem[] = [
 ];
 
 const TRUST_STRIP = [
-  { icon: FaTruckFast, label: "Envío Rápido 24Hrs", sub: "Lima y todo el Perú", href: "/atencion-al-cliente#envios" },
-  { icon: FaBagShopping, label: "Ventas por Unidad", sub: "Sin mínimo de compra", href: "/catalogo" },
-  { icon: FaBoxesStacked, label: "Ventas por Mayor B2B", sub: "Precios escalonados", href: "/mayorista" },
-  { icon: FaShieldHalved, label: "Pagos 100% Seguros", sub: "Tarjetas, Yape, Plin y RUC", href: "/politicas" },
+  { icon: FaTruckFast, label: "Envío Rápido 24Hrs", shortLabel: "Envío 24h", sub: "Lima y todo el Perú", href: "/atencion-al-cliente#envios" },
+  { icon: FaBagShopping, label: "Ventas por Unidad", shortLabel: "Por Unidad", sub: "Sin mínimo de compra", href: "/catalogo" },
+  { icon: FaBoxesStacked, label: "Ventas por Mayor B2B", shortLabel: "Por Mayor", sub: "Precios escalonados", href: "/mayorista" },
+  { icon: FaShieldHalved, label: "Pagos 100% Seguros", shortLabel: "Pago Seguro", sub: "Tarjetas, Yape, Plin y RUC", href: "/politicas" },
 ] as const;
 
 const AUTOPLAY_INTERVAL_MS = 6000;
@@ -123,10 +123,10 @@ export function Hero({ slides: externalSlides }: HeroProps) {
     <section
       id="inicio"
       aria-labelledby="hero-title"
-      className="relative bg-white pt-[6rem] lg:pt-[9.25rem]"
+      className="relative bg-white pt-[6rem] sm:pt-[6.25rem] lg:pt-[9.5rem]"
     >
-      {/* Portada Full-Imagen con Transición Cinematográfica 3D Tipo Libro / Video (cero pantallas vacías entre slides) */}
-      <div className="relative min-h-[410px] w-full overflow-hidden bg-slate-950 [perspective:1600px] sm:min-h-[440px] lg:min-h-[465px]">
+      {/* Portada Full-Imagen con Transición Cinematográfica 3D Tipo Libro / Video */}
+      <div className="relative min-h-[265px] w-full overflow-hidden bg-slate-950 [perspective:1600px] sm:min-h-[430px] lg:min-h-[465px]">
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={slide.id}
@@ -136,9 +136,9 @@ export function Hero({ slides: externalSlides }: HeroProps) {
             animate="center"
             exit="exit"
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 flex min-h-[410px] w-full items-center [transform-style:preserve-3d] sm:min-h-[440px] lg:min-h-[465px]"
+            className="absolute inset-0 flex min-h-[265px] w-full items-end [transform-style:preserve-3d] sm:min-h-[430px] sm:items-center lg:min-h-[465px]"
           >
-            {/* Imagen de fondo con efecto vivo Ken Burns (zoom cinematográfico continuo 6s) */}
+            {/* Imagen de fondo con efecto vivo Ken Burns */}
             <motion.div
               initial={{ scale: 1 }}
               animate={{ scale: 1.06 }}
@@ -156,61 +156,60 @@ export function Hero({ slides: externalSlides }: HeroProps) {
             {/* Sombra ligera inferior para contraste sin tapar a los modelos */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/15 to-transparent sm:from-slate-950/35 sm:via-transparent"
             />
 
-            {/* Contenido del Slide ubicado un poquito más abajo del centro pero 100% visible en el primer pantallazo */}
-            <div className="shell relative z-10 flex w-full flex-col items-start justify-between gap-5 pb-4 pt-12 lg:flex-row lg:items-center lg:pb-3 lg:pt-16">
-              {/* Cuadro de Texto con la Misma Transparencia (`bg-slate-950/18 backdrop-blur-[2px]`) y Letras Más Grandes */}
+            {/* Contenido del Slide compacto en móvil para mostrar el modelo completo */}
+            <div className="shell relative z-10 flex w-full flex-col items-start justify-end gap-4 pb-3 pt-4 sm:justify-between sm:pb-4 sm:pt-12 lg:flex-row lg:items-center lg:pb-3 lg:pt-16">
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.06 }}
-                className="w-full max-w-[22.5rem] rounded-2xl border border-white/25 bg-slate-950/18 p-4 text-white shadow-[0_14px_36px_rgba(0,0,0,0.4)] backdrop-blur-[2px] sm:max-w-[25rem] sm:p-5 lg:ml-8 lg:mt-6 lg:max-w-[26.5rem]"
+                className="w-full max-w-[16rem] rounded-xl border border-white/25 bg-slate-950/30 p-2.5 text-white shadow-[0_14px_36px_rgba(0,0,0,0.4)] backdrop-blur-[3px] sm:max-w-[25rem] sm:rounded-2xl sm:bg-slate-950/18 sm:p-5 sm:backdrop-blur-[2px] lg:ml-8 lg:mt-6 lg:max-w-[26.5rem]"
               >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-1 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white shadow-xs sm:text-[0.64rem]">
-                    <FaTag className="size-3 text-white" aria-hidden />
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                  <span className="bg-flow inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-1.5 py-0.5 font-mono text-[0.48rem] font-black uppercase tracking-wider text-white shadow-xs sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[0.64rem]">
+                    <FaTag className="size-2 text-white sm:size-3" aria-hidden />
                     {slide.badge}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/35 bg-[#1E3A8A]/75 px-2.5 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-wider text-white sm:text-[0.64rem]">
-                    <FaCircleCheck className="size-3 text-cyan-300" aria-hidden />
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/35 bg-[#1E3A8A]/75 px-1.5 py-0.5 font-mono text-[0.48rem] font-extrabold uppercase tracking-wider text-white sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[0.64rem]">
+                    <FaCircleCheck className="size-2 text-cyan-300 sm:size-3" aria-hidden />
                     {slide.promoPill}
                   </span>
                 </div>
 
-                <p className="mt-2 font-mono text-[0.64rem] font-extrabold uppercase tracking-[0.14em] text-cyan-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-[0.68rem]">
+                <p className="mt-1 truncate font-mono text-[0.5rem] font-extrabold uppercase tracking-[0.1em] text-cyan-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:mt-2 sm:text-[0.68rem]">
                   {slide.eyebrow}
                 </p>
 
                 <h1
                   id="hero-title"
-                  className="mt-1.5 font-sans text-xl font-black uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)] sm:text-2xl lg:text-[1.72rem]"
+                  className="mt-0.5 font-sans text-xs font-black uppercase leading-[1.12] tracking-tight text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)] sm:mt-1.5 sm:text-2xl lg:text-[1.72rem]"
                 >
                   <span className="block">{slide.titleLine1}</span>
-                  <span className="bg-flow mt-1 inline-block rounded-lg bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 text-white shadow-sm">
+                  <span className="bg-flow mt-0.5 inline-block rounded-md bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-1.5 py-0.5 text-white shadow-sm sm:mt-1 sm:rounded-lg sm:px-2.5">
                     {slide.titleHighlight}
                   </span>
                 </h1>
 
-                <p className="mt-2 line-clamp-2 text-xs font-medium leading-relaxed text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] sm:text-[0.8rem]">
+                <p className="mt-1 line-clamp-1 text-[0.6rem] font-medium leading-snug text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] sm:mt-2 sm:line-clamp-2 sm:text-[0.8rem]">
                   {slide.description}
                 </p>
 
-                <div className="mt-3.5 flex flex-wrap items-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:mt-3.5 sm:gap-2">
                   <Link
                     href={slide.primaryCtaHref}
-                    className="group/btn inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-white/85 bg-slate-950/35 px-4 text-xs font-black uppercase tracking-wider text-white shadow-md backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:border-blue-300 hover:bg-gradient-to-r hover:from-[#1E3A8A] hover:to-[#2563EB] sm:h-10 sm:text-[0.75rem]"
+                    className="group/btn inline-flex h-7 items-center justify-center gap-1 rounded-full border border-white/85 bg-slate-950/45 px-2.5 text-[0.56rem] font-black uppercase tracking-wider text-white shadow-md backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:border-blue-300 hover:bg-gradient-to-r hover:from-[#1E3A8A] hover:to-[#2563EB] sm:h-10 sm:gap-1.5 sm:px-4 sm:text-[0.75rem]"
                   >
-                    <FaMagnifyingGlass className="size-3.5 text-white transition-transform group-hover/btn:scale-110" aria-hidden />
+                    <FaMagnifyingGlass className="size-2.5 text-white transition-transform group-hover/btn:scale-110 sm:size-3.5" aria-hidden />
                     <span>{slide.primaryCtaLabel}</span>
                   </Link>
                   <Link
                     href={slide.secondaryCtaHref}
-                    className="bg-flow inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-red-600/30 transition-all duration-300 hover:scale-105 hover:from-[#1E3A8A] hover:to-[#2563EB] sm:h-10 sm:text-[0.75rem]"
+                    className="bg-flow inline-flex h-7 items-center justify-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 text-[0.56rem] font-black uppercase tracking-wider text-white shadow-md shadow-red-600/30 transition-all duration-300 hover:scale-105 hover:from-[#1E3A8A] hover:to-[#2563EB] sm:h-10 sm:gap-1.5 sm:px-4 sm:text-[0.75rem]"
                   >
                     <span>{slide.secondaryCtaLabel}</span>
-                    <FaArrowRight className="size-3.5" aria-hidden />
+                    <FaArrowRight className="size-2.5 sm:size-3.5" aria-hidden />
                   </Link>
                 </div>
               </motion.div>
@@ -265,24 +264,24 @@ export function Hero({ slides: externalSlides }: HeroProps) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Flechas Laterales Redondeadas con Font Awesome */}
+        {/* Flechas Laterales Redondeadas */}
         {activeSlides.length > 1 && (
           <>
             <button
               type="button"
               onClick={prevSlide}
               aria-label="Banner anterior"
-              className="absolute left-3 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-slate-950/55 text-white shadow-xl backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#DC2626] sm:size-11"
+              className="absolute left-1.5 top-[26%] z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 bg-slate-950/55 text-white shadow-xl backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#DC2626] sm:left-3 sm:top-1/2 sm:size-11 sm:border-2"
             >
-              <FaChevronLeft className="size-4" aria-hidden />
+              <FaChevronLeft className="size-3 sm:size-4" aria-hidden />
             </button>
             <button
               type="button"
               onClick={nextSlide}
               aria-label="Siguiente banner"
-              className="absolute right-3 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-slate-950/55 text-white shadow-xl backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#DC2626] sm:size-11"
+              className="absolute right-1.5 top-[26%] z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 bg-slate-950/55 text-white shadow-xl backdrop-blur-md transition-transform hover:scale-110 hover:bg-[#DC2626] sm:right-3 sm:top-1/2 sm:size-11 sm:border-2"
             >
-              <FaChevronRight className="size-4" aria-hidden />
+              <FaChevronRight className="size-3 sm:size-4" aria-hidden />
             </button>
           </>
         )}
@@ -300,23 +299,28 @@ export function Hero({ slides: externalSlides }: HeroProps) {
         </div>
       </div>
 
-      {/* Cinta de Confianza Rápida con Tarjetas Redondeadas y Degradado Animado */}
+      {/* Cinta de Confianza Rápida: 4 en una sola fila compacta en móvil */}
       <div className="border-b border-slate-200/80 bg-gradient-to-r from-red-50/40 via-white to-blue-50/40">
-        <div className="shell grid grid-cols-2 gap-2.5 py-3.5 lg:grid-cols-4 lg:gap-4">
+        <div className="shell grid grid-cols-4 gap-1.5 py-2 sm:gap-2.5 sm:py-3.5 lg:gap-4">
           {TRUST_STRIP.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-2.5 shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md"
+              className="group flex flex-col items-center gap-1 rounded-xl border border-slate-200/80 bg-white px-1 py-2 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md sm:rounded-2xl sm:px-3 sm:py-2.5 lg:flex-row lg:items-center lg:gap-3 lg:px-4 lg:text-left"
             >
-              <span className="bg-flow flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:from-[#1E3A8A] group-hover:via-[#2563EB] group-hover:to-[#3B82F6]">
-                <item.icon className="size-4" aria-hidden />
+              <span className="bg-flow flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:from-[#1E3A8A] group-hover:via-[#2563EB] group-hover:to-[#3B82F6] sm:size-9 sm:rounded-xl lg:size-10">
+                <item.icon className="size-3 sm:size-4" aria-hidden />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-xs font-black uppercase tracking-tight text-slate-900 group-hover:text-[#DC2626]">
+                <p className="text-[0.58rem] font-black uppercase leading-tight tracking-tight text-slate-900 group-hover:text-[#DC2626] lg:hidden">
+                  {item.shortLabel}
+                </p>
+                <p className="hidden truncate text-xs font-black uppercase tracking-tight text-slate-900 group-hover:text-[#DC2626] lg:block">
                   {item.label}
                 </p>
-                <p className="truncate text-[0.68rem] font-medium text-slate-500">{item.sub}</p>
+                <p className="hidden truncate text-[0.68rem] font-medium text-slate-500 lg:block">
+                  {item.sub}
+                </p>
               </div>
             </Link>
           ))}

@@ -178,7 +178,7 @@ function HeroInteractive3DCard() {
     >
       <motion.div
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative rounded-3xl border border-white/15 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-blue-950/85 p-6 shadow-2xl backdrop-blur-xl sm:p-7"
+        className="relative rounded-2xl border border-white/15 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-blue-950/85 p-4 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-7"
       >
         {/* Halo superior sutil */}
         <div
@@ -190,35 +190,35 @@ function HeroInteractive3DCard() {
           style={{ transform: "translateZ(28px)" }}
           className="flex items-center justify-between gap-2"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-wider text-emerald-300">
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-0.5 text-[0.58rem] font-extrabold uppercase tracking-wider text-emerald-300 sm:px-3 sm:py-1 sm:text-[0.65rem]">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse sm:size-2" />
             Portal B2B Activo
           </span>
-          <span className="inline-flex items-center gap-1 font-mono text-[0.68rem] font-bold text-slate-300">
-            <TrendingUp className="size-3.5 text-[#EF233C]" aria-hidden />
+          <span className="inline-flex items-center gap-1 font-mono text-[0.6rem] font-bold text-slate-300 sm:text-[0.68rem]">
+            <TrendingUp className="size-3 text-[#EF233C] sm:size-3.5" aria-hidden />
             Fábrica Perú
           </span>
         </div>
 
-        <div style={{ transform: "translateZ(40px)" }} className="mt-5">
-          <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-blue-300">
+        <div style={{ transform: "translateZ(40px)" }} className="mt-3 sm:mt-5">
+          <p className="text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-blue-300 sm:text-[0.68rem] sm:tracking-[0.16em]">
             Simulador Rápido de Volumen
           </p>
-          <div className="mt-2 flex items-baseline justify-between gap-3">
-            <h3 className="font-sans text-3xl font-black tracking-tight text-white">
+          <div className="mt-1 flex items-baseline justify-between gap-2 sm:mt-2 sm:gap-3">
+            <h3 className="font-sans text-2xl font-black tracking-tight text-white sm:text-3xl">
               {activeStat.save}
             </h3>
-            <span className="rounded-full bg-[#EF233C]/20 px-3 py-1 font-mono text-xs font-bold text-rose-200">
+            <span className="rounded-full bg-[#EF233C]/20 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-rose-200 sm:px-3 sm:py-1 sm:text-xs">
               {activeStat.label}
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-300">{activeStat.desc}</p>
+          <p className="mt-0.5 text-[0.68rem] text-slate-300 sm:mt-1 sm:text-xs">{activeStat.desc}</p>
         </div>
 
         {/* Botones interactivos para alternar escala 3D */}
         <div
           style={{ transform: "translateZ(32px)" }}
-          className="mt-5 grid grid-cols-3 gap-2"
+          className="mt-3 grid grid-cols-3 gap-1.5 sm:mt-5 sm:gap-2"
         >
           {tierStats.map((item, idx) => (
             <button
@@ -226,7 +226,7 @@ function HeroInteractive3DCard() {
               type="button"
               onClick={() => setSelectedTierIdx(idx)}
               className={cn(
-                "rounded-xl border px-2.5 py-2 text-center font-mono text-[0.68rem] font-bold transition-all",
+                "rounded-lg border px-1.5 py-1.5 text-center font-mono text-[0.6rem] font-bold transition-all sm:rounded-xl sm:px-2.5 sm:py-2 sm:text-[0.68rem]",
                 selectedTierIdx === idx
                   ? "border-[#EF233C] bg-[#EF233C] text-white shadow-md shadow-red-600/25"
                   : "border-white/15 bg-white/5 text-slate-300 hover:bg-white/10",
@@ -240,29 +240,29 @@ function HeroInteractive3DCard() {
         {/* Chips de beneficios 3D flotantes */}
         <div
           style={{ transform: "translateZ(24px)" }}
-          className="mt-5 grid grid-cols-2 gap-2.5 border-t border-white/10 pt-5 text-xs"
+          className="mt-3 grid grid-cols-2 gap-2 border-t border-white/10 pt-3 text-xs sm:mt-5 sm:gap-2.5 sm:pt-5"
         >
-          <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-            <p className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
+            <p className="text-[0.54rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.62rem]">
               Curva Completa
             </p>
-            <p className="mt-0.5 font-extrabold text-white">Tallas 28 a 46</p>
+            <p className="mt-0.5 text-[0.7rem] font-extrabold text-white sm:text-xs">Tallas 28 a 46</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-            <p className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
+            <p className="text-[0.54rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.62rem]">
               Comprobante
             </p>
-            <p className="mt-0.5 font-extrabold text-white">Factura RUC</p>
+            <p className="mt-0.5 text-[0.7rem] font-extrabold text-white sm:text-xs">Factura RUC</p>
           </div>
         </div>
 
-        <div style={{ transform: "translateZ(36px)" }} className="mt-5">
+        <div style={{ transform: "translateZ(36px)" }} className="mt-3 sm:mt-5">
           <Link
             href="/mayorista/cotizaciones"
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg transition-all hover:bg-[#EF233C] hover:text-white"
+            className="flex h-9 w-full items-center justify-center gap-1.5 rounded-full bg-white text-[0.66rem] font-black uppercase tracking-wider text-slate-950 shadow-lg transition-all hover:bg-[#EF233C] hover:text-white sm:h-11 sm:gap-2 sm:text-xs"
           >
             <span>Armar Cotización Ahora</span>
-            <ArrowRight className="size-4" aria-hidden />
+            <ArrowRight className="size-3.5 sm:size-4" aria-hidden />
           </Link>
         </div>
       </motion.div>
@@ -276,10 +276,10 @@ export function WholesaleLanding3D({
   featuredProductsSlot: ReactNode;
 }) {
   return (
-    <div className="bg-gradient-to-b from-slate-50/90 via-white to-slate-50/80 pt-[7rem] pb-24 lg:pt-[11.25rem]">
+    <div className="bg-gradient-to-b from-slate-50/90 via-white to-slate-50/80 pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-24">
       {/* HERO 3D CON ANILLOS WEBGL2 */}
       <section className="shell">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-[#070D18] p-6 text-white shadow-2xl sm:p-10 lg:p-14">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-[#070D18] p-4 text-white shadow-2xl sm:rounded-3xl sm:p-10 lg:p-14">
           {/* Fondo WebGL2 MagicRings en colores de marca */}
           <div className="pointer-events-none absolute inset-0 z-0 opacity-90">
             <MagicRings
@@ -311,43 +311,43 @@ export function WholesaleLanding3D({
             className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#070D18]/92 via-[#070D18]/72 to-[#070D18]/55"
           />
 
-          <div className="relative z-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center">
-            <div className="space-y-6 lg:col-span-7">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="inline-flex items-center gap-2 rounded-full border border-red-400/35 bg-[#EF233C]/15 px-4 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-red-200 backdrop-blur-sm">
-                  <FaBoxesStacked className="size-3.5 text-[#EF233C]" aria-hidden />
-                  Canal Mayorista &amp; Distribución B2B
+          <div className="relative z-10 grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-center lg:gap-10">
+            <div className="space-y-3 sm:space-y-6 lg:col-span-7">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-red-400/35 bg-[#EF233C]/15 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-red-200 backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-1 sm:text-[0.68rem] sm:tracking-[0.16em]">
+                  <FaBoxesStacked className="size-3 text-[#EF233C] sm:size-3.5" aria-hidden />
+                  Canal Mayorista B2B
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-400/35 bg-[#2563EB]/20 px-3.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-blue-200 backdrop-blur-sm">
-                  <Sparkles className="size-3.5" aria-hidden />
+                <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/35 bg-[#2563EB]/20 px-2.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-blue-200 backdrop-blur-sm sm:gap-1.5 sm:px-3.5 sm:py-1 sm:text-[0.68rem]">
+                  <Sparkles className="size-3 sm:size-3.5" aria-hidden />
                   Colección 2026
                 </span>
               </div>
 
-              <h1 className="font-sans text-3xl font-black uppercase leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              <h1 className="font-sans text-2xl font-black uppercase leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Vestimos el crecimiento de tu{" "}
                 <span className="bg-gradient-to-r from-[#EF233C] via-rose-400 to-blue-400 bg-clip-text text-transparent">
                   negocio.
                 </span>
               </h1>
 
-              <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                Abastece tu boutique, tienda o empresa con confección textil peruana de alta rotación en Denim, Drill y Algodón Pima. Tarifas transparentes por escala, combinación de tallas/colores y facturación formal con RUC.
+              <p className="max-w-2xl text-xs leading-snug text-slate-300 sm:text-base sm:leading-relaxed">
+                Abastece tu boutique o empresa con confección peruana de alta rotación en Denim, Drill y Algodón Pima. Escalas por volumen y factura RUC.
               </p>
 
-              <div className="flex flex-wrap gap-3 pt-1">
+              <div className="flex flex-wrap gap-2 pt-0.5 sm:gap-3 sm:pt-1">
                 <Link
                   href="/mayorista/registro"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#EF233C] px-8 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-[#D90429]"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#EF233C] px-4 text-[0.64rem] font-extrabold uppercase tracking-wider text-white shadow-lg shadow-red-600/25 transition-all hover:-translate-y-0.5 hover:bg-[#D90429] sm:h-12 sm:gap-2 sm:px-8 sm:text-xs"
                 >
-                  Registrar mi empresa
-                  <ArrowRight className="size-4" aria-hidden />
+                  Registrar empresa
+                  <ArrowRight className="size-3.5 sm:size-4" aria-hidden />
                 </Link>
                 <Link
                   href="/mayorista/cotizaciones"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-7 text-xs font-extrabold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 text-[0.64rem] font-extrabold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:-translate-y-0.5 hover:bg-white/20 sm:h-12 sm:gap-2 sm:px-7 sm:text-xs"
                 >
-                  Solicitar cotización B2B
+                  Solicitar cotización
                 </Link>
               </div>
             </div>
@@ -359,24 +359,24 @@ export function WholesaleLanding3D({
         </div>
       </section>
 
-      {/* BENEFICIOS EN TARJETAS 3D ELEVADAS */}
-      <section className="shell mt-20 lg:mt-24">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      {/* BENEFICIOS EN TARJETAS 3D ELEVADAS (2 COLUMNAS EN MÓVIL) */}
+      <section className="shell mt-10 sm:mt-16 lg:mt-24">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end sm:gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3.5 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#EF233C]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-[#EF233C] sm:px-3.5 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
               Propuesta de Valor Comercial
             </span>
-            <h2 className="mt-2.5 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-4xl">
-              Ventajas pensadas para{" "}
+            <h2 className="mt-1.5 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-2.5 sm:text-4xl">
+              Ventajas para{" "}
               <span className="text-[#2563EB]">negocios textiles</span>
             </h2>
           </div>
-          <p className="max-w-md text-xs leading-relaxed text-slate-600 sm:text-sm">
-            Optimizamos cada etapa del abastecimiento mayorista para que obtengas el mejor margen y formalidad tributaria sin fricciones.
+          <p className="max-w-md text-[0.7rem] leading-snug text-slate-600 sm:text-sm sm:leading-relaxed">
+            Mejor margen de ganancia y formalidad tributaria sin fricciones.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-10 sm:gap-6 lg:grid-cols-3">
           {WHOLESALE_BENEFITS.map((b, idx) => (
             <motion.div
               key={b.title}
@@ -385,25 +385,25 @@ export function WholesaleLanding3D({
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.4, delay: idx * 0.05 }}
               whileHover={{ y: -6 }}
-              className="group relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-7 shadow-sm transition-all hover:border-blue-200 hover:shadow-xl"
+              className="group relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-3 shadow-sm transition-all hover:border-blue-200 hover:shadow-xl sm:rounded-3xl sm:p-7"
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-1.5 sm:gap-3">
                 <div
                   className={cn(
-                    "flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-md transition-transform group-hover:scale-105",
+                    "flex size-8 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-md transition-transform group-hover:scale-105 sm:size-12 sm:rounded-2xl",
                     b.accent,
                   )}
                 >
-                  <b.icon className="size-6" strokeWidth={1.8} aria-hidden />
+                  <b.icon className="size-4 sm:size-6" strokeWidth={1.8} aria-hidden />
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-600">
+                <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[0.5rem] font-extrabold uppercase tracking-wider text-slate-600 sm:px-3 sm:py-1 sm:text-[0.65rem]">
                   {b.pill}
                 </span>
               </div>
-              <h3 className="mt-6 font-sans text-lg font-extrabold tracking-tight text-slate-900">
+              <h3 className="mt-2.5 font-sans text-xs font-extrabold leading-tight tracking-tight text-slate-900 sm:mt-6 sm:text-lg">
                 {b.title}
               </h3>
-              <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm">
+              <p className="mt-1 line-clamp-3 text-[0.62rem] leading-snug text-slate-600 sm:mt-2 sm:line-clamp-none sm:text-sm sm:leading-relaxed">
                 {b.description}
               </p>
             </motion.div>
@@ -411,9 +411,9 @@ export function WholesaleLanding3D({
         </div>
       </section>
 
-      {/* ESCALAS DE VOLUMEN CON FONDO WEBTHREADS 3D */}
-      <section id="escalas" className="shell mt-20 lg:mt-24">
-        <div className="relative overflow-hidden rounded-3xl border border-blue-200/80 bg-gradient-to-br from-[#C8D7F2] via-[#DBE6F8] to-[#BFCFEC] p-6 shadow-md sm:p-10 lg:p-14">
+      {/* ESCALAS DE VOLUMEN CON FONDO WEBTHREADS 3D (2 COLUMNAS EN MÓVIL) */}
+      <section id="escalas" className="shell mt-10 sm:mt-16 lg:mt-24">
+        <div className="relative overflow-hidden rounded-2xl border border-blue-200/80 bg-gradient-to-br from-[#C8D7F2] via-[#DBE6F8] to-[#BFCFEC] p-4 shadow-md sm:rounded-3xl sm:p-10 lg:p-14">
           {/* Hilos web animados en fondo claro */}
           <div className="pointer-events-none absolute inset-0 z-0 opacity-75">
             <WebThreads
@@ -441,26 +441,26 @@ export function WholesaleLanding3D({
 
           <div className="relative z-10">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3.5 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#EF233C] shadow-xs backdrop-blur-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-[#EF233C] shadow-xs backdrop-blur-xs sm:px-3.5 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
                 Escalas Comerciales B2B
               </span>
-              <h2 className="mt-3 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-4xl">
+              <h2 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-3 sm:text-4xl">
                 Precios por volumen con{" "}
                 <span className="text-[#1D4ED8]">reglas claras</span>
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-700">
-                Nuestras escalas aplican sobre la suma de unidades de un mismo modelo: combina tallas (28 a 46 o S a XL) y colores sin perder el descuento de lote.
+              <p className="mt-1 text-xs leading-snug text-slate-700 sm:mt-2 sm:text-sm sm:leading-relaxed">
+                Combina tallas y colores de un mismo modelo sin perder el descuento de lote.
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-10 sm:gap-5 lg:grid-cols-4">
               {VOLUME_TIERS.map((tier) => (
                 <motion.div
                   key={tier.range}
                   whileHover={{ y: -6, scale: 1.015 }}
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
                   className={cn(
-                    "flex flex-col justify-between rounded-3xl border p-6 shadow-sm transition-shadow",
+                    "flex flex-col justify-between rounded-2xl border p-3 shadow-sm transition-shadow sm:rounded-3xl sm:p-6",
                     tier.highlight
                       ? "border-[#EF233C] bg-gradient-to-b from-[#0B1120] to-[#1E293B] text-white shadow-xl"
                       : "border-white/70 bg-white/90 text-slate-900 backdrop-blur-md hover:shadow-lg",
@@ -469,7 +469,7 @@ export function WholesaleLanding3D({
                   <div>
                     <span
                       className={cn(
-                        "inline-flex rounded-full px-3 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-wider",
+                        "inline-flex rounded-full px-2 py-0.5 font-mono text-[0.52rem] font-extrabold uppercase tracking-wider sm:px-3 sm:py-1 sm:text-[0.65rem]",
                         tier.highlight
                           ? "bg-[#EF233C] text-white"
                           : "bg-slate-100 text-slate-700",
@@ -479,7 +479,7 @@ export function WholesaleLanding3D({
                     </span>
                     <p
                       className={cn(
-                        "mt-4 font-mono text-xs font-bold uppercase",
+                        "mt-2 font-mono text-[0.6rem] font-bold uppercase sm:mt-4 sm:text-xs",
                         tier.highlight ? "text-blue-300" : "text-slate-500",
                       )}
                     >
@@ -487,7 +487,7 @@ export function WholesaleLanding3D({
                     </p>
                     <h3
                       className={cn(
-                        "mt-1 font-sans text-lg font-black tracking-tight",
+                        "mt-0.5 font-sans text-xs font-black leading-tight tracking-tight sm:mt-1 sm:text-lg",
                         tier.highlight ? "text-white" : "text-slate-900",
                       )}
                     >
@@ -495,7 +495,7 @@ export function WholesaleLanding3D({
                     </h3>
                     <p
                       className={cn(
-                        "mt-3 font-sans text-xl font-black",
+                        "mt-1.5 font-sans text-sm font-black sm:mt-3 sm:text-xl",
                         tier.highlight ? "text-rose-400" : "text-[#EF233C]",
                       )}
                     >
@@ -503,7 +503,7 @@ export function WholesaleLanding3D({
                     </p>
                     <p
                       className={cn(
-                        "mt-2 text-xs leading-relaxed",
+                        "mt-1 line-clamp-2 text-[0.6rem] leading-snug sm:mt-2 sm:line-clamp-none sm:text-xs sm:leading-relaxed",
                         tier.highlight ? "text-slate-300" : "text-slate-600",
                       )}
                     >
@@ -514,14 +514,14 @@ export function WholesaleLanding3D({
                   <Link
                     href="/mayorista/cotizaciones"
                     className={cn(
-                      "mt-6 inline-flex h-9 items-center justify-center gap-1.5 rounded-full text-[0.68rem] font-extrabold uppercase tracking-wider transition-colors",
+                      "mt-3 inline-flex h-8 items-center justify-center gap-1 rounded-full text-[0.56rem] font-extrabold uppercase tracking-wider transition-colors sm:mt-6 sm:h-9 sm:gap-1.5 sm:text-[0.68rem]",
                       tier.highlight
                         ? "bg-white text-slate-950 hover:bg-[#EF233C] hover:text-white"
                         : "border border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-900",
                     )}
                   >
-                    Cotizar esta escala
-                    <ArrowRight className="size-3" aria-hidden />
+                    Cotizar
+                    <ArrowRight className="size-2.5 sm:size-3" aria-hidden />
                   </Link>
                 </motion.div>
               ))}
@@ -531,91 +531,91 @@ export function WholesaleLanding3D({
       </section>
 
       {/* REQUISITOS + PROCESO PASO A PASO */}
-      <section className="shell mt-20 lg:mt-24">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <section className="shell mt-10 sm:mt-16 lg:mt-24">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-8">
           {/* Requisitos */}
-          <div className="rounded-3xl border border-slate-800/80 bg-[#0B1120] p-7 text-white shadow-xl lg:col-span-5 sm:p-9">
-            <span className="inline-flex rounded-full bg-[#EF233C]/20 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-red-300">
+          <div className="rounded-2xl border border-slate-800/80 bg-[#0B1120] p-4 text-white shadow-xl sm:rounded-3xl sm:p-9 lg:col-span-5">
+            <span className="inline-flex rounded-full bg-[#EF233C]/20 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-red-300 sm:px-3 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
               Requisitos de Acceso
             </span>
-            <h2 className="mt-3 font-sans text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+            <h2 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-white sm:mt-3 sm:text-3xl">
               ¿Qué necesitas para{" "}
               <span className="text-blue-400">registrarte?</span>
             </h2>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
-              Orientado a empresas y personas naturales con negocio formalmente constituidas en el Perú:
+            <p className="mt-1 text-xs leading-snug text-slate-300 sm:mt-2 sm:text-sm sm:leading-relaxed">
+              Empresas y personas naturales con negocio formalmente constituidas en el Perú:
             </p>
 
-            <ul className="mt-6 space-y-4">
-              <li className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-400" />
-                <div className="text-xs leading-relaxed text-slate-200">
+            <ul className="mt-4 grid grid-cols-1 gap-2 sm:mt-6 sm:gap-3">
+              <li className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-2.5 sm:gap-3 sm:rounded-2xl sm:p-3.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400 sm:size-5" />
+                <div className="text-[0.68rem] leading-snug text-slate-200 sm:text-xs sm:leading-relaxed">
                   <strong className="block font-bold text-white">RUC 11 dígitos activo y habido:</strong>
-                  RUC 10 con negocio o RUC 20 registrado ante la SUNAT.
+                  RUC 10 con negocio o RUC 20 registrado ante SUNAT.
                 </div>
               </li>
-              <li className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-400" />
-                <div className="text-xs leading-relaxed text-slate-200">
+              <li className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-2.5 sm:gap-3 sm:rounded-2xl sm:p-3.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400 sm:size-5" />
+                <div className="text-[0.68rem] leading-snug text-slate-200 sm:text-xs sm:leading-relaxed">
                   <strong className="block font-bold text-white">Razón social o nombre comercial:</strong>
                   Titularidad del negocio o representación acreditable.
                 </div>
               </li>
-              <li className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-400" />
-                <div className="text-xs leading-relaxed text-slate-200">
-                  <strong className="block font-bold text-white">Datos de entrega y contacto:</strong>
-                  Dirección fiscal o almacén para coordinar despacho.
+              <li className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-2.5 sm:gap-3 sm:rounded-2xl sm:p-3.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400 sm:size-5" />
+                <div className="text-[0.68rem] leading-snug text-slate-200 sm:text-xs sm:leading-relaxed">
+                  <strong className="block font-bold text-white">Dirección fiscal o almacén:</strong>
+                  Para facturación SUNAT y coordinación de despacho.
                 </div>
               </li>
-              <li className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-400" />
-                <div className="text-xs leading-relaxed text-slate-200">
+              <li className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-2.5 sm:gap-3 sm:rounded-2xl sm:p-3.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400 sm:size-5" />
+                <div className="text-[0.68rem] leading-snug text-slate-200 sm:text-xs sm:leading-relaxed">
                   <strong className="block font-bold text-white">Apertura 100% gratuita:</strong>
                   Sin costo de afiliación ni membresías mensuales.
                 </div>
               </li>
             </ul>
 
-            <div className="mt-7">
+            <div className="mt-4 sm:mt-7">
               <Link
                 href="/mayorista/registro"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#EF233C] px-6 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#D90429]"
+                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#EF233C] px-5 text-[0.68rem] font-extrabold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#D90429] sm:h-12 sm:px-6 sm:text-xs"
               >
-                Comenzar registro de empresa
-                <ArrowRight className="size-4" aria-hidden />
+                Comenzar registro
+                <ArrowRight className="size-3.5 sm:size-4" aria-hidden />
               </Link>
             </div>
           </div>
 
-          {/* Proceso en 4 pasos */}
-          <div className="rounded-3xl border border-slate-200/90 bg-white p-7 shadow-sm lg:col-span-7 sm:p-9">
-            <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#2563EB]">
+          {/* Proceso en 4 pasos (2 columnas en móvil) */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-9 lg:col-span-7">
+            <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-[#2563EB] sm:px-3 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
               Proceso Paso a Paso
             </span>
-            <h2 className="mt-3 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-3 sm:text-3xl">
               Cómo empezar a{" "}
               <span className="text-[#EF233C]">comprar por mayor</span>
             </h2>
 
-            <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-7 sm:gap-4">
               {REGISTRATION_STEPS.map((step, i) => (
                 <div
                   key={step.number}
-                  className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5 transition-all hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-md"
+                  className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 transition-all hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-md sm:rounded-2xl sm:p-5"
                 >
                   <span
                     className={cn(
-                      "inline-flex size-9 items-center justify-center rounded-xl font-mono text-xs font-black text-white shadow-xs",
+                      "inline-flex size-7 items-center justify-center rounded-lg font-mono text-[0.65rem] font-black text-white shadow-xs sm:size-9 sm:rounded-xl sm:text-xs",
                       i % 2 === 0 ? "bg-[#EF233C]" : "bg-[#2563EB]",
                     )}
                   >
                     {step.number}
                   </span>
-                  <h3 className="mt-4 font-sans text-base font-extrabold text-slate-900">
+                  <h3 className="mt-2 font-sans text-xs font-extrabold leading-tight text-slate-900 sm:mt-4 sm:text-base">
                     {step.title}
                   </h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                  <p className="mt-1 line-clamp-3 text-[0.62rem] leading-snug text-slate-600 sm:mt-1.5 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -629,8 +629,8 @@ export function WholesaleLanding3D({
       {featuredProductsSlot}
 
       {/* CTA FINAL 3D */}
-      <section className="shell mt-20 lg:mt-24">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-r from-[#0B1120] via-[#172554] to-[#0F172A] p-8 text-center text-white shadow-2xl sm:p-14">
+      <section className="shell mt-10 sm:mt-16 lg:mt-24">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-r from-[#0B1120] via-[#172554] to-[#0F172A] p-5 text-center text-white shadow-2xl sm:rounded-3xl sm:p-14">
           <div
             aria-hidden
             className="pointer-events-none absolute -top-20 left-1/4 h-56 w-56 rounded-full bg-[#EF233C]/20 blur-3xl"
@@ -641,27 +641,27 @@ export function WholesaleLanding3D({
           />
 
           <div className="relative z-10 mx-auto max-w-2xl">
-            <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-red-200">
+            <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-0.5 text-[0.56rem] font-extrabold uppercase tracking-[0.14em] text-red-200 sm:px-4 sm:py-1 sm:text-[0.68rem] sm:tracking-[0.16em]">
               Atención Comercial Directa
             </span>
-            <h2 className="mt-4 font-sans text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
+            <h2 className="mt-2.5 font-sans text-xl font-black uppercase tracking-tight text-white sm:mt-4 sm:text-4xl">
               ¿Listo para abastecer tu negocio con{" "}
               <span className="text-[#EF233C]">American Colt JEANS™</span>?
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Regístrate hoy para desbloquear tarifas de fábrica o prepara tu cotización con las prendas, tallas y cantidades que necesitas.
+            <p className="mt-1.5 text-xs leading-relaxed text-slate-300 sm:mt-3 sm:text-sm">
+              Regístrate hoy para desbloquear tarifas de fábrica o prepara tu cotización con las prendas y tallas que necesitas.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3.5">
+            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-8 sm:gap-3.5">
               <Link
                 href="/mayorista/registro"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#EF233C] px-8 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg transition-colors hover:bg-[#D90429]"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#EF233C] px-4 text-[0.64rem] font-extrabold uppercase tracking-wider text-white shadow-lg transition-colors hover:bg-[#D90429] sm:h-12 sm:gap-2 sm:px-8 sm:text-xs"
               >
-                Registrar mi empresa
-                <ArrowRight className="size-4" aria-hidden />
+                Registrar empresa
+                <ArrowRight className="size-3.5 sm:size-4" aria-hidden />
               </Link>
               <Link
                 href="/mayorista/cotizaciones"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-7 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-white/20"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 text-[0.64rem] font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-white/20 sm:h-12 sm:gap-2 sm:px-7 sm:text-xs"
               >
                 Preparar cotización
               </Link>
@@ -671,9 +671,9 @@ export function WholesaleLanding3D({
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-6 text-xs font-extrabold uppercase tracking-wider text-emerald-200 transition-colors hover:bg-emerald-500/25"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-4 text-[0.64rem] font-extrabold uppercase tracking-wider text-emerald-200 transition-colors hover:bg-emerald-500/25 sm:h-12 sm:gap-2 sm:px-6 sm:text-xs"
               >
-                <SiWhatsapp className="size-4" aria-hidden />
+                <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
                 WhatsApp B2B
               </a>
             </div>

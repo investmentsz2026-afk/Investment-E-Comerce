@@ -97,23 +97,23 @@ export function CheckoutWhatsAppModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-4 max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-lg rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 shadow-2xl space-y-3 sm:space-y-4 max-h-[90vh] flex flex-col">
         {/* Cabecera Verde WhatsApp */}
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-md">
-              <SiWhatsapp className="size-5" />
+        <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5 sm:pb-3">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="size-8 sm:size-9 shrink-0 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-md">
+              <SiWhatsapp className="size-4 sm:size-5" />
             </div>
-            <div>
-              <h3 className="text-base font-extrabold text-neutral-900 leading-tight">
-                Seguimiento por WhatsApp Oficial
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-extrabold text-neutral-900 leading-tight truncate">
+                Seguimiento WhatsApp Oficial
               </h3>
-              <p className="text-[0.68rem] text-emerald-700 font-bold">
-                Línea oficial verificada: {OFFICIAL_WHATSAPP_DISPLAY}
+              <p className="text-[0.64rem] sm:text-[0.68rem] text-emerald-700 font-bold truncate">
+                Línea oficial: {OFFICIAL_WHATSAPP_DISPLAY}
               </p>
             </div>
           </div>
@@ -121,14 +121,14 @@ export function CheckoutWhatsAppModal({
           <button
             type="button"
             onClick={onClose}
-            className="size-8 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-500 hover:text-neutral-900"
+            className="size-8 shrink-0 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-500 hover:text-neutral-900"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {/* Pregunta Principal y Motivo de Confianza */}
-        <div className="space-y-1 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3.5 text-xs">
+        <div className="space-y-1 bg-emerald-50/70 border border-emerald-200/80 rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-[0.7rem] sm:text-xs">
           <p className="font-extrabold text-emerald-950 flex items-center gap-1.5">
             <ShieldCheck className="size-4 text-[#25D366] shrink-0" />
             ¿Deseas dar seguimiento o enviar el comprobante de tu compra por WhatsApp?

@@ -41,7 +41,7 @@ export default async function MayoristaCotizacionesPage({
       : [];
 
   return (
-    <div className="bg-gradient-to-b from-slate-50/90 via-white to-slate-50/70 pt-[7rem] pb-24 lg:pt-[11.25rem]">
+    <div className="bg-gradient-to-b from-slate-50/90 via-white to-slate-50/70 pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-24">
       <div className="shell">
         <WholesaleQuotesPortal
           user={user ? { id: user.id, role: user.role } : null}

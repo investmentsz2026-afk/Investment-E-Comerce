@@ -492,35 +492,35 @@ export function WholesaleQuoteBuilder({
   }
 
   return (
-    <form onSubmit={handleSubmitQuote} className="space-y-7">
+    <form onSubmit={handleSubmitQuote} className="space-y-4 sm:space-y-7">
       {!isUserAuthorized && (
-        <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/80 via-white to-red-50/40 p-5 shadow-xs">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
-                <FaBoxesStacked className="size-4" aria-hidden />
+        <div className="rounded-xl border border-blue-200/80 bg-gradient-to-r from-blue-50/80 via-white to-red-50/40 p-3.5 shadow-xs sm:rounded-2xl sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex items-start gap-2.5 sm:gap-3.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#2563EB] text-white shadow-xs sm:size-10 sm:rounded-xl">
+                <FaBoxesStacked className="size-3.5 sm:size-4" aria-hidden />
               </div>
               <div>
-                <p className="text-sm font-extrabold text-slate-900">
+                <p className="text-xs font-extrabold text-slate-900 sm:text-sm">
                   Modo Borrador de Cotización B2B
                 </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
-                  Selecciona prendas, tallas, colores y cantidades con libertad. Tu borrador se guarda automáticamente en este navegador; para procesar la cotización formal necesitarás una cuenta empresarial con RUC.
+                <p className="mt-0.5 text-[0.68rem] leading-snug text-slate-600 sm:text-xs sm:leading-relaxed">
+                  Arma tu lote libremente. Para emitir cotización formal con RUC necesitarás una cuenta empresarial.
                 </p>
               </div>
             </div>
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-1.5 sm:gap-2">
               {!isAuthenticated ? (
                 <Link
                   href="/iniciar-sesion?next=/mayorista/cotizaciones"
-                  className="inline-flex h-9 items-center justify-center rounded-full bg-slate-900 px-4 text-[0.68rem] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#EF233C]"
+                  className="inline-flex h-8 items-center justify-center rounded-full bg-slate-900 px-3 text-[0.6rem] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#EF233C] sm:h-9 sm:px-4 sm:text-[0.68rem]"
                 >
                   Iniciar sesión
                 </Link>
               ) : null}
               <Link
                 href="/mayorista/registro"
-                className="inline-flex h-9 items-center justify-center rounded-full border border-slate-300 bg-white px-4 text-[0.68rem] font-bold uppercase tracking-wider text-slate-800 transition-colors hover:border-slate-900"
+                className="inline-flex h-8 items-center justify-center rounded-full border border-slate-300 bg-white px-3 text-[0.6rem] font-bold uppercase tracking-wider text-slate-800 transition-colors hover:border-slate-900 sm:h-9 sm:px-4 sm:text-[0.68rem]"
               >
                 Registrar empresa
               </Link>
@@ -605,26 +605,26 @@ export function WholesaleQuoteBuilder({
       )}
 
       {/* Paso 1: Selector buscable de productos y variantes */}
-      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 sm:gap-3 sm:pb-5">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#EF233C]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-[#EF233C] sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
               Paso 1 · Selección de Prendas
             </span>
-            <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
+            <h3 className="mt-1 font-sans text-base font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-2xl">
               Añadir modelos y tallas al lote
             </h3>
           </div>
-          <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-[#2563EB]">
-            <FaLayerGroup className="size-5" aria-hidden />
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[#2563EB] sm:size-10 sm:rounded-xl">
+            <FaLayerGroup className="size-4 sm:size-5" aria-hidden />
           </div>
         </div>
 
         {/* Vista previa rápida del modelo elegido + escalas B2B clicables */}
         {currentProduct && (
-          <div className="mt-6 flex flex-col gap-5 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="mt-3.5 flex flex-col gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:rounded-2xl sm:p-4">
+            <div className="flex items-center gap-2.5 sm:gap-4">
+              <div className="relative aspect-[3/4] w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white sm:w-16 sm:rounded-xl">
                 <Image
                   src={currentProduct.imageUrl}
                   alt={currentProduct.name}
@@ -633,24 +633,24 @@ export function WholesaleQuoteBuilder({
                   className="object-cover"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <Link
                   href={`/producto/${currentProduct.slug}`}
-                  className="text-sm font-extrabold text-slate-900 transition-colors hover:text-[#2563EB]"
+                  className="line-clamp-1 text-xs font-extrabold text-slate-900 transition-colors hover:text-[#2563EB] sm:text-sm"
                 >
                   {currentProduct.name}
                 </Link>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                  <span>Precio catálogo: {formatPEN(currentProduct.retailPrice)}</span>
+                <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[0.66rem] text-slate-600 sm:mt-1 sm:gap-2 sm:text-xs">
+                  <span>Catálogo: {formatPEN(currentProduct.retailPrice)}</span>
                   {selectedVariantObj && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 font-mono text-[0.68rem] text-slate-700">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 font-mono text-[0.58rem] text-slate-700 sm:gap-1.5 sm:px-2.5 sm:text-[0.68rem]">
                       {selectedVariantObj.colorSwatch && (
                         <span
-                          className="size-2.5 rounded-full border border-slate-300"
+                          className="size-2 rounded-full border border-slate-300 sm:size-2.5"
                           style={{ backgroundColor: selectedVariantObj.colorSwatch }}
                         />
                       )}
-                      Stock ref: {selectedVariantObj.stock} uds.
+                      Stock: {selectedVariantObj.stock}
                     </span>
                   )}
                 </div>
@@ -658,10 +658,10 @@ export function WholesaleQuoteBuilder({
             </div>
 
             {currentProduct.wholesaleTiers.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-500">
-                  <BadgePercent className="size-3.5 text-emerald-600" aria-hidden />
-                  Escalas B2B:
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="inline-flex items-center gap-1 text-[0.56rem] font-extrabold uppercase tracking-wider text-slate-500 sm:text-[0.65rem]">
+                  <BadgePercent className="size-3 text-emerald-600 sm:size-3.5" aria-hidden />
+                  B2B:
                 </span>
                 {currentProduct.wholesaleTiers.map((tier) => (
                   <button
@@ -669,13 +669,13 @@ export function WholesaleQuoteBuilder({
                     type="button"
                     onClick={() => setAddQuantity(tier.minQuantity)}
                     className={cn(
-                      "rounded-full border px-3 py-1 text-xs font-bold transition-all",
+                      "rounded-full border px-2 py-0.5 text-[0.62rem] font-bold transition-all sm:px-3 sm:py-1 sm:text-xs",
                       addQuantity >= tier.minQuantity
                         ? "border-emerald-300 bg-emerald-100 text-emerald-900 shadow-xs"
                         : "border-slate-200 bg-white text-slate-700 hover:border-slate-400",
                     )}
                   >
-                    {tier.minQuantity}+ uds · {formatPEN(tier.amount)}
+                    {tier.minQuantity}+ · {formatPEN(tier.amount)}
                   </button>
                 ))}
               </div>
@@ -683,7 +683,7 @@ export function WholesaleQuoteBuilder({
           </div>
         )}
 
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-12">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-6 sm:gap-4 md:grid-cols-12">
           {/* Buscador de Modelo */}
           <div ref={productBoxRef} className="relative md:col-span-5">
             <label
@@ -978,47 +978,47 @@ export function WholesaleQuoteBuilder({
       </div>
 
       {/* Paso 2: Resumen del lote */}
-      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 sm:gap-3 sm:pb-5">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#2563EB]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-[#2563EB] sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
               Paso 2 · Resumen de Prendas
             </span>
-            <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
-              Detalle por variante ({summaryLines.length}{" "}
+            <h3 className="mt-1 font-sans text-base font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-2xl">
+              Detalle ({summaryLines.length}{" "}
               {summaryLines.length === 1 ? "línea" : "líneas"} · {totalUnits} uds.)
             </h3>
           </div>
           {summaryLines.length > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3.5 py-1.5 font-mono text-xs font-bold text-slate-800">
-              <Sparkles className="size-3.5 text-[#2563EB]" aria-hidden />
-              Total estimado: {formatPEN(estimatedSubtotal)}
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 font-mono text-[0.64rem] font-bold text-slate-800 sm:gap-1.5 sm:px-3.5 sm:py-1.5 sm:text-xs">
+              <Sparkles className="size-3 text-[#2563EB] sm:size-3.5" aria-hidden />
+              Est.: {formatPEN(estimatedSubtotal)}
             </span>
           )}
         </div>
 
         {summaryLines.length === 0 ? (
-          <div className="py-12 text-center">
-            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-              <ShoppingBag className="size-6" aria-hidden />
+          <div className="py-7 text-center sm:py-12">
+            <div className="mx-auto flex size-11 items-center justify-center rounded-xl bg-slate-100 text-slate-400 sm:size-14 sm:rounded-2xl">
+              <ShoppingBag className="size-5 sm:size-6" aria-hidden />
             </div>
-            <p className="mt-4 text-sm font-bold text-slate-800">
+            <p className="mt-3 text-xs font-bold text-slate-800 sm:mt-4 sm:text-sm">
               Aún no has añadido variantes al lote
             </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Usa el buscador superior para seleccionar modelos, colores y tallas a tu cotización.
+            <p className="mt-1 text-[0.68rem] text-slate-500 sm:text-xs">
+              Usa el buscador superior para elegir modelos, colores y tallas.
             </p>
           </div>
         ) : (
-          <div className="mt-5 space-y-3">
+          <div className="mt-3.5 space-y-2.5 sm:mt-5 sm:space-y-3">
             {summaryLines.map((line) => (
               <div
                 key={line.variantId}
                 data-testid={`quote-builder-line-${line.variant.sku}`}
-                className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/50 p-2.5 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:gap-4 sm:rounded-2xl sm:p-4"
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative aspect-[3/4] w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                <div className="flex items-center gap-2.5 sm:gap-4">
+                  <div className="relative aspect-[3/4] w-11 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white sm:w-14 sm:rounded-xl">
                     <Image
                       src={line.product.imageUrl}
                       alt={line.product.name}
@@ -1027,33 +1027,32 @@ export function WholesaleQuoteBuilder({
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{line.product.name}</p>
-                    <p className="mt-0.5 font-mono text-xs text-slate-500">
-                      SKU: {line.variant.sku} · Color: {line.variant.colorName ?? "Único"} · Talla:{" "}
-                      {line.variant.size ?? "Única"}
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold text-slate-900 sm:text-sm">{line.product.name}</p>
+                    <p className="mt-0.5 font-mono text-[0.6rem] text-slate-500 sm:text-xs">
+                      {line.variant.colorName ?? "Único"} · Talla {line.variant.size ?? "Única"} · {line.variant.sku}
                     </p>
                     {line.itemNotes && (
-                      <p className="mt-1 text-xs italic text-slate-600">
+                      <p className="mt-0.5 text-[0.64rem] italic text-slate-600 sm:mt-1 sm:text-xs">
                         Nota: {line.itemNotes}
                       </p>
                     )}
                     <span
                       className={cn(
-                        "mt-1.5 inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[0.65rem] font-bold uppercase",
+                        "mt-1 inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[0.55rem] font-bold uppercase sm:mt-1.5 sm:px-2.5 sm:text-[0.65rem]",
                         line.appliedTierMin
                           ? "bg-emerald-100 text-emerald-800"
                           : "bg-slate-200/80 text-slate-700",
                       )}
                     >
                       {line.appliedTierMin
-                        ? `Tarifa B2B (≥ ${line.appliedTierMin} uds.): ${formatPEN(line.unitPrice)}/ud.`
-                        : `Precio base ref.: ${formatPEN(line.unitPrice)}/ud.`}
+                        ? `B2B (≥${line.appliedTierMin}): ${formatPEN(line.unitPrice)}/ud.`
+                        : `Ref: ${formatPEN(line.unitPrice)}/ud.`}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 sm:justify-end">
+                <div className="flex items-center justify-between gap-2 border-t border-slate-200/60 pt-2 sm:justify-end sm:gap-4 sm:border-t-0 sm:pt-0">
                   <div>
                     <label className="sr-only" htmlFor={`q-line-${line.variantId}`}>
                       Cantidad para {line.variant.sku}
@@ -1067,39 +1066,39 @@ export function WholesaleQuoteBuilder({
                       onChange={(e) =>
                         handleUpdateLineQuantity(line.variantId, Number(e.target.value))
                       }
-                      className="h-10 w-24 rounded-xl border border-slate-200 bg-white px-2 text-center font-mono text-xs font-bold tabular-nums text-slate-900 focus:border-[#2563EB] focus:outline-none"
+                      className="h-8 w-20 rounded-lg border border-slate-200 bg-white px-2 text-center font-mono text-xs font-bold tabular-nums text-slate-900 focus:border-[#2563EB] focus:outline-none sm:h-10 sm:w-24 sm:rounded-xl"
                     />
                   </div>
 
-                  <div className="min-w-24 text-right sm:min-w-28">
-                    <p className="font-mono text-sm font-extrabold tabular-nums text-slate-900">
+                  <div className="min-w-20 text-right sm:min-w-28">
+                    <p className="font-mono text-xs font-extrabold tabular-nums text-slate-900 sm:text-sm">
                       {formatPEN(line.subtotal)}
                     </p>
-                    <p className="text-[0.65rem] font-medium text-slate-500">Subtotal ref.</p>
+                    <p className="text-[0.56rem] font-medium text-slate-500 sm:text-[0.65rem]">Subtotal ref.</p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleRemoveLine(line.variantId)}
                     aria-label={`Quitar ${line.variant.sku}`}
-                    className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-[#EF233C]"
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-[#EF233C] sm:rounded-xl sm:p-2"
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Trash2 className="size-3.5 sm:size-4" aria-hidden />
                   </button>
                 </div>
               </div>
             ))}
 
-            <div className="mt-5 flex flex-col justify-between gap-2 rounded-2xl bg-gradient-to-r from-[#0F172A] to-[#1E293B] p-5 text-white sm:flex-row sm:items-center">
+            <div className="mt-3 flex flex-col justify-between gap-1.5 rounded-xl bg-gradient-to-r from-[#0F172A] to-[#1E293B] p-3.5 text-white sm:mt-5 sm:flex-row sm:items-center sm:gap-2 sm:rounded-2xl sm:p-5">
               <div>
-                <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-slate-300">
-                  Valor referencial del lote solicitado
+                <p className="text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-slate-300 sm:text-[0.68rem] sm:tracking-[0.14em]">
+                  Valor referencial del lote
                 </p>
-                <p className="text-xs text-slate-400">
-                  {totalUnits} {totalUnits === 1 ? "unidad en total" : "unidades en total"} · Sujeto a propuesta formal B2B
+                <p className="text-[0.64rem] text-slate-400 sm:text-xs">
+                  {totalUnits} {totalUnits === 1 ? "unidad" : "unidades"} · Sujeto a propuesta formal
                 </p>
               </div>
-              <span className="font-sans text-2xl font-black tabular-nums text-white sm:text-3xl">
+              <span className="font-sans text-xl font-black tabular-nums text-white sm:text-3xl">
                 {formatPEN(estimatedSubtotal)}
               </span>
             </div>
@@ -1108,17 +1107,17 @@ export function WholesaleQuoteBuilder({
       </div>
 
       {/* Paso 3: Condiciones comerciales y despacho */}
-      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
-        <div className="border-b border-slate-100 pb-5">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-emerald-700">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="border-b border-slate-100 pb-3 sm:pb-5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-[0.12em] text-emerald-700 sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.65rem] sm:tracking-[0.14em]">
             Paso 3 · Condiciones y Despacho
           </span>
-          <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
+          <h3 className="mt-1 font-sans text-base font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-2xl">
             Requerimientos del pedido corporativo
           </h3>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="mt-3.5 grid grid-cols-1 gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-5">
           <div className="sm:col-span-2">
             <label
               htmlFor="quote-commercial-needs"

@@ -40,18 +40,18 @@ export function ChangePasswordForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6 text-slate-900"
+      className="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-4 text-slate-900 shadow-sm sm:space-y-6 sm:p-8"
     >
-      <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-[#0055FF] border border-blue-100">
-          <FaKey className="size-4" aria-hidden />
+      <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3 sm:gap-3 sm:pb-4">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-[#0055FF] sm:size-10">
+          <FaKey className="size-3.5 sm:size-4" aria-hidden />
         </div>
         <div>
-          <h3 className="text-lg font-black uppercase tracking-tight text-slate-900">
-            Actualizar Contraseña de Acceso
+          <h3 className="text-sm font-black uppercase tracking-tight text-slate-900 sm:text-lg">
+            Actualizar Contraseña
           </h3>
-          <p className="text-xs text-slate-500">
-            Protege tu cuenta con una credencial de alta seguridad criptográfica (scrypt 32B).
+          <p className="text-[0.68rem] text-slate-500 sm:text-xs">
+            Protege tu cuenta con cifrado de alta seguridad (scrypt 32B).
           </p>
         </div>
       </div>

@@ -163,66 +163,68 @@ export function AccountCartView() {
             return (
               <article
                 key={item.variantId}
-                className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs transition-shadow hover:shadow-sm"
+                className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs transition-shadow hover:shadow-sm sm:rounded-2xl sm:p-4"
               >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  {/* Imagen de la Prenda */}
-                  <div className="relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                    <Image
-                      src={item.imageUrl ?? "/placeholder.jpg"}
-                      alt={item.productName}
-                      fill
-                      unoptimized={Boolean(item.imageUrl?.startsWith("/api/media/"))}
-                      sizes="80px"
-                      className="object-cover"
-                    />
-                  </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex items-start gap-3 sm:contents">
+                    {/* Imagen de la Prenda */}
+                    <div className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:w-20 sm:rounded-xl">
+                      <Image
+                        src={item.imageUrl ?? "/placeholder.jpg"}
+                        alt={item.productName}
+                        fill
+                        unoptimized={Boolean(item.imageUrl?.startsWith("/api/media/"))}
+                        sizes="80px"
+                        className="object-cover"
+                      />
+                    </div>
 
-                  {/* Info de la Prenda */}
-                  <div className="min-w-0 flex-1 space-y-1">
-                    {subtitle && (
-                      <span className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
-                        {subtitle}
-                      </span>
-                    )}
-                    <h3 className="text-sm font-bold text-slate-900 truncate">
-                      <Link href={`/producto/${item.productSlug}`} className="hover:text-[#0055FF]">
-                        {item.productName}
-                      </Link>
-                    </h3>
-
-                    {/* Color y Talla con Swatch */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                      {item.colorSwatch && (
-                        <span
-                          className="size-2.5 rounded-full border border-black/15 shadow-2xs"
-                          style={{ backgroundColor: item.colorSwatch }}
-                          aria-hidden
-                        />
+                    {/* Info de la Prenda */}
+                    <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
+                      {subtitle && (
+                        <span className="block truncate text-[0.58rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
+                          {subtitle}
+                        </span>
                       )}
-                      <span>
-                        {item.colorName ?? "Color estándar"} · Talla {item.size ?? "Única"}
-                      </span>
-                    </div>
+                      <h3 className="truncate text-xs font-bold text-slate-900 sm:text-sm">
+                        <Link href={`/producto/${item.productSlug}`} className="hover:text-[#0055FF]">
+                          {item.productName}
+                        </Link>
+                      </h3>
 
-                    {/* Botón Editar Talla y Color */}
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setEditingVariantId(isEditing ? null : item.variantId)
-                        }
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0055FF] hover:underline pt-0.5"
-                      >
-                        <FaPencil className="size-2.5" />
-                        <span>Editar talla y color</span>
-                      </button>
-                    </div>
+                      {/* Color y Talla con Swatch */}
+                      <div className="flex items-center gap-1.5 text-[0.68rem] text-slate-600 sm:text-xs">
+                        {item.colorSwatch && (
+                          <span
+                            className="size-2.5 shrink-0 rounded-full border border-black/15 shadow-2xs"
+                            style={{ backgroundColor: item.colorSwatch }}
+                            aria-hidden
+                          />
+                        )}
+                        <span className="truncate">
+                          {item.colorName ?? "Estándar"} · Talla {item.size ?? "Única"}
+                        </span>
+                      </div>
 
-                    <p className="font-mono text-xs font-bold text-slate-900 pt-1">
-                      {formatPEN(item.pricing.effectiveUnitAmount)}{" "}
-                      <span className="text-[0.68rem] font-normal text-slate-500">c/u</span>
-                    </p>
+                      {/* Botón Editar Talla y Color */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingVariantId(isEditing ? null : item.variantId)
+                          }
+                          className="inline-flex items-center gap-1 pt-0.5 text-[0.68rem] font-semibold text-[#0055FF] hover:underline sm:gap-1.5 sm:text-xs"
+                        >
+                          <FaPencil className="size-2.5" />
+                          <span>Editar talla y color</span>
+                        </button>
+                      </div>
+
+                      <p className="pt-0.5 font-mono text-xs font-bold text-slate-900 sm:pt-1">
+                        {formatPEN(item.pricing.effectiveUnitAmount)}{" "}
+                        <span className="text-[0.62rem] font-normal text-slate-500 sm:text-[0.68rem]">c/u</span>
+                      </p>
+                    </div>
                   </div>
 
                   {/* Controles de Cantidad y Subtotal */}

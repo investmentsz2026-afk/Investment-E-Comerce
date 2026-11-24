@@ -22,13 +22,13 @@ import {
   FaUser,
   FaXmark,
 } from "react-icons/fa6";
-import type { ImageAsset } from "@/types/catalog";
 import { Logo } from "@/components/brand/logo";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useCart } from "@/components/cart/cart-provider";
 import { useEscapeKey, useLockBodyScroll } from "@/hooks/use-overlay";
 import { cn } from "@/lib/utils";
 import type { PublicPromotionItem } from "@/lib/promo-display";
+import { DRAWER_CATEGORIES } from "./header-categories";
 import { SearchOverlay } from "./search-overlay";
 import { MobileMenu } from "./mobile-menu";
 import { MobileTabBar } from "./mobile-tab-bar";
@@ -36,250 +36,6 @@ import { MobileTabBar } from "./mobile-tab-bar";
 interface SiteHeaderProps {
   promotions?: PublicPromotionItem[];
 }
-
-interface DrawerSubGroup {
-  id: string;
-  title: string;
-  badge?: string;
-  items: readonly { label: string; href: string; tag?: string }[];
-}
-
-interface DrawerCategoryConfig {
-  id: string;
-  label: string;
-  subtitle: string;
-  allHref: string;
-  highlight?: boolean;
-  banner: {
-    tag: string;
-    title: string;
-    href: string;
-    image: ImageAsset;
-  };
-  groups: readonly DrawerSubGroup[];
-}
-
-const DRAWER_CATEGORIES: readonly DrawerCategoryConfig[] = [
-  {
-    id: "hombre",
-    label: "Catálogo Hombre",
-    subtitle: "Los 11 modelos oficiales American Colt JEANS™ 2026",
-    allHref: "/catalogo?audiencia=hombre",
-    banner: {
-      tag: "CATÁLOGO OFICIAL 2026",
-      title: "Toda la Colección Masculina por Unidad y Mayor",
-      href: "/catalogo?audiencia=hombre",
-      image: {
-        src: "/catalogo-colt/16-portada-jeans-2026.png",
-        alt: "Catálogo Hombre American Colt JEANS 2026",
-      },
-    },
-    groups: [
-      {
-        id: "h-drill",
-        title: "Línea Drill Premium (Pantalones y Bermudas)",
-        badge: "Stretch",
-        items: [
-          { label: "Pantalón Drill King 767 — Skinny Fit", href: "/producto/pantalon-drill-king-767", tag: "S/ 140" },
-          { label: "Pantalón Drill Fendy 769 — Slim Fit", href: "/producto/pantalon-drill-fendy-769", tag: "S/ 130" },
-          { label: "Pantalón Drill Rolex 770 — Straight Fit", href: "/producto/pantalon-drill-rolex-770", tag: "S/ 130" },
-          { label: "Bermuda Drill Balance 770 — Straight Fit", href: "/producto/bermuda-drill-balance-770", tag: "S/ 120" },
-          { label: "Ver toda la Línea Drill", href: "/catalogo/pantalones?audiencia=hombre" },
-        ],
-      },
-      {
-        id: "h-jeans",
-        title: "Línea Clásica Jeans Denim",
-        badge: "Tallas 28-46",
-        items: [
-          { label: "Jean Denim Comfort 762 — Classic Fit", href: "/producto/jean-denim-comfort-762", tag: "S/ 130" },
-          { label: "Jean Denim Relaxed 750 — Classic Fit", href: "/producto/jean-denim-relaxed-750", tag: "S/ 120" },
-          { label: "Jean Clásico Parker 769 — Slim Fit", href: "/producto/jean-clasico-parker-769", tag: "S/ 130" },
-          { label: "Jean Bull Denim 750 — Classic Fit", href: "/producto/jean-bull-denim-750", tag: "S/ 120" },
-          { label: "Ver todos los Jeans Denim", href: "/catalogo/denim?audiencia=hombre" },
-        ],
-      },
-      {
-        id: "h-camisas-polos",
-        title: "Camisas y Polos de Algodón Peruano",
-        badge: "S a XXL",
-        items: [
-          { label: "Camisa Denim Zair — Slim Fit", href: "/producto/camisa-denim-zair-slim-fit", tag: "S/ 130" },
-          { label: "Camisa Clásica Kendall — Slim Fit", href: "/producto/camisa-clasica-kendall-slim-fit", tag: "S/ 125" },
-          { label: "Polo Piqué Clásico Mark — Classic Fit", href: "/producto/polo-pique-clasico-mark", tag: "S/ 89" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "jeans",
-    label: "Jeans Denim",
-    subtitle: "Relaxed 750, Comfort 762, Parker 769 y Bull Denim 750",
-    allHref: "/catalogo/denim?audiencia=hombre",
-    banner: {
-      tag: "LÍNEA CLÁSICA DENIM",
-      title: "Jeans de Alta Resistencia desde la Talla 28 hasta la 46",
-      href: "/catalogo/denim?audiencia=hombre",
-      image: {
-        src: "/catalogo-colt/15-linea-clasica.png",
-        alt: "Jeans Denim American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "j-modelos",
-        title: "Modelos Oficiales de Jeans",
-        badge: "Denim",
-        items: [
-          { label: "Jean Denim Relaxed 750 — Tela Rígida Classic Fit", href: "/producto/jean-denim-relaxed-750", tag: "7 Colores" },
-          { label: "Jean Denim Comfort 762 — Tela Stretch Classic Fit", href: "/producto/jean-denim-comfort-762", tag: "6 Colores" },
-          { label: "Jean Clásico Parker 769 — Tela Stretch Slim Fit", href: "/producto/jean-clasico-parker-769", tag: "8 Colores" },
-          { label: "Jean Bull Denim 750 — Tela Rígida Classic Fit", href: "/producto/jean-bull-denim-750", tag: "7 Colores" },
-          { label: "Ver toda la categoría Jeans Denim", href: "/catalogo/denim?audiencia=hombre" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "pantalones",
-    label: "Pantalones Drill",
-    subtitle: "King 767, Fendy 769, Rolex 770 y Bermuda Balance 770",
-    allHref: "/catalogo/pantalones?audiencia=hombre",
-    banner: {
-      tag: "LÍNEA DRILL PREMIUM",
-      title: "Entalle Pitillo, Semipitillo y Bota Recta en Tela Stretch",
-      href: "/catalogo/pantalones?audiencia=hombre",
-      image: {
-        src: "/catalogo-colt/08-linea-drill-premium.png",
-        alt: "Pantalones Drill American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "dr-modelos",
-        title: "Pantalones y Bermudas Drill",
-        badge: "Drill Stretch",
-        items: [
-          { label: "Pantalón Drill King 767 — Skinny Fit (Entalle Pitillo)", href: "/producto/pantalon-drill-king-767", tag: "7 Colores" },
-          { label: "Pantalón Drill Fendy 769 — Slim Fit (Semipitillo)", href: "/producto/pantalon-drill-fendy-769", tag: "9 Colores" },
-          { label: "Pantalón Drill Rolex 770 — Straight Fit (Bota Recta)", href: "/producto/pantalon-drill-rolex-770", tag: "6 Colores" },
-          { label: "Bermuda Drill Balance 770 — Straight Fit", href: "/producto/bermuda-drill-balance-770", tag: "6 Colores" },
-          { label: "Ver todos los Pantalones y Bermudas Drill", href: "/catalogo/pantalones?audiencia=hombre" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "camisas",
-    label: "Camisas",
-    subtitle: "Camisa Denim Zair & Camisa Clásica Kendall",
-    allHref: "/catalogo/camisas?audiencia=hombre",
-    banner: {
-      tag: "CAMISAS SLIM FIT",
-      title: "Confección en Algodón Peruano y Acabados de Primera",
-      href: "/catalogo/camisas?audiencia=hombre",
-      image: {
-        src: "/catalogo-colt/camisa-zair-model.png",
-        alt: "Camisas American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "cam-modelos",
-        title: "Modelos de Camisas Hombre",
-        badge: "Slim Fit",
-        items: [
-          { label: "Camisa Denim Zair — Slim Fit (Sky, Blackie, Stone)", href: "/producto/camisa-denim-zair-slim-fit", tag: "100% Algodón" },
-          { label: "Camisa Clásica Kendall — Slim Fit (8 Colores)", href: "/producto/camisa-clasica-kendall-slim-fit", tag: "Algodón + Elastano" },
-          { label: "Ver todas las Camisas", href: "/catalogo/camisas?audiencia=hombre" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "polos",
-    label: "Polos Piqué",
-    subtitle: "Polo Clásico Mark en 100% Algodón Peruano",
-    allHref: "/catalogo/polos?audiencia=hombre",
-    banner: {
-      tag: "ALGODÓN PERUANO",
-      title: "Polo Piqué Clásico Mark con Cuello Camisero en 10 Colores",
-      href: "/catalogo/polos?audiencia=hombre",
-      image: {
-        src: "/catalogo-colt/01-estudio-azul.png",
-        alt: "Polo Mark American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "p-lineas",
-        title: "Polos Clásicos Hombre",
-        badge: "10 Colores",
-        items: [
-          { label: "Polo Piqué Clásico Mark — Classic Fit (Tallas S a XXL)", href: "/producto/polo-pique-clasico-mark", tag: "S/ 89.00" },
-          { label: "Ver categoría Polos", href: "/catalogo/polos?audiencia=hombre" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "mayorista",
-    label: "Venta por Mayor",
-    subtitle: "Canal Corporativo B2B y Distribuidores",
-    allHref: "/mayorista",
-    banner: {
-      tag: "PRECIOS DE FÁBRICA",
-      title: "Abastece tu Tienda o Boutique desde 12 Unidades",
-      href: "/mayorista/cotizaciones",
-      image: {
-        src: "/catalogo-colt/02-campana-bolsas.png",
-        alt: "Ventas por Mayor American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "may-opciones",
-        title: "Opciones de Compra por Mayor B2B",
-        badge: "Empresas",
-        items: [
-          { label: "Información y Escalas Mayoristas", href: "/mayorista", tag: "Beneficios" },
-          { label: "Armar Cotización por Volumen", href: "/mayorista/cotizaciones", tag: "Cotizador" },
-          { label: "Registrar mi Empresa (RUC 20 / 10)", href: "/mayorista/registro", tag: "Gratis" },
-          { label: "Ver Catálogo con Tarifas por Mayor", href: "/catalogo?mayorista=1" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "sale",
-    label: "Ofertas 3x2 / -50%",
-    subtitle: "Prendas del Catálogo con Descuento Activo",
-    allHref: "/catalogo?novedades=1&oferta=50",
-    highlight: true,
-    banner: {
-      tag: "PROMOCIÓN ACTIVA",
-      title: "Promoción 3x2 y hasta 50% de Descuento en el Catálogo",
-      href: "/catalogo?novedades=1&oferta=50",
-      image: {
-        src: "/catalogo-colt/16-portada-jeans-2026.png",
-        alt: "Ofertas American Colt",
-      },
-    },
-    groups: [
-      {
-        id: "sale-opciones",
-        title: "Ver Productos con Descuento",
-        badge: "Oferta",
-        items: [
-          { label: "Todas las Prendas en Oferta (3x2 / -50%)", href: "/catalogo?novedades=1&oferta=50", tag: "-50% OFF" },
-          { label: "Ofertas en Jeans Denim", href: "/catalogo/denim?oferta=50", tag: "Denim" },
-          { label: "Ofertas en Pantalones y Bermudas Drill", href: "/catalogo/pantalones?oferta=50", tag: "Drill" },
-          { label: "Ofertas en Camisas y Polos", href: "/catalogo/camisas?oferta=50" },
-        ],
-      },
-    ],
-  },
-];
 
 export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
   const [drawerCategoryId, setDrawerCategoryId] = useState<string | null>(null);
@@ -427,27 +183,30 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
             aria-hidden
             className="animate-silk-ribbon pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.58)_0%,transparent_70%)]"
           />
-          <div className="shell relative z-10 flex min-h-8 items-center justify-center py-1 text-center">
+          <div className="shell relative z-10 flex min-h-7 items-center justify-center py-1 text-center sm:h-8 sm:py-0.5">
             {activeTopPromo ? (
               <Link
                 href={topPromoHref}
-                className="inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-0.5 text-[0.68rem] font-black tracking-wide text-[#450A0A] hover:opacity-90 sm:text-xs"
+                className="flex min-w-0 max-w-full items-center justify-center gap-1.5 text-[0.53rem] font-black leading-[1.15] tracking-tight text-[#450A0A] hover:opacity-90 sm:gap-2.5 sm:text-xs"
               >
-                <FaTag className="size-3 shrink-0 text-[#B91C1C]" aria-hidden />
-                <span>{activeTopPromo.cleanDescription}</span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-gradient-to-r from-[#B91C1C] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-105">
-                  <FaPercent className="size-2.5 text-[#FEF08A]" aria-hidden />
-                  <span>OFERTA -{activeTopPromo.discountPercent}% · VER PRENDAS</span>
+                <FaTag className="size-2.5 shrink-0 text-[#B91C1C] sm:size-3" aria-hidden />
+                <span className="line-clamp-2 text-left sm:truncate sm:whitespace-nowrap sm:text-center">
+                  {activeTopPromo.cleanDescription}
+                </span>
+                <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-white/70 bg-gradient-to-r from-[#B91C1C] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.5rem] font-black uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-105 sm:px-2.5 sm:text-[0.6rem]">
+                  <FaPercent className="size-2 text-[#FEF08A] sm:size-2.5" aria-hidden />
+                  <span className="sm:hidden">-{activeTopPromo.discountPercent}% VER</span>
+                  <span className="hidden sm:inline">OFERTA -{activeTopPromo.discountPercent}% · VER PRENDAS</span>
                 </span>
               </Link>
             ) : (
               <Link
                 href="/catalogo"
-                className="inline-flex flex-wrap items-center justify-center gap-x-2 text-[0.68rem] font-black tracking-wide text-[#450A0A] hover:underline sm:text-xs"
+                className="flex min-w-0 max-w-full items-center justify-center gap-1.5 text-[0.53rem] font-black leading-[1.15] tracking-tight text-[#450A0A] hover:underline sm:gap-2 sm:text-xs"
               >
-                <FaTag className="size-3 shrink-0 text-[#B91C1C]" aria-hidden />
-                <span>
-                  AMERICAN COLT JEANS™ · Confección Peruana de Alta Calidad · Envíos a Lima y todo el Perú
+                <FaTag className="size-2.5 shrink-0 text-[#B91C1C] sm:size-3" aria-hidden />
+                <span className="line-clamp-2 text-center sm:truncate sm:whitespace-nowrap">
+                  AMERICAN COLT JEANS™ · Confección Peruana · Envíos a todo el Perú
                 </span>
               </Link>
             )}
@@ -518,12 +277,12 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
             </svg>
           </div>
 
-          <div className="shell relative z-10 flex h-16 items-center justify-between gap-3 lg:h-[4.5rem] lg:gap-6">
+          <div className="shell relative z-10 flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-3 lg:h-[4.5rem] lg:gap-6">
             {/* Izquierda: Menú móvil + Logo Oficial en su Color Original */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               <button
                 type="button"
-                className="flex size-10 items-center justify-center rounded-full text-white hover:bg-white/15 lg:hidden"
+                className="flex size-9 items-center justify-center rounded-full text-white hover:bg-white/15 sm:size-10 lg:hidden"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Abrir menú"
                 aria-expanded={mobileOpen}
@@ -536,7 +295,12 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 aria-label="American Colt JEANS — Inicio"
                 className="flex items-center transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-none"
               >
-                <Logo size="md" />
+                <span className="sm:hidden">
+                  <Logo size="sm" />
+                </span>
+                <span className="hidden sm:inline-flex">
+                  <Logo size="md" />
+                </span>
               </Link>
             </div>
 
@@ -598,7 +362,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 href="/seguir-pedido"
                 aria-label="Seguir mi pedido"
                 title="Seguir mi pedido"
-                className="flex lg:hidden size-10 items-center justify-center rounded-full text-amber-300 transition-colors hover:bg-white/15"
+                className="flex lg:hidden size-9 items-center justify-center rounded-full text-amber-300 transition-colors hover:bg-white/15"
               >
                 <FaTruckFast className="size-4" aria-hidden />
               </Link>
@@ -608,7 +372,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 aria-label="Buscar"
                 title="Buscar"
                 onClick={() => setSearchOpen(true)}
-                className="flex md:hidden size-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15"
+                className="flex md:hidden size-9 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15"
               >
                 <FaMagnifyingGlass className="size-4" aria-hidden />
               </button>
@@ -618,7 +382,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 data-testid="header-favorites-link"
                 aria-label={`Favoritos, ${favoritesCount} ${favoritesCount === 1 ? "prenda" : "prendas"}`}
                 title={`Favoritos (${favoritesCount})`}
-                className="flex size-10 sm:size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
+                className="flex size-9 sm:size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
               >
                 <span className="relative">
                   <FaHeart
@@ -638,7 +402,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 href="/cuenta"
                 aria-label="Mi cuenta"
                 title="Mi cuenta"
-                className="flex size-10 sm:size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
+                className="flex size-9 sm:size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
               >
                 <FaUser className="size-4 sm:size-5" aria-hidden />
               </Link>
@@ -648,7 +412,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
                 aria-label={`Bolsa de compras, ${cart.totalUnits} ${cart.totalUnits === 1 ? "producto" : "productos"}`}
                 title="Bolsa de compras"
                 onClick={openDrawer}
-                className="flex size-10 sm:size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
+                className="hidden lg:flex size-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:bg-white/15 active:scale-95"
               >
                 <span className="relative">
                   <FaBagShopping className="size-4 sm:size-5" aria-hidden />
@@ -957,7 +721,7 @@ export function SiteHeader({ promotions = [] }: SiteHeaderProps) {
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <MobileTabBar onSearch={() => setSearchOpen(true)} />
+      <MobileTabBar />
     </>
   );
 }

@@ -20,7 +20,7 @@ export function CatalogGrid({ products }: CatalogGridProps) {
   return (
     <motion.ul
       layout
-      className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:grid-cols-3 lg:gap-x-6 xl:grid-cols-4"
+      className="grid grid-cols-2 gap-x-2.5 gap-y-5 sm:gap-x-5 sm:gap-y-10 md:grid-cols-3 lg:gap-x-6 xl:grid-cols-4"
     >
       <AnimatePresence mode="popLayout" initial={false}>
         {products.map((product, i) => (

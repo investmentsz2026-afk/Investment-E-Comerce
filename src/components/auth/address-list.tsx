@@ -63,21 +63,21 @@ export function AddressList({ addresses }: { addresses: Address[] }) {
   };
 
   return (
-    <div className="space-y-6 text-slate-900">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-4">
+    <div className="space-y-4 text-slate-900 sm:space-y-6">
+      <div className="flex flex-col justify-between gap-3 border-b border-slate-200/80 pb-3.5 sm:flex-row sm:items-center sm:gap-4 sm:pb-4">
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900">
+          <h2 className="text-lg font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
             Libreta de Direcciones
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
-            Administra los domicilios de entrega para tus envíos por Olva Courier, Shalom o recojo comercial.
+          <p className="mt-0.5 text-[0.7rem] text-slate-500 sm:mt-1 sm:text-xs">
+            Administra los domicilios para envíos o recojo comercial.
           </p>
         </div>
         {!showAddForm && (
           <button
             type="button"
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#0055FF] hover:bg-blue-700 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-colors cursor-pointer"
+            className="inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-xl bg-[#0055FF] px-4 py-2 text-[0.68rem] font-bold uppercase tracking-wider text-white shadow-xs transition-colors hover:bg-blue-700 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-xs"
           >
             <FaPlus className="size-3" aria-hidden />
             <span>Nueva Dirección</span>
@@ -88,7 +88,7 @@ export function AddressList({ addresses }: { addresses: Address[] }) {
       {showAddForm && (
         <form
           action={formAction}
-          className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-5 shadow-sm"
+          className="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:space-y-5 sm:p-8"
         >
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">

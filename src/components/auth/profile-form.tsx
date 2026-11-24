@@ -96,14 +96,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       {/* Formulario de actualización de datos */}
       <form
         action={formAction}
-        className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-6 shadow-sm"
+        className="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:space-y-6 sm:p-8"
       >
-        <div className="border-b border-slate-100 pb-4">
-          <h2 className="text-lg font-black uppercase tracking-tight text-slate-900 sm:text-xl">
+        <div className="border-b border-slate-100 pb-3 sm:pb-4">
+          <h2 className="text-base font-black uppercase tracking-tight text-slate-900 sm:text-xl">
             Información Personal y Contacto
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
-            Actualiza tus nombres y celular para despachos con Olva Courier y Shalom a todo el Perú.
+          <p className="mt-0.5 text-[0.7rem] text-slate-500 sm:mt-1 sm:text-xs">
+            Actualiza tus nombres y celular para despachos a todo el Perú.
           </p>
         </div>
 

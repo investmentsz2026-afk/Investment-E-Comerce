@@ -78,22 +78,22 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.45, ease: ease.luxe }}
-            className="relative z-10 flex h-full w-full max-w-md flex-col bg-[#FAF8F5] text-neutral-900 shadow-2xl sm:max-w-lg"
+            className="relative z-10 flex h-full w-[92%] max-w-md flex-col overflow-hidden rounded-l-2xl bg-[#FAF8F5] text-neutral-900 shadow-2xl sm:w-full sm:max-w-lg sm:rounded-l-none"
           >
             {/* Cabecera Superior: Ícono bolsa + "Tu bolsa" (serif) + "X PRENDAS" + Botón circular ✕ */}
-            <div className="flex items-center justify-between border-b border-neutral-200/80 bg-[#FAF8F5] px-5 py-4 sm:px-6 sm:py-5">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-neutral-100/80 text-neutral-800">
-                  <ShoppingBag className="size-5 stroke-[1.8]" aria-hidden />
+            <div className="flex items-center justify-between border-b border-neutral-200/80 bg-[#FAF8F5] px-4 py-3 sm:px-6 sm:py-5">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="flex size-8 items-center justify-center rounded-xl bg-neutral-100/80 text-neutral-800 sm:size-9">
+                  <ShoppingBag className="size-4 stroke-[1.8] sm:size-5" aria-hidden />
                 </div>
                 <div>
                   <h2
                     id="cart-drawer-title"
-                    className="font-display font-serif text-2xl font-bold tracking-tight text-[#1A1A1A]"
+                    className="font-display font-serif text-xl font-bold tracking-tight text-[#1A1A1A] sm:text-2xl"
                   >
                     Tu bolsa
                   </h2>
-                  <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.16em] text-neutral-500">
+                  <p className="font-mono text-[0.58rem] font-bold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.65rem] sm:tracking-[0.16em]">
                     {itemCountText}
                   </p>
                 </div>
@@ -103,9 +103,9 @@ export function CartDrawer() {
                 type="button"
                 onClick={closeDrawer}
                 aria-label="Cerrar bolsa de compras"
-                className="flex size-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 shadow-xs transition-colors hover:border-black hover:text-black"
+                className="flex size-8 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 shadow-xs transition-colors hover:border-black hover:text-black sm:size-9"
               >
-                <X className="size-4 stroke-[2]" aria-hidden />
+                <X className="size-3.5 stroke-[2] sm:size-4" aria-hidden />
               </button>
             </div>
 
@@ -225,7 +225,7 @@ export function CartDrawer() {
             ) : (
               /* ESTADO LLENO CON PRENDAS */
               <>
-                <div className="flex-1 space-y-3.5 overflow-y-auto px-5 py-4 sm:px-6">
+                <div className="flex-1 space-y-2.5 overflow-y-auto px-3.5 py-3 sm:space-y-3.5 sm:px-6 sm:py-4">
                   {cart.items.map((item) => {
                     const isUpdating = pendingVariantId === item.variantId;
                     const isEditing = editingVariantId === item.variantId;
@@ -234,14 +234,14 @@ export function CartDrawer() {
                     return (
                       <article
                         key={item.id}
-                        className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs transition-shadow hover:shadow-sm"
+                        className="rounded-xl border border-neutral-200/80 bg-white p-3 shadow-xs transition-shadow hover:shadow-sm sm:rounded-2xl sm:p-4"
                       >
-                        <div className="flex gap-4">
+                        <div className="flex gap-3 sm:gap-4">
                           {/* Miniatura vertical */}
                           <Link
                             href={`/producto/${item.productSlug}`}
                             onClick={closeDrawer}
-                            className="relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-xl border border-neutral-100 bg-neutral-100"
+                            className="relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 sm:w-20 sm:rounded-xl"
                           >
                             <Image
                               src={item.imageUrl}
@@ -391,9 +391,9 @@ export function CartDrawer() {
                 </div>
 
                 {/* Pie con Resumen y Acciones (Subtotal, Continuar al pago, Ver bolsa) */}
-                <div className="border-t border-neutral-200/80 bg-[#FAF8F5] p-5 space-y-3.5 sm:px-6">
+                <div className="pb-safe space-y-2.5 border-t border-neutral-200/80 bg-[#FAF8F5] p-3.5 sm:space-y-3.5 sm:px-6 sm:py-5">
                   {cart.wholesaleSavingsAmount > 0 && (
-                    <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-3 py-1.5 text-xs text-emerald-900">
+                    <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-3 py-1 text-[0.68rem] text-emerald-900 sm:py-1.5 sm:text-xs">
                       <span>Descuento B2B aplicado</span>
                       <span className="font-mono font-bold text-emerald-700">
                         −{formatPEN(cart.wholesaleSavingsAmount)}
@@ -403,23 +403,23 @@ export function CartDrawer() {
 
                   {/* Fila de Subtotal */}
                   <div className="flex items-baseline justify-between">
-                    <span className="text-base font-bold text-[#1A1A1A]">Subtotal</span>
-                    <span className="font-mono text-base font-bold tabular-nums text-[#1A1A1A]">
+                    <span className="text-sm font-bold text-[#1A1A1A] sm:text-base">Subtotal</span>
+                    <span className="font-mono text-sm font-bold tabular-nums text-[#1A1A1A] sm:text-base">
                       {formatPEN(cart.estimatedTotalAmount)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-[0.68rem] text-neutral-500 sm:text-xs">
                     El envío se calcula al continuar.
                   </p>
 
                   {/* Botones de Acción */}
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-1.5 pt-0.5 sm:space-y-2 sm:pt-1">
                     {!cart.hasStockIssues && (
                       <Link
                         href="/checkout"
                         onClick={closeDrawer}
-                        className="bg-flow flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] text-xs font-bold text-white shadow-md shadow-blue-900/20 transition-all active:scale-[0.99]"
+                        className="bg-flow flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-[0.7rem] font-bold text-white shadow-md shadow-blue-900/20 transition-all active:scale-[0.99] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] sm:h-12 sm:text-xs"
                       >
                         <span>Continuar al pago</span>
                         <ArrowRight className="size-3.5" aria-hidden />
@@ -429,7 +429,7 @@ export function CartDrawer() {
                     <Link
                       href="/carrito"
                       onClick={closeDrawer}
-                      className="flex h-11 w-full items-center justify-center rounded-xl border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-bold text-neutral-800 shadow-2xs transition-colors"
+                      className="flex h-9 w-full items-center justify-center rounded-xl border border-neutral-300 bg-white text-[0.7rem] font-bold text-neutral-800 shadow-2xs transition-colors hover:bg-neutral-50 sm:h-11 sm:text-xs"
                     >
                       <span>Ver bolsa completa</span>
                     </Link>

@@ -256,13 +256,13 @@ export function CartPageView() {
                 <article
                   key={item.id}
                   data-testid={`cart-line-${item.sku}`}
-                  className="py-6 sm:py-8"
+                  className="py-4 sm:py-8"
                 >
-                  <div className="flex flex-col gap-5 sm:flex-row">
+                  <div className="flex flex-row gap-3 sm:gap-5">
                     {/* Imagen */}
                     <Link
                       href={`/producto/${item.productSlug}`}
-                      className="relative aspect-[3/4] w-28 shrink-0 overflow-hidden bg-taupe-100 sm:w-32"
+                      className="relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-xl bg-taupe-100 sm:w-32 sm:rounded-none"
                     >
                       <Image
                         src={item.imageUrl}
@@ -276,23 +276,23 @@ export function CartPageView() {
 
                     {/* Detalles */}
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div>
-                          <p className="eyebrow text-[0.6rem] text-taupe-500">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="eyebrow truncate text-[0.54rem] text-taupe-500 sm:text-[0.6rem]">
                             <Link href={`/catalogo/${item.categorySlug}`} className="hover:text-ink">
                               {item.categoryName}
                             </Link>
                           </p>
-                          <h3 className="mt-1 font-display text-xl text-ink">
+                          <h3 className="mt-0.5 truncate font-display text-base text-ink sm:mt-1 sm:text-xl">
                             <Link href={`/producto/${item.productSlug}`} className="hover:underline">
                               {item.productName}
                             </Link>
                           </h3>
-                          <p className="mt-1 font-mono text-xs text-taupe-500">
+                          <p className="mt-0.5 truncate font-mono text-[0.62rem] text-taupe-500 sm:mt-1 sm:text-xs">
                             SKU: <span className="text-ink">{item.sku}</span>
                             {item.isDemo && (
-                              <span className="ml-2 inline-flex items-center border border-amber-400/50 bg-amber-50 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-amber-900">
-                                Demo Catálogo
+                              <span className="ml-1.5 inline-flex items-center border border-amber-400/50 bg-amber-50 px-1.5 py-0.5 font-mono text-[0.54rem] uppercase tracking-wider text-amber-900 sm:ml-2 sm:text-[0.6rem]">
+                                Demo
                               </span>
                             )}
                           </p>
@@ -528,8 +528,8 @@ export function CartPageView() {
 
         {/* Columna derecha: Resumen comercial */}
         <aside className="lg:col-span-4">
-          <div className="sticky top-28 border border-ink/15 bg-[#fbfaf7] p-6 sm:p-8">
-            <h2 className="font-display text-2xl text-ink">Resumen Estimado</h2>
+          <div className="sticky top-28 rounded-2xl border border-ink/15 bg-[#fbfaf7] p-4 sm:rounded-none sm:p-8">
+            <h2 className="font-display text-xl text-ink sm:text-2xl">Resumen Estimado</h2>
             <p className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-taupe-500">
               Moneda: Sol Peruano (PEN)
             </p>

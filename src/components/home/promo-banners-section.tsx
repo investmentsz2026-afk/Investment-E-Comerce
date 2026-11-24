@@ -126,21 +126,21 @@ export function PromoBannersSection({
                   <span
                     className={
                       cat.accent === "blue"
-                        ? "bg-flow absolute left-3 top-3 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-wider text-white shadow-md"
-                        : "bg-flow absolute left-3 top-3 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-wider text-white shadow-md"
+                        ? "bg-flow absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-2 py-0.5 font-mono text-[0.5rem] font-extrabold uppercase tracking-wider text-white shadow-md sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-[0.6rem]"
+                        : "bg-flow absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.5rem] font-extrabold uppercase tracking-wider text-white shadow-md sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-[0.6rem]"
                     }
                   >
                     {cat.badge}
                   </span>
 
-                  <div className="absolute inset-x-0 bottom-0 p-4 text-left text-white">
-                    <h3 className="font-sans text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
+                  <div className="absolute inset-x-0 bottom-0 p-2.5 text-left text-white sm:p-4">
+                    <h3 className="font-sans text-xs font-black uppercase leading-tight tracking-tight sm:text-xl">
                       {cat.title}
                     </h3>
-                    <p className="mt-0.5 text-xs text-blue-100">{cat.subtitle}</p>
-                    <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-[0.68rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-md transition-all duration-200 group-hover:translate-x-1 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-white">
+                    <p className="mt-0.5 hidden text-xs text-blue-100 sm:block">{cat.subtitle}</p>
+                    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[0.54rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-md transition-all duration-200 group-hover:translate-x-1 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-white sm:mt-3 sm:gap-1.5 sm:px-4 sm:py-1.5 sm:text-[0.68rem]">
                       <span>Ver Prendas</span>
-                      <FaArrowRight className="size-3" aria-hidden />
+                      <FaArrowRight className="size-2.5 sm:size-3" aria-hidden />
                     </span>
                   </div>
                 </Link>
@@ -199,19 +199,21 @@ export function PromoBannersSection({
           </div>
         )}
 
-        {/* 3. Mosaico de 3 Banners Interactivos Redondeados (`rounded-3xl`) con Degradado Moderno */}
-        <div className="grid gap-5 md:grid-cols-3">
-          {CAMPAIGN_BANNERS.map((banner) => (
+        {/* 3. Mosaico de Banners: 2 columnas en móvil, 3 columnas en desktop */}
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-5 md:grid-cols-3">
+          {CAMPAIGN_BANNERS.map((banner, idx) => (
             <Link
               key={banner.id}
               href={banner.href}
-              className="group relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/80 bg-[#0F172A] p-6 text-white shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:min-h-[310px]"
+              className={`group relative flex min-h-[195px] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-[#0F172A] p-3 text-white shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:min-h-[310px] sm:rounded-3xl sm:p-6 ${
+                idx === 2 ? "col-span-2 md:col-span-1" : ""
+              }`}
             >
               <Image
                 src={banner.imageSrc}
                 alt={banner.title}
                 fill
-                sizes="(min-width: 768px) 33vw, 100vw"
+                sizes="(min-width: 768px) 33vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div
@@ -223,26 +225,26 @@ export function PromoBannersSection({
                 }
               />
 
-              <div className="relative z-10 flex items-center justify-between gap-2">
-                <span className="rounded-full bg-white/95 px-3 py-1 font-mono text-[0.6rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-xs">
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-1.5">
+                <span className="rounded-full bg-white/95 px-2 py-0.5 font-mono text-[0.48rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-xs sm:px-3 sm:py-1 sm:text-[0.6rem]">
                   {banner.tag}
                 </span>
-                <span className="bg-flow inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.65rem] font-black uppercase text-white shadow-md">
-                  <FaTag className="size-3 text-white" aria-hidden />
+                <span className="bg-flow inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.48rem] font-black uppercase text-white shadow-md sm:px-3 sm:py-1 sm:text-[0.65rem]">
+                  <FaTag className="size-2 text-white sm:size-3" aria-hidden />
                   {banner.discount}
                 </span>
               </div>
 
-              <div className="relative z-10 mt-auto pt-8">
-                <h3 className="font-sans text-xl font-black uppercase leading-tight tracking-tight text-white sm:text-2xl">
+              <div className="relative z-10 mt-auto pt-4 sm:pt-8">
+                <h3 className="font-sans text-xs font-black uppercase leading-tight tracking-tight text-white sm:text-2xl">
                   {banner.title}
                 </h3>
-                <p className="mt-1.5 text-xs text-blue-100 line-clamp-2">
+                <p className="mt-1 hidden text-xs text-blue-100 line-clamp-2 sm:block">
                   {banner.subtitle}
                 </p>
-                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.7rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-md transition-all duration-200 group-hover:translate-x-1 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-white">
+                <span className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[0.55rem] font-black uppercase tracking-wider text-[#1E40AF] shadow-md transition-all duration-200 group-hover:translate-x-1 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-white sm:mt-4 sm:gap-2 sm:px-4 sm:py-2 sm:text-[0.7rem]">
                   <span>{banner.cta}</span>
-                  <FaArrowRight className="size-3" aria-hidden />
+                  <FaArrowRight className="size-2.5 sm:size-3" aria-hidden />
                 </span>
               </div>
             </Link>

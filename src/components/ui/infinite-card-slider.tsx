@@ -131,9 +131,9 @@ export function InfiniteCardSlider<T>({
         type="button"
         onClick={stepPrev}
         aria-label="Anterior"
-        className="absolute -left-2 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-2xl border border-blue-200 bg-paper text-[#0055FF] shadow-lg transition-all duration-200 hover:scale-110 hover:bg-[#0055FF] hover:text-paper sm:-left-4 sm:size-11"
+        className="absolute -left-1.5 top-1/2 z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-blue-200 bg-paper text-[#0055FF] shadow-lg transition-all duration-200 hover:scale-110 hover:bg-[#0055FF] hover:text-paper sm:-left-4 sm:size-11 sm:rounded-2xl"
       >
-        <ChevronLeft className="size-5 sm:size-6 stroke-[2.5]" aria-hidden />
+        <ChevronLeft className="size-4 sm:size-6 stroke-[2.5]" aria-hidden />
       </button>
 
       {/* Botón Lateral Derecho (>) reluciente */}
@@ -141,9 +141,9 @@ export function InfiniteCardSlider<T>({
         type="button"
         onClick={stepNext}
         aria-label="Siguiente"
-        className="absolute -right-2 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-2xl border border-blue-200 bg-paper text-[#0055FF] shadow-lg transition-all duration-200 hover:scale-110 hover:bg-[#0055FF] hover:text-paper sm:-right-4 sm:size-11"
+        className="absolute -right-1.5 top-1/2 z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-blue-200 bg-paper text-[#0055FF] shadow-lg transition-all duration-200 hover:scale-110 hover:bg-[#0055FF] hover:text-paper sm:-right-4 sm:size-11 sm:rounded-2xl"
       >
-        <ChevronRight className="size-5 sm:size-6 stroke-[2.5]" aria-hidden />
+        <ChevronRight className="size-4 sm:size-6 stroke-[2.5]" aria-hidden />
       </button>
 
       {/* Ventana del Carrusel */}

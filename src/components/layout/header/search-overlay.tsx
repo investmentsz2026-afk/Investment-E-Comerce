@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Search, X } from "lucide-react";
 import { trendingSearches } from "@/config/navigation";
 import { useEscapeKey, useLockBodyScroll } from "@/hooks/use-overlay";
-import { ease } from "@/lib/motion";
 
 interface SearchOverlayProps {
   open: boolean;
@@ -53,10 +52,10 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[70]"
+      className="fixed inset-0 z-[70] flex items-start justify-center px-2.5 pt-2.5 sm:px-4 sm:pt-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Buscar en INVESTMENTS"
+      aria-label="Buscar en American Colt JEANS"
       initial="hidden"
       animate="show"
       exit="hidden"
@@ -65,73 +64,89 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
         type="button"
         aria-label="Cerrar búsqueda"
         onClick={onClose}
-        className="absolute inset-0 h-full w-full cursor-default bg-ink/45"
+        className="fixed inset-0 h-full w-full cursor-default bg-slate-950/45 backdrop-blur-xs"
         variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.25 }}
       />
       <motion.div
-        className="relative bg-paper pb-10 pt-6 shadow-[0_40px_80px_-40px_rgba(13,12,11,0.5)] lg:pb-14 lg:pt-8"
-        variants={{ hidden: { y: "-100%" }, show: { y: "0%" } }}
-        transition={{ duration: 0.75, ease: ease.luxe }}
+        className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 shadow-[0_24px_54px_-16px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:rounded-3xl sm:p-6"
+        variants={{
+          hidden: { opacity: 0, y: -26, scale: 0.96 },
+          show: { opacity: 1, y: 0, scale: 1 },
+        }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="shell">
-          <div className="flex items-center justify-between">
-            <p className="eyebrow text-taupe-500">Buscar</p>
+        <div className="flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-widest text-[#DC2626] sm:text-[0.65rem]">
+            <Search className="size-3" aria-hidden />
+            Buscador Rápido
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex size-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:border-[#DC2626] hover:bg-red-50 hover:text-[#DC2626] sm:size-9"
+            aria-label="Cerrar búsqueda"
+          >
+            <X className="size-4" aria-hidden />
+          </button>
+        </div>
+
+        <form
+          onSubmit={submit}
+          role="search"
+          className="mt-2.5 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-1.5 shadow-inner focus-within:border-[#2563EB] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#2563EB]/15 sm:mt-4 sm:p-2"
+        >
+          <Search className="ml-2 size-4 shrink-0 text-slate-400 sm:ml-2.5 sm:size-5" aria-hidden />
+          <label htmlFor="site-search" className="sr-only">
+            ¿Qué prenda buscas?
+          </label>
+          <input
+            id="site-search"
+            ref={inputRef}
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ej: King 767, Camisa Zair, Comfort..."
+            autoComplete="off"
+            className="min-w-0 flex-1 bg-transparent py-1 font-sans text-xs font-semibold text-slate-900 outline-none placeholder:text-slate-400 sm:text-sm"
+          />
+          {query ? (
             <button
               type="button"
-              onClick={onClose}
-              className="flex size-11 items-center justify-center rounded-full border border-ink/10 text-ink transition-colors hover:border-ink"
-              aria-label="Cerrar búsqueda"
+              onClick={() => setQuery("")}
+              aria-label="Limpiar texto"
+              className="flex size-7 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-slate-700"
             >
-              <X className="size-4" aria-hidden />
+              <X className="size-3.5" aria-hidden />
             </button>
-          </div>
+          ) : null}
+          <button
+            type="submit"
+            className="bg-flow flex h-8 shrink-0 items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 text-[0.65rem] font-extrabold uppercase tracking-wider text-white shadow-sm transition-transform hover:scale-[1.03] sm:h-9 sm:px-4 sm:text-xs"
+            aria-label="Buscar"
+          >
+            <span className="hidden sm:inline">Buscar</span>
+            <ArrowRight className="size-3.5" aria-hidden />
+          </button>
+        </form>
 
-          <form onSubmit={submit} role="search" className="mt-6 flex items-center gap-4 border-b border-ink/20 pb-4 focus-within:border-ink">
-            <Search className="size-6 shrink-0 text-taupe-500" aria-hidden />
-            <label htmlFor="site-search" className="sr-only">
-              ¿Qué estás buscando?
-            </label>
-            <input
-              id="site-search"
-              ref={inputRef}
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="¿Qué estás buscando?"
-              autoComplete="off"
-              className="min-w-0 flex-1 bg-transparent font-display text-display-sm text-ink outline-none placeholder:text-taupe-300 focus-visible:outline-none"
-            />
-            <button
-              type="submit"
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-ink text-paper transition-colors hover:bg-cochinilla"
-              aria-label="Buscar"
-            >
-              <ArrowRight className="size-4" aria-hidden />
-            </button>
-          </form>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <p className="eyebrow text-taupe-500">Búsquedas frecuentes</p>
-              <ul className="mt-4 flex flex-wrap gap-2">
-                {trendingSearches.map((term) => (
-                  <li key={term}>
-                    <button
-                      type="button"
-                      onClick={() => searchTerm(term)}
-                      className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/80 transition-colors hover:border-ink hover:text-ink"
-                    >
-                      {term}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <p className="text-xs leading-relaxed text-taupe-500 lg:col-span-4 lg:text-right">
-              Busca por nombre de prenda, categoría o material. Los resultados se muestran al instante.
-            </p>
-          </div>
+        <div className="mt-3 sm:mt-4">
+          <p className="font-mono text-[0.58rem] font-bold uppercase tracking-widest text-slate-400 sm:text-[0.64rem]">
+            Búsquedas frecuentes
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
+            {trendingSearches.map((term) => (
+              <li key={term}>
+                <button
+                  type="button"
+                  onClick={() => searchTerm(term)}
+                  className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.66rem] font-bold text-slate-700 transition-colors hover:border-[#DC2626] hover:bg-red-50 hover:text-[#DC2626] sm:px-3.5 sm:py-1.5 sm:text-xs"
+                >
+                  {term}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </motion.div>
     </motion.div>

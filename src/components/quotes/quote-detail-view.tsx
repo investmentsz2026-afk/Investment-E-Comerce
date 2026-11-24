@@ -58,38 +58,38 @@ export function QuoteDetailView({
   const statusMeta = getQuoteStatusMeta(quote.status);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-8">
       <div>
         <Link
           href={backHref}
-          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-xs transition-colors hover:border-slate-900 hover:text-slate-900"
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[0.64rem] font-bold uppercase tracking-wider text-slate-700 shadow-xs transition-colors hover:border-slate-900 hover:text-slate-900 sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
         >
-          <ArrowLeft className="size-3.5" aria-hidden />
-          Volver a mis cotizaciones B2B
+          <ArrowLeft className="size-3 sm:size-3.5" aria-hidden />
+          Volver a cotizaciones B2B
         </Link>
       </div>
 
       {/* Cabecera moderna del expediente */}
-      <header className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-start">
+      <header className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start lg:gap-6">
           <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 font-mono text-xs font-extrabold uppercase tracking-wider text-[#EF233C]">
-                <Building2 className="size-3.5" aria-hidden />
-                Expediente {quote.quoteNumber}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 font-mono text-[0.62rem] font-extrabold uppercase tracking-wider text-[#EF233C] sm:px-3 sm:py-1 sm:text-xs">
+                <Building2 className="size-3 sm:size-3.5" aria-hidden />
+                {quote.quoteNumber}
               </span>
               <QuoteStatusBadge status={quote.status} />
             </div>
-            <h1 className="mt-3 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="mt-2 font-sans text-lg font-black uppercase tracking-tight text-slate-900 sm:mt-3 sm:text-3xl">
               {quote.companyLegalName}
             </h1>
-            <p className="mt-1 font-mono text-xs text-slate-500">
-              RUC: {quote.companyTaxId} · Contacto: {quote.contactName} ({quote.contactEmail})
+            <p className="mt-0.5 font-mono text-[0.66rem] text-slate-500 sm:mt-1 sm:text-xs">
+              RUC: {quote.companyTaxId} · {quote.contactName}
             </p>
-            <p className="mt-2.5 text-sm text-slate-600">{statusMeta.description}</p>
+            <p className="mt-1.5 text-xs text-slate-600 sm:mt-2.5 sm:text-sm">{statusMeta.description}</p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 text-xs sm:min-w-72">
+          <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 text-[0.68rem] sm:min-w-72 sm:rounded-2xl sm:p-5 sm:text-xs">
             <div className="flex items-center justify-between py-1">
               <span className="flex items-center gap-1.5 text-slate-500">
                 <Calendar className="size-3.5" aria-hidden />

@@ -65,7 +65,12 @@ export default async function WholesaleRegisterPage() {
             aria-label="American Colt JEANS™ — Portada"
             className="inline-block transition-transform hover:scale-105 active:scale-95"
           >
-            <Logo size="md" />
+            <span className="sm:hidden">
+              <Logo size="sm" />
+            </span>
+            <span className="hidden sm:inline-block">
+              <Logo size="md" />
+            </span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -88,27 +93,27 @@ export default async function WholesaleRegisterPage() {
       </header>
 
       {/* Contenido Principal en Split-Screen Studio */}
-      <main className="relative z-20 flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        <div className="mx-auto grid max-w-7xl items-start gap-10 lg:grid-cols-12 lg:gap-14">
+      <main className="relative z-20 flex-1 px-3 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-12">
+        <div className="mx-auto grid max-w-7xl items-start gap-5 sm:gap-10 lg:grid-cols-12 lg:gap-14">
           {/* LADO IZQUIERDO: Información B2B & Showroom */}
-          <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-600/15 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-[#EF233C]">
-              <span className="size-2 rounded-full bg-[#EF233C] animate-pulse" />
+          <div className="space-y-3 sm:space-y-6 lg:sticky lg:top-24 lg:col-span-4">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-600/15 px-3 py-1 text-[0.62rem] font-black uppercase tracking-widest text-[#EF233C] sm:gap-2 sm:px-4 sm:py-1.5 sm:text-xs">
+              <span className="size-1.5 rounded-full bg-[#EF233C] animate-pulse sm:size-2" />
               Canal Corporativo B2B
             </div>
 
-            <div className="space-y-3">
-              <h1 className="text-3xl font-black uppercase tracking-tight text-white leading-tight">
+            <div className="space-y-1.5 sm:space-y-3">
+              <h1 className="text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl">
                 Registro de Empresas y Mayoristas con RUC
               </h1>
-              <p className="text-xs sm:text-sm leading-relaxed text-slate-300">
-                Únete a la red comercial de American Colt JEANS™ en el Perú. Evaluamos solicitudes de tiendas boutique, distribuidores departamentales, confeccionistas y empresas para autorizar condiciones mayoristas exclusivas de fábrica.
+              <p className="text-xs leading-snug text-slate-300 sm:text-sm sm:leading-relaxed">
+                Evaluamos tiendas boutique, distribuidores y empresas para autorizar condiciones mayoristas exclusivas de fábrica.
               </p>
             </div>
 
             {/* Showcase Visual con Badges 3D */}
             <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-b from-slate-800/40 to-slate-900/80 p-2 shadow-2xl backdrop-blur-xl">
-              <div className="relative h-56 w-full overflow-hidden rounded-xl">
+              <div className="relative h-36 w-full overflow-hidden rounded-xl sm:h-56">
                 <Image
                   src="/catalogo-colt/hero-colt-1.png"
                   alt="Lotes Mayoristas American Colt JEANS 2026"
@@ -118,53 +123,53 @@ export default async function WholesaleRegisterPage() {
                   sizes="(min-width: 1024px) 380px, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#070D18] via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-slate-200">
-                  <span className="font-bold tracking-wide uppercase text-white">American Colt JEANS™ B2B</span>
-                  <span className="rounded bg-black/60 px-2 py-0.5 font-mono text-[0.65rem] text-slate-300">
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-[0.65rem] text-slate-200 sm:bottom-3 sm:left-3 sm:right-3 sm:text-xs">
+                  <span className="font-bold uppercase tracking-wide text-white">American Colt B2B</span>
+                  <span className="rounded bg-black/60 px-2 py-0.5 font-mono text-[0.58rem] text-slate-300 sm:text-[0.65rem]">
                     LIMA — GAMARRA
                   </span>
                 </div>
               </div>
 
-              {/* 4 Beneficios Mayoristas */}
-              <div className="mt-3.5 space-y-2">
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-red-500/20 text-[#EF233C]">
-                    <FaGem className="size-3.5" aria-hidden />
+              {/* 4 Beneficios Mayoristas (2 columnas en móvil) */}
+              <div className="mt-2.5 grid grid-cols-2 gap-1.5 sm:mt-3.5 sm:grid-cols-1 sm:gap-2">
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 sm:gap-3 sm:p-2.5">
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-red-500/20 text-[#EF233C] sm:size-7">
+                    <FaGem className="size-3 sm:size-3.5" aria-hidden />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Hasta -50% de Descuento</p>
-                    <p className="text-[0.65rem] text-slate-400">Precios por volumen en Denim y Drill.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-[#0055FF]">
-                    <FaBuilding className="size-3.5" aria-hidden />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Curvas de Tallas 28 al 46</p>
-                    <p className="text-[0.65rem] text-slate-400">Surtido de cortes Skinny, Slim y Clásico.</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.66rem] font-bold text-white sm:text-xs">Hasta -50% OFF</p>
+                    <p className="truncate text-[0.56rem] text-slate-400 sm:text-[0.65rem]">Denim y Drill.</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
-                    <FaFileInvoice className="size-3.5" aria-hidden />
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 sm:gap-3 sm:p-2.5">
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-[#0055FF] sm:size-7">
+                    <FaBuilding className="size-3 sm:size-3.5" aria-hidden />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Factura SUNAT con RUC 20 / 10</p>
-                    <p className="text-[0.65rem] text-slate-400">Emisión automática por cada orden.</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.66rem] font-bold text-white sm:text-xs">Tallas 28 al 46</p>
+                    <p className="truncate text-[0.56rem] text-slate-400 sm:text-[0.65rem]">Curvas completas.</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2.5">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400">
-                    <FaTruckFast className="size-3.5" aria-hidden />
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 sm:gap-3 sm:p-2.5">
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 sm:size-7">
+                    <FaFileInvoice className="size-3 sm:size-3.5" aria-hidden />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Envíos a Todo el Perú</p>
-                    <p className="text-[0.65rem] text-slate-400">Shalom, Olva Courier y Agencias.</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.66rem] font-bold text-white sm:text-xs">Factura SUNAT</p>
+                    <p className="truncate text-[0.56rem] text-slate-400 sm:text-[0.65rem]">RUC 20 / RUC 10.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 sm:gap-3 sm:p-2.5">
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 sm:size-7">
+                    <FaTruckFast className="size-3 sm:size-3.5" aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.66rem] font-bold text-white sm:text-xs">Todo el Perú</p>
+                    <p className="truncate text-[0.56rem] text-slate-400 sm:text-[0.65rem]">Shalom &amp; Olva.</p>
                   </div>
                 </div>
               </div>
@@ -173,31 +178,31 @@ export default async function WholesaleRegisterPage() {
 
           {/* LADO DERECHO: Tarjeta 3D con Formulario de Registro Empresarial */}
           <div className="lg:col-span-8">
-            <div className="relative w-full rounded-3xl border border-white/20 bg-[#0B1325]/90 p-6 sm:p-8 md:p-10 shadow-[0_25px_60px_-15px_rgba(239,35,60,0.2)] backdrop-blur-2xl">
+            <div className="relative w-full rounded-2xl border border-white/20 bg-[#0B1325]/90 p-4 shadow-[0_25px_60px_-15px_rgba(239,35,60,0.2)] backdrop-blur-2xl sm:rounded-3xl sm:p-8 md:p-10">
               {/* Reflejo luminoso en borde */}
-              <div className="pointer-events-none absolute -inset-[1px] rounded-3xl opacity-40 blur-xs bg-gradient-to-r from-[#EF233C] via-[#0055FF] to-[#D90429]" />
+              <div className="pointer-events-none absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#EF233C] via-[#0055FF] to-[#D90429] opacity-40 blur-xs sm:rounded-3xl" />
 
-              <div className="relative z-10 space-y-6">
+              <div className="relative z-10 space-y-4 sm:space-y-6">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-widest text-[#EF233C]">
-                      <FaBuilding className="size-3" aria-hidden />
-                      Formulario Oficial de Postulación B2B
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-widest text-[#EF233C] sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.68rem]">
+                      <FaBuilding className="size-2.5 sm:size-3" aria-hidden />
+                      Postulación B2B
                     </span>
 
                     <Link
                       href="/iniciar-sesion"
-                      className="text-xs font-bold text-slate-400 hover:text-white"
+                      className="text-[0.68rem] font-bold text-slate-400 hover:text-white sm:text-xs"
                     >
-                      ¿Ya tienes cuenta? Iniciar sesión →
+                      ¿Ya tienes cuenta? Entrar →
                     </Link>
                   </div>
 
-                  <h2 className="mt-3 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+                  <h2 className="mt-2 text-xl font-black uppercase tracking-tight text-white sm:mt-3 sm:text-3xl">
                     Solicitud de Cuenta Comercial
                   </h2>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-300">
-                    Ingresa los datos de tu empresa para que nuestro equipo comercial valide tu RUC y te habilite los precios por mayor.
+                  <p className="mt-1 text-xs text-slate-300 sm:text-sm">
+                    Ingresa los datos de tu empresa para validar tu RUC y habilitar precios por mayor.
                   </p>
                 </div>
 

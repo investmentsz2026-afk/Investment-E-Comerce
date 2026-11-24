@@ -14,7 +14,7 @@ export default async function PublicStoresPage() {
   const activeStores = await getActivePhysicalStores();
 
   return (
-    <div className="bg-gradient-to-b from-slate-50/60 to-white pt-[7rem] pb-16 lg:pt-[11.25rem]">
+    <div className="bg-gradient-to-b from-slate-50/60 to-white pt-[7rem] pb-20 sm:pt-[7.25rem] lg:pt-[10.75rem]">
       <div className="shell">
         <PublicStoresExplorer stores={activeStores} />
       </div>

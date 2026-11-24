@@ -379,7 +379,7 @@ function TiltQuickCard({ item }: { item: QuickCardItem }) {
         transform: `perspective(850px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
         transformStyle: "preserve-3d",
       }}
-      className="group/card relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-white/60 bg-white p-4 shadow-md transition-all duration-300 hover:border-[#0055FF] hover:shadow-xl"
+      className="group/card relative flex flex-col justify-between overflow-hidden rounded-xl border-2 border-white/60 bg-white p-3 shadow-md transition-all duration-300 hover:border-[#0055FF] hover:shadow-xl sm:rounded-2xl sm:p-4"
     >
       {/* Brillo dinámico 3D */}
       <div
@@ -391,32 +391,34 @@ function TiltQuickCard({ item }: { item: QuickCardItem }) {
       />
 
       <div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1">
           <span
             className={cn(
-              "flex size-11 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-md transition-transform duration-300 group-hover/card:scale-110",
+              "flex size-8 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md transition-transform duration-300 group-hover/card:scale-110 sm:size-11 sm:rounded-xl",
               item.colorClass,
             )}
           >
-            <item.icon className="size-5" aria-hidden />
+            <item.icon className="size-4 sm:size-5" aria-hidden />
           </span>
-          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider text-slate-700">
+          <span className="rounded-full bg-slate-100 px-1.5 py-0.5 font-mono text-[0.48rem] font-black uppercase tracking-wider text-slate-700 sm:px-2.5 sm:text-[0.58rem]">
             {item.badge}
           </span>
         </div>
 
-        <h3 className="mt-3 font-sans text-sm font-black uppercase text-slate-900 group-hover/card:text-[#0055FF] sm:text-base">
+        <h3 className="mt-2 font-sans text-xs font-black uppercase leading-tight text-slate-900 group-hover/card:text-[#0055FF] sm:mt-3 sm:text-base">
           {item.title}
         </h3>
-        <p className="mt-1 text-xs text-slate-600 leading-relaxed">{item.subtitle}</p>
+        <p className="mt-0.5 line-clamp-2 text-[0.65rem] leading-snug text-slate-600 sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+          {item.subtitle}
+        </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-        <span className="font-mono text-[0.68rem] font-bold uppercase text-[#0055FF] group-hover/card:underline">
-          Acceder ahora
+      <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 sm:mt-4 sm:pt-3">
+        <span className="font-mono text-[0.58rem] font-bold uppercase text-[#0055FF] group-hover/card:underline sm:text-[0.68rem]">
+          Acceder
         </span>
-        <span className="flex size-6 items-center justify-center rounded-full bg-blue-50 text-[#0055FF] transition-all group-hover/card:scale-110 group-hover/card:bg-[#0055FF] group-hover/card:text-white">
-          <FaArrowRight className="size-2.5" aria-hidden />
+        <span className="flex size-5 items-center justify-center rounded-full bg-blue-50 text-[#0055FF] transition-all group-hover/card:scale-110 group-hover/card:bg-[#0055FF] group-hover/card:text-white sm:size-6">
+          <FaArrowRight className="size-2 sm:size-2.5" aria-hidden />
         </span>
       </div>
     </a>
@@ -446,7 +448,7 @@ export function CustomerCareView() {
   const prevSlide = () => setSlideIdx((prev) => (prev - 1 + CARE_SLIDES.length) % CARE_SLIDES.length);
 
   return (
-    <div className="bg-white pt-[6rem] lg:pt-[9.25rem]">
+    <div className="bg-white pt-[6.75rem] sm:pt-[7rem] lg:pt-[10.25rem]">
       {/* 1. HERO CINÉTICO CON ANILLOS MÁGICOS WEBGL2 Y TÍTULO ELÁSTICO 3D (SIN IMAGEN DE FONDO) */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#040711] via-[#0A132B] to-[#0F172A] text-white">
         {/* ANILLOS MÁGICOS INTERACTIVOS DE FONDO EN COLORES DE LA MARCA (ROJO CARMESÍ + AZUL COBALTO) */}
@@ -497,28 +499,28 @@ export function CustomerCareView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 flex min-h-[450px] w-full items-center py-10 sm:min-h-[480px] lg:min-h-[500px] lg:py-12"
+            className="relative z-10 flex min-h-[290px] w-full items-center py-5 sm:min-h-[450px] sm:py-10 lg:min-h-[500px] lg:py-12"
           >
-            <div className="shell grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-8">
+            <div className="shell grid w-full items-center gap-4 px-7 sm:gap-8 sm:px-6 lg:grid-cols-12">
               {/* COLUMNA IZQUIERDA: TIPOGRAFÍA GRÁFICA MODERNA Y LIMPIA */}
-              <div className="space-y-4 lg:col-span-7">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3.5 py-1 font-mono text-[0.65rem] font-black uppercase tracking-widest text-white shadow-md shadow-red-600/25">
-                    <FaHeadset className="size-3 text-white" aria-hidden />
+              <div className="space-y-2.5 sm:space-y-4 lg:col-span-7">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <span className="bg-flow inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 font-mono text-[0.52rem] font-black uppercase tracking-wider text-white shadow-md shadow-red-600/25 sm:gap-1.5 sm:px-3.5 sm:py-1 sm:text-[0.65rem] sm:tracking-widest">
+                    <FaHeadset className="size-2.5 text-white sm:size-3" aria-hidden />
                     <span>{slide.badge}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/35 bg-sky-500/15 px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-sky-200 backdrop-blur-md">
-                    <FaCircleCheck className="size-3 text-emerald-400" aria-hidden />
+                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/35 bg-sky-500/15 px-2.5 py-0.5 font-mono text-[0.52rem] font-extrabold uppercase tracking-wider text-sky-200 backdrop-blur-md sm:gap-1.5 sm:px-3.5 sm:py-1 sm:text-[0.65rem] sm:tracking-widest">
+                    <FaCircleCheck className="size-2.5 text-emerald-400 sm:size-3" aria-hidden />
                     <span>{slide.promoPill}</span>
                   </span>
                 </div>
 
-                <p className="flex items-center gap-2 font-mono text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-amber-300">
-                  <Sparkles className="size-3.5" aria-hidden />
+                <p className="flex items-center gap-1.5 font-mono text-[0.56rem] font-extrabold uppercase tracking-[0.14em] text-amber-300 sm:gap-2 sm:text-[0.7rem] sm:tracking-[0.2em]">
+                  <Sparkles className="size-3 sm:size-3.5" aria-hidden />
                   <span>{slide.eyebrow}</span>
                 </p>
 
-                <div className="relative h-[108px] w-full max-w-[660px] sm:h-[132px] lg:h-[154px]">
+                <div className="relative h-[74px] w-full max-w-[660px] sm:h-[132px] lg:h-[154px]">
                   <h1 className="sr-only">
                     {slide.titleLine1} {slide.titleHighlight}
                   </h1>
@@ -542,61 +544,92 @@ export function CustomerCareView() {
                   />
                 </div>
 
-                <p className="max-w-xl text-sm font-medium leading-relaxed text-slate-300 sm:text-base">
+                <p className="max-w-xl text-xs font-medium leading-snug text-slate-300 sm:text-base sm:leading-relaxed">
                   {slide.description}
                 </p>
 
                 {/* Botones Principales */}
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:gap-3 sm:pt-1">
                   {slide.primaryCta.external ? (
                     <a
                       href={slide.primaryCta.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex h-11 items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-6 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-emerald-600/25 transition-all hover:scale-105 hover:shadow-xl sm:text-sm"
+                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-4 font-sans text-[0.64rem] font-black uppercase tracking-wider text-white shadow-lg shadow-emerald-600/25 transition-all hover:scale-105 hover:shadow-xl sm:h-11 sm:gap-2.5 sm:px-6 sm:text-sm"
                     >
-                      <SiWhatsapp className="size-4" aria-hidden />
+                      <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
                       <span>{slide.primaryCta.label}</span>
                     </a>
                   ) : (
                     <a
                       href={slide.primaryCta.href}
-                      className="bg-flow inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-6 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-red-600/25 transition-all hover:scale-105 sm:text-sm"
+                      className="bg-flow inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 font-sans text-[0.64rem] font-black uppercase tracking-wider text-white shadow-lg shadow-red-600/25 transition-all hover:scale-105 sm:h-11 sm:gap-2 sm:px-6 sm:text-sm"
                     >
                       <span>{slide.primaryCta.label}</span>
-                      <FaArrowRight className="size-3.5" aria-hidden />
+                      <FaArrowRight className="size-3 sm:size-3.5" aria-hidden />
                     </a>
                   )}
 
                   <Link
                     href={slide.secondaryCta.href}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 text-xs font-extrabold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:scale-105 hover:border-white/60 hover:bg-white hover:text-slate-950 sm:text-sm"
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 text-[0.64rem] font-extrabold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:scale-105 hover:border-white/60 hover:bg-white hover:text-slate-950 sm:h-11 sm:gap-2 sm:px-6 sm:text-sm"
                   >
-                    <PackageSearch className="size-4" aria-hidden />
+                    <PackageSearch className="size-3.5 sm:size-4" aria-hidden />
                     <span>{slide.secondaryCta.label}</span>
                   </Link>
                 </div>
 
                 {/* Franja gráfica de confianza */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-3 text-xs font-semibold text-slate-300">
-                  <span className="inline-flex items-center gap-2">
-                    <ShieldCheck className="size-4 text-emerald-400" aria-hidden />
-                    <span>Garantía Oficial 7 Días</span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1.5 text-[0.62rem] font-semibold text-slate-300 sm:gap-x-6 sm:gap-y-2 sm:pt-3 sm:text-xs">
+                  <span className="inline-flex items-center gap-1 sm:gap-2">
+                    <ShieldCheck className="size-3 text-emerald-400 sm:size-4" aria-hidden />
+                    <span>Garantía 7 Días</span>
                   </span>
-                  <span className="inline-flex items-center gap-2">
-                    <FaClock className="size-3.5 text-amber-300" aria-hidden />
-                    <span>Lun – Sáb · 9:00 a 20:00 hrs</span>
+                  <span className="inline-flex items-center gap-1 sm:gap-2">
+                    <FaClock className="size-3 text-amber-300 sm:size-3.5" aria-hidden />
+                    <span>Lun – Sáb · 9 a 20h</span>
                   </span>
-                  <span className="inline-flex items-center gap-2">
-                    <FaLocationDot className="size-3.5 text-sky-400" aria-hidden />
-                    <span>Lima &amp; 25 Regiones del Perú</span>
+                  <span className="inline-flex items-center gap-1 sm:gap-2">
+                    <FaLocationDot className="size-3 text-sky-400 sm:size-3.5" aria-hidden />
+                    <span>25 Regiones Perú</span>
                   </span>
                 </div>
               </div>
 
-              {/* COLUMNA DERECHA: NÚCLEO GRÁFICO DENTRO DE LOS ANILLOS ORBITALES */}
+              {/* COLUMNA DERECHA: RESUMEN COMPACTO EN MÓVIL + ANILLOS ORBITALES EN TABLET/DESKTOP */}
               <div className="relative flex items-center justify-center lg:col-span-5">
-                <div className="relative flex size-[290px] items-center justify-center sm:size-[330px]">
+                {/* Tarjeta resumen horizontal compacta en < sm */}
+                <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/20 bg-slate-900/75 px-3.5 py-2.5 shadow-lg backdrop-blur-md sm:hidden">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2563EB] to-[#EF233C] text-white">
+                      {slide.id === "whatsapp-soporte" ? (
+                        <Headphones className="size-4" aria-hidden />
+                      ) : slide.id === "envios-nacionales" ? (
+                        <Truck className="size-4" aria-hidden />
+                      ) : (
+                        <Ruler className="size-4" aria-hidden />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-sans text-xs font-black uppercase text-white">
+                        {slide.orbitalHub.title}
+                      </p>
+                      <p className="truncate font-mono text-[0.62rem] font-bold text-amber-300">
+                        {slide.orbitalHub.subtitle}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="font-sans text-base font-black text-white leading-none">
+                      {slide.orbitalHub.metricValue}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[0.5rem] font-bold uppercase text-sky-300">
+                      {slide.orbitalHub.metricLabel}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative hidden size-[330px] items-center justify-center sm:flex">
                   {/* Onda de pulso radar central */}
                   <motion.div
                     aria-hidden
@@ -680,29 +713,29 @@ export function CustomerCareView() {
           type="button"
           onClick={prevSlide}
           aria-label="Diapositiva anterior"
-          className="absolute left-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:size-10"
+          className="absolute left-1.5 top-1/2 z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:left-3 sm:size-10"
         >
-          <FaChevronLeft className="size-3.5" aria-hidden />
+          <FaChevronLeft className="size-2.5 sm:size-3.5" aria-hidden />
         </button>
         <button
           type="button"
           onClick={nextSlide}
           aria-label="Siguiente diapositiva"
-          className="absolute right-3 top-1/2 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:size-10"
+          className="absolute right-1.5 top-1/2 z-20 flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-slate-900/70 text-white shadow-md backdrop-blur-md transition-transform hover:scale-110 hover:border-white hover:bg-[#2563EB] sm:right-3 sm:size-10"
         >
-          <FaChevronRight className="size-3.5" aria-hidden />
+          <FaChevronRight className="size-2.5 sm:size-3.5" aria-hidden />
         </button>
 
         {/* Pestañas inferiores del carrusel */}
         <div className="relative z-10 border-t border-white/10 bg-slate-950/75 backdrop-blur-md">
-          <div className="shell grid grid-cols-3 gap-2 py-2.5">
+          <div className="shell grid grid-cols-3 gap-1 py-1.5 sm:gap-2 sm:py-2.5">
             {CARE_SLIDES.map((s, idx) => (
               <button
                 key={s.id}
                 type="button"
                 onClick={() => setSlideIdx(idx)}
                 className={cn(
-                  "rounded-xl px-3 py-2 text-center font-sans text-xs font-black uppercase tracking-wider transition-all",
+                  "truncate rounded-lg px-1.5 py-1.5 text-center font-sans text-[0.55rem] font-black uppercase tracking-wide transition-all sm:rounded-xl sm:px-3 sm:py-2 sm:text-xs sm:tracking-wider",
                   idx === slideIdx
                     ? "bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#EF233C] text-white shadow-md"
                     : "text-slate-400 hover:bg-white/5 hover:text-white",
@@ -715,49 +748,49 @@ export function CustomerCareView() {
         </div>
       </section>
 
-      {/* 2. CUADRÍCULA DE 4 TARJETAS 3D MAGNÉTICAS */}
-      <section className="border-b border-blue-100 bg-gradient-to-b from-blue-50/50 to-white py-10 lg:py-12">
+      {/* 2. CUADRÍCULA DE 4 TARJETAS 3D MAGNÉTICAS (2 COLUMNAS EN MÓVIL) */}
+      <section className="border-b border-blue-100 bg-gradient-to-b from-blue-50/50 to-white py-6 sm:py-10 lg:py-12">
         <div className="shell">
-          <div className="mb-6 flex flex-col items-center text-center">
-            <span className="rounded-full bg-[#0055FF]/10 px-3 py-1 font-mono text-[0.62rem] font-black uppercase tracking-widest text-[#0055FF]">
+          <div className="mb-4 flex flex-col items-center text-center sm:mb-6">
+            <span className="rounded-full bg-[#0055FF]/10 px-2.5 py-0.5 font-mono text-[0.55rem] font-black uppercase tracking-widest text-[#0055FF] sm:px-3 sm:py-1 sm:text-[0.62rem]">
               SERVICIOS Y CANALES DIRECTOS
             </span>
-            <h2 className="mt-1 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
+            <h2 className="mt-1 font-sans text-lg font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
               ¿En qué podemos ayudarte hoy?
             </h2>
-            <p className="mt-1 max-w-xl text-xs text-slate-600 sm:text-sm">
-              Selecciona cualquiera de las opciones para acceder al instante a la información oficial y asesoría en vivo.
+            <p className="mt-0.5 max-w-xl text-[0.7rem] text-slate-600 sm:mt-1 sm:text-sm">
+              Accede al instante a la información oficial y asesoría en vivo.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
             {QUICK_CARDS.map((card) => (
               <TiltQuickCard key={card.id} item={card} />
             ))}
           </div>
 
           {/* Banner Destacado: Gestión Oficial de Cambio de Talla con Subida de Fotos */}
-          <div className="mt-6 overflow-hidden rounded-3xl border-2 border-red-200 bg-gradient-to-r from-[#1E3A8A] via-[#DC2626] to-[#041C4A] p-5 text-white shadow-xl sm:p-6">
-            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
+          <div className="mt-4 overflow-hidden rounded-2xl border-2 border-red-200 bg-gradient-to-r from-[#1E3A8A] via-[#DC2626] to-[#041C4A] p-3.5 text-white shadow-xl sm:mt-6 sm:rounded-3xl sm:p-6">
+            <div className="flex flex-col items-start justify-between gap-3 lg:flex-row lg:items-center lg:gap-4">
               <div className="max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider text-[#DC2626] shadow-xs">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 font-mono text-[0.52rem] font-black uppercase tracking-wider text-[#DC2626] shadow-xs sm:gap-1.5 sm:px-3 sm:text-[0.58rem]">
                   <FaRotateLeft className="size-2.5" aria-hidden />
                   <span>GARANTÍA DE CAMBIO DE TALLA</span>
                 </span>
-                <h3 className="mt-2 font-sans text-lg font-black uppercase text-white sm:text-xl">
+                <h3 className="mt-1.5 font-sans text-sm font-black uppercase text-white sm:mt-2 sm:text-xl">
                   ¿Pediste una prenda y la talla te quedó grande o chica?
                 </h3>
-                <p className="mt-1 text-xs text-white/90 leading-relaxed sm:text-sm">
-                  Solicita tu cambio en línea con tu número de pedido o boleta, sube fotos de la prenda y coordina de inmediato por WhatsApp con un asesor.
+                <p className="mt-0.5 text-[0.68rem] leading-snug text-white/90 sm:mt-1 sm:text-sm sm:leading-relaxed">
+                  Solicita tu cambio en línea con tu número de pedido, sube fotos y coordina de inmediato por WhatsApp.
                 </p>
               </div>
 
               <Link
                 href="/cambios-y-devoluciones"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-sans text-xs font-black uppercase tracking-wider text-[#DC2626] shadow-lg transition-transform hover:scale-105 hover:bg-slate-100"
+                className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-white px-4 font-sans text-[0.64rem] font-black uppercase tracking-wider text-[#DC2626] shadow-lg transition-transform hover:scale-105 hover:bg-slate-100 sm:h-11 sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-xs"
               >
-                <span>Solicitar Cambio de Talla Ahora</span>
-                <FaArrowRight className="size-3" aria-hidden />
+                <span>Solicitar Cambio Ahora</span>
+                <FaArrowRight className="size-2.5 sm:size-3" aria-hidden />
               </Link>
             </div>
           </div>
@@ -765,33 +798,33 @@ export function CustomerCareView() {
       </section>
 
       {/* 3. SECCIÓN INTERACTIVA DE GUÍA DE TALLAS ANATÓMICAS */}
-      <section id="tallas" className="border-b border-blue-100 bg-white py-12 lg:py-16">
-        <div className="shell space-y-8">
-          <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-end">
+      <section id="tallas" className="border-b border-blue-100 bg-white py-7 sm:py-12 lg:py-16">
+        <div className="shell space-y-4 sm:space-y-8">
+          <div className="flex flex-col items-start justify-between gap-2.5 border-b border-slate-200 pb-3.5 sm:gap-4 sm:pb-5 md:flex-row md:items-end">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EF233C] px-3 py-0.5 font-mono text-[0.6rem] font-black uppercase tracking-wider text-white">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.54rem] font-black uppercase tracking-wider text-white sm:gap-1.5 sm:px-3 sm:text-[0.6rem]">
                 <FaRulerCombined className="size-2.5" aria-hidden />
                 <span>TABLA ANATÓMICA OFICIAL 2026</span>
               </span>
-              <h2 className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
-                Guía de Tallas & Calce Perfecto
+              <h2 className="mt-1.5 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-3xl">
+                Guía de Tallas &amp; Calce Perfecto
               </h2>
-              <p className="mt-1 max-w-2xl text-xs text-slate-600 sm:text-sm">
-                Nuestras prendas cuentan con patrones exactos confeccionados en el Perú. Revisa las medidas corporales y de prenda terminada para asegurar tu entalle ideal.
+              <p className="mt-0.5 max-w-2xl text-[0.7rem] text-slate-600 sm:mt-1 sm:text-sm">
+                Patrones exactos confeccionados en el Perú para asegurar tu entalle ideal.
               </p>
             </div>
 
             <Link
               href={sizeCat.catalogHref}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] px-3.5 py-1.5 font-mono text-[0.62rem] font-black uppercase tracking-wider text-white shadow-md transition-transform hover:scale-105 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-xs"
             >
-              <span>Ver Modelos en Catálogo</span>
-              <FaArrowRight className="size-3" aria-hidden />
+              <span>Ver en Catálogo</span>
+              <FaArrowRight className="size-2.5 sm:size-3" aria-hidden />
             </Link>
           </div>
 
           {/* Selector de categoría de prenda */}
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1 sm:gap-2">
             {SIZE_CATEGORIES.map((cat, idx) => {
               const active = idx === activeSizeCategory;
               return (
@@ -800,16 +833,16 @@ export function CustomerCareView() {
                   type="button"
                   onClick={() => setActiveSizeCategory(idx)}
                   className={cn(
-                    "flex shrink-0 flex-col items-start rounded-2xl border px-4 py-2.5 text-left transition-all",
+                    "flex shrink-0 flex-col items-start rounded-xl border px-3 py-1.5 text-left transition-all sm:rounded-2xl sm:px-4 sm:py-2.5",
                     active
-                      ? "border-[#0055FF] bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] text-white shadow-lg scale-102"
+                      ? "border-[#0055FF] bg-gradient-to-r from-[#0055FF] to-[#1D4ED8] text-white shadow-md"
                       : "border-slate-200 bg-slate-50 text-slate-800 hover:border-[#0055FF]/40 hover:bg-blue-50",
                   )}
                 >
-                  <span className="font-sans text-xs font-black uppercase tracking-wide">
+                  <span className="font-sans text-[0.68rem] font-black uppercase tracking-wide sm:text-xs">
                     {cat.label}
                   </span>
-                  <span className={cn("text-[0.65rem]", active ? "text-blue-100" : "text-slate-500")}>
+                  <span className={cn("text-[0.56rem] sm:text-[0.65rem]", active ? "text-blue-100" : "text-slate-500")}>
                     {cat.sub}
                   </span>
                 </button>
@@ -818,27 +851,27 @@ export function CustomerCareView() {
           </div>
 
           {/* Tabla de Medidas con Imagen del Modelo */}
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
+          <div className="grid gap-4 lg:grid-cols-12 lg:items-start lg:gap-6">
             {/* Tabla de Tallas */}
             <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-md lg:col-span-8">
-              <div className="border-b border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-sans text-base font-black uppercase text-slate-900">
+              <div className="border-b border-slate-200 bg-slate-50 p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-sans text-xs font-black uppercase text-slate-900 sm:text-base">
                     Medidas: {sizeCat.label}
                   </h3>
-                  <span className="rounded-full bg-blue-100 px-3 py-0.5 font-mono text-[0.62rem] font-bold text-[#0055FF]">
-                    En centímetros (cm)
+                  <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 font-mono text-[0.54rem] font-bold text-[#0055FF] sm:px-3 sm:text-[0.62rem]">
+                    En cm
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-600">{sizeCat.fitDescription}</p>
+                <p className="mt-1 text-[0.68rem] text-slate-600 sm:text-xs">{sizeCat.fitDescription}</p>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-[0.68rem] sm:text-xs">
                   <thead>
-                    <tr className="border-b border-slate-200 bg-blue-50/60 font-mono text-[0.65rem] font-black uppercase tracking-wider text-slate-700">
+                    <tr className="border-b border-slate-200 bg-blue-50/60 font-mono text-[0.58rem] font-black uppercase tracking-wider text-slate-700 sm:text-[0.65rem]">
                       {sizeCat.headers.map((h) => (
-                        <th key={h} className="px-4 py-3">
+                        <th key={h} className="whitespace-nowrap px-2.5 py-2 sm:px-4 sm:py-3">
                           {h}
                         </th>
                       ))}
@@ -847,13 +880,13 @@ export function CustomerCareView() {
                   <tbody className="divide-y divide-slate-100">
                     {sizeCat.rows.map((r, i) => (
                       <tr key={r.size} className={cn("hover:bg-blue-50/40", i % 2 === 0 ? "bg-white" : "bg-slate-50/40")}>
-                        <td className="px-4 py-3 font-mono font-black text-[#0055FF]">
-                          Talla {r.size}
+                        <td className="whitespace-nowrap px-2.5 py-2 font-mono font-black text-[#0055FF] sm:px-4 sm:py-3">
+                          {r.size}
                         </td>
-                        <td className="px-4 py-3 font-semibold text-slate-700">{r.col1}</td>
-                        <td className="px-4 py-3 font-semibold text-slate-700">{r.col2}</td>
-                        <td className="px-4 py-3 font-semibold text-slate-700">{r.col3}</td>
-                        <td className="px-4 py-3 font-semibold text-slate-700">{r.col4}</td>
+                        <td className="whitespace-nowrap px-2.5 py-2 font-semibold text-slate-700 sm:px-4 sm:py-3">{r.col1}</td>
+                        <td className="whitespace-nowrap px-2.5 py-2 font-semibold text-slate-700 sm:px-4 sm:py-3">{r.col2}</td>
+                        <td className="whitespace-nowrap px-2.5 py-2 font-semibold text-slate-700 sm:px-4 sm:py-3">{r.col3}</td>
+                        <td className="whitespace-nowrap px-2.5 py-2 font-semibold text-slate-700 sm:px-4 sm:py-3">{r.col4}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -861,38 +894,38 @@ export function CustomerCareView() {
               </div>
             </div>
 
-            {/* Tarjeta Visual y Consejos de Medición */}
-            <div className="space-y-4 lg:col-span-4">
-              <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50 p-3.5 shadow-sm">
-                <div className="relative aspect-[3/3.6] w-full overflow-hidden rounded-xl bg-slate-200">
+            {/* Tarjeta Visual y Consejos de Medición (2 columnas en móvil) */}
+            <div className="grid grid-cols-2 gap-2.5 lg:col-span-4 lg:grid-cols-1 lg:gap-4">
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 shadow-sm sm:rounded-2xl sm:border-2 sm:p-3.5">
+                <div className="relative aspect-[3/3.4] w-full overflow-hidden rounded-lg bg-slate-200 sm:aspect-[3/3.6] sm:rounded-xl">
                   <Image
                     src={sizeCat.imageSrc}
                     alt={sizeCat.label}
                     fill
-                    sizes="320px"
+                    sizes="(max-width: 640px) 46vw, 320px"
                     className="object-cover"
                   />
-                  <span className="absolute bottom-2 left-2 rounded-full bg-slate-950/80 px-2.5 py-0.5 font-mono text-[0.55rem] font-bold text-white backdrop-blur-xs">
-                    Prenda Oficial American Colt
+                  <span className="absolute bottom-1.5 left-1.5 rounded-full bg-slate-950/80 px-2 py-0.5 font-mono text-[0.5rem] font-bold text-white backdrop-blur-xs sm:bottom-2 sm:left-2 sm:px-2.5 sm:text-[0.55rem]">
+                    American Colt
                   </span>
                 </div>
               </div>
 
               {/* Guía rápida: ¿Cómo medirte? */}
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4">
-                <h4 className="flex items-center gap-1.5 font-sans text-xs font-black uppercase text-[#0055FF]">
-                  <FaRulerCombined className="size-3.5" aria-hidden />
-                  <span>¿Cómo medirte correctamente?</span>
+              <div className="flex flex-col justify-center rounded-xl border border-blue-200 bg-blue-50/70 p-2.5 sm:rounded-2xl sm:p-4">
+                <h4 className="flex items-center gap-1 font-sans text-[0.65rem] font-black uppercase text-[#0055FF] sm:gap-1.5 sm:text-xs">
+                  <FaRulerCombined className="size-3 shrink-0 sm:size-3.5" aria-hidden />
+                  <span>¿Cómo medirte?</span>
                 </h4>
-                <ul className="mt-2.5 space-y-1.5 text-xs text-slate-700 leading-snug">
+                <ul className="mt-1.5 space-y-1 text-[0.62rem] leading-tight text-slate-700 sm:mt-2.5 sm:space-y-1.5 sm:text-xs sm:leading-snug">
                   <li>
-                    <strong className="text-slate-900">1. Cintura:</strong> Mide el contorno natural donde normalmente asienta tu pantalón.
+                    <strong className="text-slate-900">1. Cintura:</strong> Donde asienta tu pantalón.
                   </li>
                   <li>
-                    <strong className="text-slate-900">2. Cadera:</strong> Coloca la cinta métrica en la parte más ancha de los glúteos.
+                    <strong className="text-slate-900">2. Cadera:</strong> Parte más ancha de glúteos.
                   </li>
                   <li>
-                    <strong className="text-slate-900">3. Largo:</strong> Mide desde la entrepierna hasta el tobillo exterior.
+                    <strong className="text-slate-900">3. Largo:</strong> Entrepierna hasta tobillo.
                   </li>
                 </ul>
               </div>
@@ -902,71 +935,71 @@ export function CustomerCareView() {
       </section>
 
       {/* 4. SECCIÓN DE ENVÍOS Y COBERTURA NACIONAL */}
-      <section id="envios" className="border-b border-blue-100 bg-slate-50 py-12 lg:py-16">
-        <div className="shell space-y-8">
+      <section id="envios" className="border-b border-blue-100 bg-slate-50 py-7 sm:py-12 lg:py-16">
+        <div className="shell space-y-4 sm:space-y-8">
           <div className="flex flex-col items-center text-center">
-            <span className="rounded-full bg-[#0055FF] px-3.5 py-1 font-mono text-[0.62rem] font-black uppercase tracking-widest text-white shadow-xs">
+            <span className="rounded-full bg-[#0055FF] px-3 py-0.5 font-mono text-[0.55rem] font-black uppercase tracking-widest text-white shadow-xs sm:px-3.5 sm:py-1 sm:text-[0.62rem]">
               LOGÍSTICA Y DESPACHO EXCLUSIVO
             </span>
-            <h2 className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="mt-1.5 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-3xl">
               Envíos y Cobertura Nacional
             </h2>
-            <p className="mt-1 max-w-2xl text-xs text-slate-600 sm:text-sm">
-              Llegamos a cada rincón del Perú con embalaje sellado de fábrica y seguimiento en tiempo real.
+            <p className="mt-0.5 max-w-2xl text-[0.7rem] text-slate-600 sm:mt-1 sm:text-sm">
+              Llegamos a cada rincón del Perú con embalaje sellado de fábrica.
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-6 md:grid-cols-3">
             {/* Tarjeta Lima */}
-            <div className="rounded-3xl border-2 border-blue-100 bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:border-[#0055FF]">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0055FF] to-[#1D4ED8] text-white shadow-md">
-                <FaTruckFast className="size-6" aria-hidden />
+            <div className="rounded-2xl border border-blue-100 bg-white p-3 shadow-md transition-all hover:-translate-y-1 hover:border-[#0055FF] sm:rounded-3xl sm:border-2 sm:p-6">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#0055FF] to-[#1D4ED8] text-white shadow-md sm:size-12 sm:rounded-2xl">
+                <FaTruckFast className="size-4 sm:size-6" aria-hidden />
               </span>
-              <h3 className="mt-4 font-sans text-lg font-black uppercase text-slate-900">
-                Lima Metropolitana & Callao
+              <h3 className="mt-2.5 font-sans text-xs font-black uppercase leading-tight text-slate-900 sm:mt-4 sm:text-lg">
+                Lima &amp; Callao
               </h3>
-              <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                Despacho en 24 a 48 horas hábiles mediante motorizado express directo a tu puerta o centro laboral.
+              <p className="mt-1 line-clamp-2 text-[0.62rem] leading-snug text-slate-600 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+                Entrega 24–48h hábiles con motorizado express.
               </p>
-              <div className="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Tarifa estándar:</span>
+              <div className="mt-2.5 space-y-1 border-t border-slate-100 pt-2 text-[0.6rem] sm:mt-4 sm:space-y-2 sm:pt-3 sm:text-xs">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-slate-500">Tarifa:</span>
                   <span className="font-mono font-bold text-slate-900">S/ 12.00</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Envío Gratis:</span>
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono font-black text-emerald-800">
-                    Compras &gt; S/ 199
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-slate-500">Gratis:</span>
+                  <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 font-mono text-[0.54rem] font-black text-emerald-800 sm:px-2 sm:text-xs">
+                    &gt; S/ 199
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Horario entrega:</span>
+                <div className="hidden items-center justify-between sm:flex">
+                  <span className="text-slate-500">Horario:</span>
                   <span className="font-semibold text-slate-700">9:00 a 19:00 hrs</span>
                 </div>
               </div>
             </div>
 
             {/* Tarjeta Provincias */}
-            <div className="rounded-3xl border-2 border-blue-100 bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:border-[#EF233C]">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#EF233C] to-[#DC2626] text-white shadow-md">
-                <FaLocationDot className="size-6" aria-hidden />
+            <div className="rounded-2xl border border-blue-100 bg-white p-3 shadow-md transition-all hover:-translate-y-1 hover:border-[#EF233C] sm:rounded-3xl sm:border-2 sm:p-6">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#EF233C] to-[#DC2626] text-white shadow-md sm:size-12 sm:rounded-2xl">
+                <FaLocationDot className="size-4 sm:size-6" aria-hidden />
               </span>
-              <h3 className="mt-4 font-sans text-lg font-black uppercase text-slate-900">
-                Provincias (Todo el Perú)
+              <h3 className="mt-2.5 font-sans text-xs font-black uppercase leading-tight text-slate-900 sm:mt-4 sm:text-lg">
+                Provincias Perú
               </h3>
-              <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                Envíos consolidados a las 25 regiones a través de agencias autorizadas como Olva Courier y Shalom Empresarial.
+              <p className="mt-1 line-clamp-2 text-[0.62rem] leading-snug text-slate-600 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+                Despacho a 25 regiones vía Olva Courier y Shalom.
               </p>
-              <div className="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Tiempo estimado:</span>
-                  <span className="font-mono font-bold text-[#EF233C]">48 a 72 hrs</span>
+              <div className="mt-2.5 space-y-1 border-t border-slate-100 pt-2 text-[0.6rem] sm:mt-4 sm:space-y-2 sm:pt-3 sm:text-xs">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-slate-500">Plazo:</span>
+                  <span className="font-mono font-bold text-[#EF233C]">48–72 hrs</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Modalidad:</span>
-                  <span className="font-semibold text-slate-700">Domicilio o Agencia</span>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-slate-500">Entrega:</span>
+                  <span className="font-semibold text-slate-700">Agencia / Dom.</span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="hidden items-center justify-between sm:flex">
                   <span className="text-slate-500">Seguimiento:</span>
                   <span className="rounded-full bg-blue-100 px-2 py-0.5 font-mono font-bold text-[#0055FF]">
                     Código Online
@@ -976,28 +1009,32 @@ export function CustomerCareView() {
             </div>
 
             {/* Tarjeta Pagos Seguros y SUNAT */}
-            <div className="rounded-3xl border-2 border-blue-100 bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:border-emerald-600">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md">
-                <FaShieldHalved className="size-6" aria-hidden />
-              </span>
-              <h3 className="mt-4 font-sans text-lg font-black uppercase text-slate-900">
-                Garantía y Facturación SUNAT
-              </h3>
-              <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                Tus transacciones están encriptadas. Emitimos Boleta o Factura con RUC 20 para personas naturales y empresas.
-              </p>
-              <div className="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs">
-                <div className="flex items-center justify-between">
+            <div className="col-span-2 rounded-2xl border border-blue-100 bg-white p-3 shadow-md transition-all hover:-translate-y-1 hover:border-emerald-600 sm:p-6 md:col-span-1 sm:rounded-3xl sm:border-2">
+              <div className="flex items-start gap-3 md:block">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md sm:size-12 sm:rounded-2xl">
+                  <FaShieldHalved className="size-4 sm:size-6" aria-hidden />
+                </span>
+                <div>
+                  <h3 className="font-sans text-xs font-black uppercase text-slate-900 md:mt-4 sm:text-lg">
+                    Garantía y Facturación SUNAT
+                  </h3>
+                  <p className="mt-0.5 text-[0.64rem] leading-snug text-slate-600 sm:mt-1 sm:text-xs sm:leading-relaxed">
+                    Boleta o Factura con RUC 20. Cambios por talla garantizados 7 días.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2.5 grid grid-cols-3 gap-2 border-t border-slate-100 pt-2 text-[0.6rem] md:mt-4 md:grid-cols-1 md:space-y-2 md:pt-3 sm:text-xs">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <span className="text-slate-500">Comprobante:</span>
                   <span className="font-semibold text-slate-700">Boleta y Factura</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Cambio de Talla:</span>
-                  <span className="font-mono font-bold text-emerald-700">7 días garantizados</span>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <span className="text-slate-500">Cambios:</span>
+                  <span className="font-mono font-bold text-emerald-700">7 días</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Cuentas Bancarias:</span>
-                  <span className="font-semibold text-slate-700">BCP, BBVA, Yape, Plin</span>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <span className="text-slate-500">Medios:</span>
+                  <span className="font-semibold text-slate-700">BCP, Yape, Plin</span>
                 </div>
               </div>
             </div>
@@ -1006,44 +1043,44 @@ export function CustomerCareView() {
       </section>
 
       {/* 5. PREGUNTAS FRECUENTES (FAQ) INTERACTIVAS */}
-      <section id="faq" className="border-b border-blue-100 bg-white py-12 lg:py-16">
-        <div className="shell max-w-4xl space-y-8">
+      <section id="faq" className="border-b border-blue-100 bg-white py-7 sm:py-12 lg:py-16">
+        <div className="shell max-w-4xl space-y-4 sm:space-y-8">
           <div className="flex flex-col items-center text-center">
-            <span className="rounded-full bg-purple-100 px-3.5 py-1 font-mono text-[0.62rem] font-black uppercase tracking-widest text-purple-700">
-              RESOLUCIÓN DE DUDAS INMEDIATA
+            <span className="rounded-full bg-purple-100 px-3 py-0.5 font-mono text-[0.55rem] font-black uppercase tracking-widest text-purple-700 sm:px-3.5 sm:py-1 sm:text-[0.62rem]">
+              RESOLUCIÓN DE DUDAS
             </span>
-            <h2 className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="mt-1.5 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:mt-2 sm:text-3xl">
               Preguntas Frecuentes (FAQ)
             </h2>
-            <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-              Encuentra respuestas claras sobre pagos, comprobantes SUNAT, envíos, tallas y ventas por mayor.
+            <p className="mt-0.5 text-[0.7rem] text-slate-600 sm:mt-1 sm:text-sm">
+              Respuestas claras sobre pagos, SUNAT, envíos, tallas y mayoristas.
             </p>
           </div>
 
           {/* Buscador de preguntas y Filtro por categorías */}
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="relative flex items-center">
               <FaMagnifyingGlass
-                className="pointer-events-none absolute left-3.5 size-3.5 text-slate-400"
+                className="pointer-events-none absolute left-3 size-3 text-slate-400 sm:left-3.5 sm:size-3.5"
                 aria-hidden
               />
               <input
                 type="search"
                 value={faqSearch}
                 onChange={(e) => setFaqSearch(e.target.value)}
-                placeholder="Busca tu duda (Ej: Factura, Olva, devoluciones, precios mayoristas)..."
-                className="h-11 w-full rounded-2xl border-2 border-slate-200 bg-slate-50 pl-10 pr-4 text-xs font-semibold text-slate-900 outline-none transition-colors focus:border-[#0055FF] focus:bg-white"
+                placeholder="Busca tu duda (Ej: Factura, Olva, mayoristas)..."
+                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 text-xs font-semibold text-slate-900 outline-none transition-colors focus:border-[#0055FF] focus:bg-white sm:h-11 sm:rounded-2xl sm:border-2 sm:pl-10 sm:pr-4"
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
               {(
                 [
-                  { id: "todas", label: "Todas las preguntas" },
-                  { id: "pagos", label: "Pagos y SUNAT" },
-                  { id: "envios", label: "Envíos y Entregas" },
-                  { id: "tallas", label: "Tallas y Cambios" },
-                  { id: "mayorista", label: "Mayoristas B2B" },
+                  { id: "todas", label: "Todas" },
+                  { id: "pagos", label: "Pagos" },
+                  { id: "envios", label: "Envíos" },
+                  { id: "tallas", label: "Tallas" },
+                  { id: "mayorista", label: "Mayoristas" },
                 ] as const
               ).map((cat) => (
                 <button
@@ -1051,9 +1088,9 @@ export function CustomerCareView() {
                   type="button"
                   onClick={() => setFaqFilter(cat.id)}
                   className={cn(
-                    "rounded-full px-3.5 py-1.5 font-mono text-[0.68rem] font-bold uppercase transition-all",
+                    "rounded-full px-2.5 py-1 font-mono text-[0.58rem] font-bold uppercase transition-all sm:px-3.5 sm:py-1.5 sm:text-[0.68rem]",
                     faqFilter === cat.id
-                      ? "bg-[#0055FF] text-white shadow-xs scale-105"
+                      ? "bg-[#0055FF] text-white shadow-xs"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200",
                   )}
                 >
@@ -1064,11 +1101,11 @@ export function CustomerCareView() {
           </div>
 
           {/* Acordeones animados */}
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {filteredFaqs.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <div className="rounded-2xl border border-dashed border-slate-300 p-6 text-center sm:p-8">
                 <p className="text-xs text-slate-600">
-                  No encontramos preguntas que coincidan con &ldquo;{faqSearch}&rdquo;. Escríbenos directamente a nuestro WhatsApp para ayudarte al instante.
+                  No encontramos preguntas que coincidan con &ldquo;{faqSearch}&rdquo;. Escríbenos directamente a nuestro WhatsApp.
                 </p>
               </div>
             ) : (
@@ -1077,25 +1114,25 @@ export function CustomerCareView() {
                 return (
                   <div
                     key={faq.id}
-                    className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white transition-all hover:border-[#0055FF]/60"
+                    className="overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:border-[#0055FF]/60 sm:rounded-2xl sm:border-2"
                   >
                     <button
                       type="button"
                       onClick={() => setOpenFaq(isOpen ? null : faq.id)}
                       aria-expanded={isOpen}
-                      className="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-blue-50/40"
+                      className="flex w-full items-center justify-between gap-3 p-3 text-left transition-colors hover:bg-blue-50/40 sm:gap-4 sm:p-4"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0055FF]">
-                          <FaCircleQuestion className="size-3.5" aria-hidden />
+                      <div className="flex items-center gap-2 sm:gap-2.5">
+                        <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0055FF] sm:size-7">
+                          <FaCircleQuestion className="size-3 sm:size-3.5" aria-hidden />
                         </span>
-                        <span className="font-sans text-xs font-black uppercase text-slate-900 sm:text-sm">
+                        <span className="font-sans text-[0.72rem] font-black uppercase leading-snug text-slate-900 sm:text-sm">
                           {faq.q}
                         </span>
                       </div>
                       <FaChevronDown
                         className={cn(
-                          "size-3.5 shrink-0 text-slate-400 transition-transform duration-200",
+                          "size-3 shrink-0 text-slate-400 transition-transform duration-200 sm:size-3.5",
                           isOpen && "rotate-180 text-[#0055FF]",
                         )}
                         aria-hidden
@@ -1109,9 +1146,9 @@ export function CustomerCareView() {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="border-t border-slate-100 bg-slate-50/60 px-5 py-4"
+                          className="border-t border-slate-100 bg-slate-50/60 px-3.5 py-3 sm:px-5 sm:py-4"
                         >
-                          <p className="text-xs leading-relaxed text-slate-700 sm:text-sm">{faq.a}</p>
+                          <p className="text-[0.7rem] leading-relaxed text-slate-700 sm:text-sm">{faq.a}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -1124,56 +1161,56 @@ export function CustomerCareView() {
       </section>
 
       {/* 6. BANNER DE CANALES OFICIALES DE SOPORTE DIRECTO */}
-      <section className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#1E3A8A] py-12 text-white lg:py-16">
+      <section className="bg-gradient-to-r from-[#0055FF] via-[#1D4ED8] to-[#1E3A8A] py-7 text-white sm:py-12 lg:py-16">
         <div className="shell max-w-5xl">
-          <div className="rounded-3xl border-2 border-white/20 bg-slate-950/40 p-6 backdrop-blur-md sm:p-10">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-xl space-y-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EF233C] px-3 py-0.5 font-mono text-[0.62rem] font-black uppercase tracking-widest text-white shadow-xs">
-                  <FaHeadset className="size-3" aria-hidden />
-                  <span>SOPORTE HUMANO EN TIEMPO REAL</span>
+          <div className="rounded-2xl border-2 border-white/20 bg-slate-950/40 p-4 backdrop-blur-md sm:rounded-3xl sm:p-10">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+              <div className="max-w-xl space-y-1.5 sm:space-y-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#EF233C] px-2.5 py-0.5 font-mono text-[0.54rem] font-black uppercase tracking-widest text-white shadow-xs sm:gap-1.5 sm:px-3 sm:text-[0.62rem]">
+                  <FaHeadset className="size-2.5 sm:size-3" aria-hidden />
+                  <span>SOPORTE EN TIEMPO REAL</span>
                 </span>
-                <h2 className="font-sans text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
-                  ¿Tienes una consulta específica sobre tu pedido o cotización?
+                <h2 className="font-sans text-lg font-black uppercase tracking-tight text-white sm:text-3xl">
+                  ¿Tienes una consulta sobre tu pedido o cotización?
                 </h2>
-                <p className="text-xs text-blue-100 sm:text-sm">
-                  Nuestro equipo de atención al cliente y asesores de venta por mayor están listos para asistirte.
+                <p className="text-[0.7rem] text-blue-100 sm:text-sm">
+                  Nuestro equipo de atención y asesores mayoristas están listos para asistirte.
                 </p>
 
-                <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-white">
-                  <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
-                    <FaClock className="size-3 text-amber-300" aria-hidden />
-                    <span>Lun – Sáb · 9:00 a 20:00 hrs</span>
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-[0.62rem] font-semibold text-white sm:gap-3 sm:pt-2 sm:text-xs">
+                  <span className="flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 sm:gap-1.5 sm:px-3 sm:py-1">
+                    <FaClock className="size-2.5 text-amber-300 sm:size-3" aria-hidden />
+                    <span>Lun – Sáb · 9 a 20h</span>
                   </span>
-                  <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
-                    <FaLocationDot className="size-3 text-cyan-300" aria-hidden />
+                  <span className="flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 sm:gap-1.5 sm:px-3 sm:py-1">
+                    <FaLocationDot className="size-2.5 text-cyan-300 sm:size-3" aria-hidden />
                     <span>Lima, Perú</span>
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col shrink-0">
+              <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-row lg:flex-col sm:gap-2.5">
                 <a
                   href="https://wa.me/51926922583?text=Hola%20American%20Colt,%20deseo%20comunicarme%20con%20un%20asesor%20comercial."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center gap-2.5 rounded-2xl bg-[#25D366] px-6 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#1ebe5b]"
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-3 font-sans text-[0.64rem] font-black uppercase tracking-wider text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#1ebe5b] sm:h-12 sm:gap-2.5 sm:rounded-2xl sm:px-6 sm:text-xs"
                 >
-                  <SiWhatsapp className="size-4" aria-hidden />
-                  <span>Chatear por WhatsApp</span>
+                  <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
+                  <span>WhatsApp</span>
                 </a>
 
                 <a
                   href="mailto:ventas@americancolt.pe"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border-2 border-white/80 bg-white/15 px-5 font-mono text-xs font-bold uppercase tracking-wider text-white backdrop-blur-xs transition-colors hover:bg-white hover:text-[#0055FF]"
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/80 bg-white/15 px-3 font-mono text-[0.6rem] font-bold uppercase tracking-wider text-white backdrop-blur-xs transition-colors hover:bg-white hover:text-[#0055FF] sm:h-11 sm:gap-2 sm:rounded-2xl sm:border-2 sm:px-5 sm:text-xs"
                 >
-                  <FaEnvelope className="size-3.5" aria-hidden />
-                  <span>ventas@americancolt.pe</span>
+                  <FaEnvelope className="size-3 sm:size-3.5" aria-hidden />
+                  <span className="truncate">ventas@americancolt.pe</span>
                 </a>
 
                 <Link
                   href="/libro-de-reclamaciones"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-white/40 bg-slate-950/40 px-4 font-mono text-[0.68rem] font-bold uppercase tracking-wider text-white/90 transition-colors hover:bg-white/20 hover:text-white"
+                  className="col-span-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-white/40 bg-slate-950/40 px-4 font-mono text-[0.6rem] font-bold uppercase tracking-wider text-white/90 transition-colors hover:bg-white/20 hover:text-white sm:h-10 sm:gap-2 sm:rounded-2xl sm:text-[0.68rem]"
                 >
                   <FaReceipt className="size-3 text-amber-300" aria-hidden />
                   <span>Libro de Reclamaciones</span>

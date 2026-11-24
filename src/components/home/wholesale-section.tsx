@@ -311,19 +311,19 @@ function OrbitalLookbookDeck({
         )}
       </div>
 
-      {/* Escenario Simétrico 3D de 3 Tarjetas */}
+      {/* Escenario Simétrico 3D de 3 Tarjetas (limpio y sin solaparse en móvil) */}
       <div
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative flex h-[305px] sm:h-[320px] w-full max-w-[390px] items-center justify-center [perspective:1400px]"
+        className="relative flex h-[215px] w-full max-w-[390px] items-center justify-center [perspective:1400px] sm:h-[320px]"
       >
-        {/* Tarjeta izquierda inclinada en profundidad 3D */}
+        {/* Tarjeta izquierda inclinada en profundidad 3D (solo sm+) */}
         {prevLook && (
           <button
             type="button"
             onClick={handlePrev}
             aria-label={`Anterior: ${prevLook.title}`}
-            className="absolute left-0 sm:left-2 z-10 h-[225px] w-[150px] sm:h-[240px] sm:w-[162px] overflow-hidden rounded-3xl border border-white/80 bg-white opacity-80 shadow-lg transition-all duration-300 hover:-translate-x-1.5 hover:opacity-100 [transform:perspective(900px)_rotateY(18deg)_rotateZ(-7deg)_scale(0.86)]"
+            className="hidden sm:block absolute left-2 z-10 h-[240px] w-[162px] overflow-hidden rounded-3xl border border-white/80 bg-white opacity-80 shadow-lg transition-all duration-300 hover:-translate-x-1.5 hover:opacity-100 [transform:perspective(900px)_rotateY(18deg)_rotateZ(-7deg)_scale(0.86)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -334,13 +334,13 @@ function OrbitalLookbookDeck({
           </button>
         )}
 
-        {/* Tarjeta derecha inclinada en profundidad 3D */}
+        {/* Tarjeta derecha inclinada en profundidad 3D (solo sm+) */}
         {nextLook && (
           <button
             type="button"
             onClick={handleNext}
             aria-label={`Siguiente: ${nextLook.title}`}
-            className="absolute right-0 sm:right-2 z-10 h-[225px] w-[150px] sm:h-[240px] sm:w-[162px] overflow-hidden rounded-3xl border border-white/80 bg-white opacity-80 shadow-lg transition-all duration-300 hover:translate-x-1.5 hover:opacity-100 [transform:perspective(900px)_rotateY(-18deg)_rotateZ(7deg)_scale(0.86)]"
+            className="hidden sm:block absolute right-2 z-10 h-[240px] w-[162px] overflow-hidden rounded-3xl border border-white/80 bg-white opacity-80 shadow-lg transition-all duration-300 hover:translate-x-1.5 hover:opacity-100 [transform:perspective(900px)_rotateY(-18deg)_rotateZ(7deg)_scale(0.86)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -351,16 +351,16 @@ function OrbitalLookbookDeck({
           </button>
         )}
 
-        {/* Tarjeta Frontal Activa en 3D (Centro más claro y nítido) con Tilt y Link Directo al Producto */}
+        {/* Tarjeta Frontal Activa en 3D */}
         <AnimatePresence initial={false} mode="popLayout" custom={direction}>
           <motion.div
             key={currentLook.id}
             custom={direction}
             initial={{
               opacity: 0,
-              x: direction >= 0 ? 80 : -80,
-              rotateY: direction >= 0 ? 20 : -20,
-              scale: 0.86,
+              x: direction >= 0 ? 60 : -60,
+              rotateY: direction >= 0 ? 18 : -18,
+              scale: 0.9,
             }}
             animate={{
               opacity: 1,
@@ -370,9 +370,9 @@ function OrbitalLookbookDeck({
             }}
             exit={{
               opacity: 0,
-              x: direction >= 0 ? -80 : 80,
-              rotateY: direction >= 0 ? -20 : 20,
-              scale: 0.86,
+              x: direction >= 0 ? -60 : 60,
+              rotateY: direction >= 0 ? -18 : 18,
+              scale: 0.9,
             }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             style={{
@@ -380,11 +380,11 @@ function OrbitalLookbookDeck({
               rotateY,
               transformStyle: "preserve-3d",
             }}
-            className="relative z-20 h-[285px] w-[200px] sm:h-[302px] sm:w-[216px]"
+            className="relative z-20 h-[210px] w-full sm:h-[302px] sm:w-[216px]"
           >
             <Link
               href={currentLook.linkHref || "/catalogo"}
-              className="group/deck relative block size-full overflow-hidden rounded-[1.6rem] border-[2.5px] border-white bg-slate-950 shadow-[0_24px_52px_-14px_rgba(15,23,42,0.28)]"
+              className="group/deck relative block size-full overflow-hidden rounded-2xl border-2 border-white bg-slate-950 shadow-[0_24px_52px_-14px_rgba(15,23,42,0.28)] sm:rounded-[1.6rem] sm:border-[2.5px]"
             >
               <motion.div
                 initial={{ scale: 1.07 }}
@@ -411,26 +411,26 @@ function OrbitalLookbookDeck({
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"
               />
 
-              <span className="bg-flow absolute left-3 top-3 z-20 inline-flex rounded-full border border-white/60 bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider text-white shadow-md">
+              <span className="bg-flow absolute left-2 top-2 z-20 inline-flex rounded-full border border-white/60 bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.46rem] font-black uppercase tracking-wider text-white shadow-md sm:left-3 sm:top-3 sm:px-2.5 sm:text-[0.58rem]">
                 {currentLook.badge}
               </span>
 
-              <div className="absolute inset-x-0 bottom-0 z-20 p-3.5 text-left text-white">
-                <h3 className="truncate font-sans text-sm font-black uppercase tracking-tight">
+              <div className="absolute inset-x-0 bottom-0 z-20 p-2 text-left text-white sm:p-3.5">
+                <h3 className="truncate font-sans text-[0.68rem] font-black uppercase tracking-tight sm:text-sm">
                   {currentLook.title}
                 </h3>
                 {currentLook.subtitle && (
-                  <p className="mt-0.5 truncate text-[0.68rem] font-medium text-blue-100">
+                  <p className="mt-0.5 hidden truncate text-[0.68rem] font-medium text-blue-100 sm:block">
                     {currentLook.subtitle}
                   </p>
                 )}
-                <div className="mt-2 flex items-center justify-between border-t border-white/20 pt-2">
-                  <span className="font-mono text-xs font-black text-amber-300">
+                <div className="mt-1.5 flex items-center justify-between border-t border-white/20 pt-1.5 sm:mt-2 sm:pt-2">
+                  <span className="font-mono text-[0.62rem] font-black text-amber-300 sm:text-xs">
                     {currentLook.priceTag || "Ver Precio"}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[0.6rem] font-black uppercase text-[#991B1B] shadow-md transition group-hover/deck:bg-[#DC2626] group-hover/deck:text-white">
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-white px-2 py-0.5 text-[0.5rem] font-black uppercase text-[#991B1B] shadow-md transition group-hover/deck:bg-[#DC2626] group-hover/deck:text-white sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[0.6rem]">
                     <span>Ver Look</span>
-                    <ArrowRight className="size-2.5" />
+                    <ArrowRight className="size-2 sm:size-2.5" />
                   </span>
                 </div>
               </div>
@@ -453,7 +453,7 @@ function OrbitalLookbookDeck({
 
       {/* Miniaturas rápidas */}
       {slides.length > 1 && (
-        <div className="flex flex-wrap items-center justify-center gap-1.5">
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
           {slides.map((item, idx) => (
             <button
               key={item.id}
@@ -461,7 +461,7 @@ function OrbitalLookbookDeck({
               onClick={() => handleJump(idx)}
               title={item.title}
               className={cn(
-                "size-9 overflow-hidden rounded-xl border-2 transition-all",
+                "size-7 overflow-hidden rounded-lg border-2 transition-all sm:size-9 sm:rounded-xl",
                 idx === safeIdx
                   ? "scale-110 border-white ring-2 ring-[#EF233C] shadow-md"
                   : "border-white/75 opacity-80 hover:scale-105 hover:opacity-100",
@@ -542,9 +542,53 @@ export function WholesaleSection({
             />
           </div>
 
-          <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(220px,0.75fr)_minmax(0,1.25fr)] lg:gap-4">
-            {/* COLUMNA IZQUIERDA: TRÍO 3D (EJ: CAMISAS & POLOS) */}
-            <div className="min-w-0">
+          <div className="relative z-10 grid grid-cols-2 items-start gap-2.5 lg:grid-cols-[minmax(0,1.25fr)_minmax(220px,0.75fr)_minmax(0,1.25fr)] lg:items-center lg:gap-4">
+            {/* COLUMNA CENTRAL ARRIBA EN MÓVIL: PANEL CRISTALINO CLARO CON LECTURA NÍTIDA */}
+            <div className="order-first col-span-2 mx-auto flex w-full max-w-sm flex-col items-center rounded-2xl border border-white/85 bg-white/85 px-4 py-4 text-center shadow-[0_14px_36px_-12px_rgba(15,23,42,0.16)] backdrop-blur-md lg:order-2 lg:col-span-1 lg:max-w-[245px] lg:rounded-3xl lg:py-5">
+              <motion.div
+                animate={{ scale: [1, 1.03, 1] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 font-mono text-[0.52rem] font-extrabold uppercase tracking-wider text-slate-800 shadow-xs sm:px-3 sm:py-1 sm:text-[0.55rem]"
+              >
+                <FaBoxesStacked className="size-2.5 text-[#DC2626] sm:size-3" aria-hidden />
+                <span>{cfg.centerBadge}</span>
+              </motion.div>
+
+              <h2
+                id="mayorista-title"
+                className="mt-2 font-sans text-base font-black uppercase leading-snug tracking-tight text-slate-900 sm:mt-3 sm:text-xl"
+              >
+                {cfg.centerTitle}{" "}
+                <span className="bg-flow mt-0.5 inline-block rounded-lg bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 text-white shadow-md sm:mt-1 sm:px-2.5">
+                  {cfg.centerHighlight}
+                </span>
+              </h2>
+
+              {cfg.centerSubtitle && (
+                <p className="mt-1.5 text-[0.65rem] font-semibold leading-relaxed text-slate-600 sm:mt-2.5 sm:text-[0.7rem]">
+                  {cfg.centerSubtitle}
+                </p>
+              )}
+
+              <div className="mt-3 grid w-full grid-cols-2 gap-2 lg:mt-4 lg:grid-cols-1">
+                <Link
+                  href="/mayorista"
+                  className="bg-flow inline-flex h-8 items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 text-[0.58rem] font-extrabold uppercase tracking-wider text-white shadow-md shadow-red-600/20 transition-all hover:scale-105 hover:brightness-110 sm:h-9 sm:gap-1.5 sm:px-4 sm:text-[0.65rem]"
+                >
+                  <span>Mayorista B2B</span>
+                  <ArrowRight className="size-3 sm:size-3.5" aria-hidden />
+                </Link>
+                <Link
+                  href="/mayorista/cotizaciones"
+                  className="inline-flex h-8 items-center justify-center rounded-xl border border-slate-300 bg-white px-2.5 text-[0.58rem] font-extrabold uppercase tracking-wider text-slate-800 shadow-xs transition-colors hover:border-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white sm:h-9 sm:px-4 sm:text-[0.65rem]"
+                >
+                  <span>Cotizar Lote</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* COLUMNA IZQUIERDA EN 2 COLUMNAS EN MÓVIL (CAMISAS & POLOS) */}
+            <div className="order-2 min-w-0 lg:order-1">
               <OrbitalLookbookDeck
                 label={cfg.leftLabel}
                 slides={resolvedLeft}
@@ -553,52 +597,8 @@ export function WholesaleSection({
               />
             </div>
 
-            {/* COLUMNA CENTRAL: PANEL CRISTALINO CLARO CON LECTURA NÍTIDA */}
-            <div className="mx-auto flex max-w-[245px] flex-col items-center rounded-3xl border border-white/85 bg-white/80 px-4 py-5 text-center shadow-[0_14px_36px_-12px_rgba(15,23,42,0.16)] backdrop-blur-md">
-              <motion.div
-                animate={{ scale: [1, 1.03, 1] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-mono text-[0.55rem] font-extrabold uppercase tracking-wider text-slate-800 shadow-xs"
-              >
-                <FaBoxesStacked className="size-3 text-[#DC2626]" aria-hidden />
-                <span>{cfg.centerBadge}</span>
-              </motion.div>
-
-              <h2
-                id="mayorista-title"
-                className="mt-3 font-sans text-lg font-black uppercase leading-snug tracking-tight text-slate-900 sm:text-xl"
-              >
-                {cfg.centerTitle}{" "}
-                <span className="bg-flow mt-1 inline-block rounded-lg bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 text-white shadow-md">
-                  {cfg.centerHighlight}
-                </span>
-              </h2>
-
-              {cfg.centerSubtitle && (
-                <p className="mt-2.5 text-[0.7rem] font-semibold leading-relaxed text-slate-600">
-                  {cfg.centerSubtitle}
-                </p>
-              )}
-
-              <div className="mt-4 flex w-full flex-col gap-2">
-                <Link
-                  href="/mayorista"
-                  className="bg-flow inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 text-[0.65rem] font-extrabold uppercase tracking-wider text-white shadow-md shadow-red-600/20 transition-all hover:scale-105 hover:brightness-110"
-                >
-                  <span>Venta por Mayor B2B</span>
-                  <ArrowRight className="size-3.5" aria-hidden />
-                </Link>
-                <Link
-                  href="/mayorista/cotizaciones"
-                  className="inline-flex h-9 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-800 shadow-xs transition-colors hover:border-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white"
-                >
-                  <span>Solicitar Cotización</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* COLUMNA DERECHA: TRÍO 3D (EJ: JEANS & PANTALONES DRILL) */}
-            <div className="min-w-0">
+            {/* COLUMNA DERECHA EN 2 COLUMNAS EN MÓVIL (JEANS & PANTALONES DRILL) */}
+            <div className="order-3 min-w-0 lg:order-3">
               <OrbitalLookbookDeck
                 label={cfg.rightLabel}
                 slides={resolvedRight}
@@ -649,19 +649,19 @@ export function WholesaleSection({
                     className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#1E3A8A]/45 to-transparent"
                   />
 
-                  <span className="bg-flow absolute left-3.5 top-3.5 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-wider text-paper shadow-md">
-                    <card.icon className="size-3" aria-hidden />
+                  <span className="bg-flow absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.48rem] font-extrabold uppercase tracking-wider text-paper shadow-md sm:left-3.5 sm:top-3.5 sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.6rem]">
+                    <card.icon className="size-2.5 sm:size-3" aria-hidden />
                     {card.badge}
                   </span>
 
-                  <div className="absolute inset-x-0 bottom-0 p-5 text-left text-paper">
-                    <h4 className="font-sans text-lg font-black uppercase leading-tight drop-shadow-xs">
+                  <div className="absolute inset-x-0 bottom-0 p-2.5 text-left text-paper sm:p-5">
+                    <h4 className="font-sans text-xs font-black uppercase leading-tight drop-shadow-xs sm:text-lg">
                       {card.title}
                     </h4>
-                    <p className="mt-1 line-clamp-2 text-xs text-white/90">
+                    <p className="mt-1 hidden line-clamp-2 text-xs text-white/90 sm:block">
                       {card.subtitle}
                     </p>
-                    <span className="mt-3 inline-flex items-center gap-1 rounded-xl bg-paper px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md transition-all group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper">
+                    <span className="mt-2 inline-flex items-center gap-1 rounded-xl bg-paper px-2.5 py-1 text-[0.54rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md transition-all group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper sm:mt-3 sm:px-3.5 sm:py-1.5 sm:text-[0.68rem]">
                       {card.cta}
                     </span>
                   </div>

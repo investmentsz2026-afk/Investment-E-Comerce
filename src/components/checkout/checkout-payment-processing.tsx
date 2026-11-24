@@ -57,25 +57,25 @@ export function CheckoutPaymentProcessing({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-full max-w-md rounded-3xl bg-gradient-to-b from-[#141824] via-[#0F1422] to-[#0A0D16] p-7 text-white text-center shadow-2xl border border-white/10 space-y-6 overflow-hidden">
+      <div className="relative w-full max-w-md rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#141824] via-[#0F1422] to-[#0A0D16] p-5 sm:p-7 text-white text-center shadow-2xl border border-white/10 space-y-4 sm:space-y-6 overflow-hidden">
         {/* Destellos de fondo */}
         <div className="absolute -top-24 -left-24 size-48 rounded-full bg-[#0055FF]/20 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 size-48 rounded-full bg-[#DC2626]/25 blur-3xl pointer-events-none" />
 
         {/* Encabezado Seguro */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-300">
-          <ShieldCheck className="size-3.5 text-emerald-400 animate-pulse" />
-          <span>Pasarela de Pago Segura · SSL 256-Bit</span>
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 sm:px-3.5 py-1 text-[0.68rem] sm:text-xs font-bold text-emerald-300">
+          <ShieldCheck className="size-3.5 text-emerald-400 animate-pulse shrink-0" />
+          <span>Pasarela Segura · SSL 256-Bit</span>
         </div>
 
         {/* Centro Visual: Animación de Tarjeta / Escaneo */}
-        <div className="relative py-3">
+        <div className="relative py-2 sm:py-3">
           {phase < 4 ? (
-            <div className="relative mx-auto size-28 rounded-2xl bg-gradient-to-tr from-[#1E2640] via-[#2D375B] to-[#4A1521] p-3 shadow-xl border border-white/20 flex flex-col justify-between overflow-hidden">
+            <div className="relative mx-auto size-24 sm:size-28 rounded-2xl bg-gradient-to-tr from-[#1E2640] via-[#2D375B] to-[#4A1521] p-2.5 sm:p-3 shadow-xl border border-white/20 flex flex-col justify-between overflow-hidden">
               {/* Línea de escaneo láser */}
               <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#38bdf8] animate-bounce" />
 

@@ -4,6 +4,7 @@ import { requireAuth } from "@/server/auth/session";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { AdminPortalButton } from "@/components/account/admin-portal-button";
 import { AccountNavTab } from "./account-nav-tab";
+import { AccountMobileDrawer } from "./account-mobile-drawer";
 import { AccountBreadcrumb } from "./account-breadcrumb";
 import {
   FaUser,
@@ -54,7 +55,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const userInitials = `${user.firstName?.charAt(0) ?? "A"}${user.lastName?.charAt(0) ?? "C"}`.toUpperCase();
 
   return (
-    <div className="relative min-h-screen bg-[#F4F7FB] text-slate-900 pt-36 sm:pt-40 lg:pt-44 pb-20">
+    <div className="relative min-h-screen bg-[#F4F7FB] pt-[6.75rem] pb-16 text-slate-900 sm:pt-[7.25rem] sm:pb-20 lg:pt-[10.75rem]">
       {/* Sutil gradiente azulejo de fondo */}
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(0,85,255,0.06),transparent)]" />
 
@@ -62,33 +63,33 @@ export default async function AccountLayout({ children }: { children: ReactNode 
         {/* Ruta de navegación (Breadcrumb) */}
         <AccountBreadcrumb />
 
-        {/* Tarjeta Superior del Nombre de Usuario (con separación limpia y sin chocar) */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm border-l-4 border-l-[#0055FF]">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Tarjeta Superior del Nombre de Usuario (compacta en móvil) */}
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 border-l-4 border-l-[#0055FF] bg-white p-3.5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             {/* Avatar & Nombres */}
-            <div className="flex items-center gap-4 min-w-0">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               {/* Cuadro azul con iniciales */}
-              <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#0055FF] text-white shadow-md shadow-blue-500/20 font-black text-xl tracking-wider">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#0055FF] text-base font-black tracking-wider text-white shadow-md shadow-blue-500/20 sm:size-14 sm:text-xl">
                 {userInitials}
               </div>
 
               <div className="min-w-0 flex-1 space-y-0.5">
-                <span className={`block text-[0.68rem] font-bold uppercase tracking-wider ${currentRole.badgeClass}`}>
+                <span className={`block text-[0.58rem] font-bold uppercase tracking-wider sm:text-[0.68rem] ${currentRole.badgeClass}`}>
                   {currentRole.label}
                 </span>
 
-                <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-slate-900 truncate">
+                <h1 className="truncate text-base font-bold uppercase tracking-tight text-slate-900 sm:text-2xl">
                   {user.firstName} {user.lastName}
                 </h1>
 
-                <p className="text-xs text-slate-500 font-mono">
+                <p className="truncate font-mono text-[0.68rem] text-slate-500 sm:text-xs">
                   {user.email}
                 </p>
               </div>
             </div>
 
             {/* Acciones del Perfil */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 sm:gap-3">
               {user.role === "admin" && <AdminPortalButton />}
 
               <LogoutButton />
@@ -96,13 +97,20 @@ export default async function AccountLayout({ children }: { children: ReactNode 
           </div>
         </div>
 
-        {/* Estructura con menú lateral y contenido principal */}
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8 min-w-0">
-          {/* Navegación lateral */}
-          <aside className="min-w-0 w-full overflow-hidden lg:col-span-3 space-y-5">
+        {/* Menú de opciones compacto con botón de 3 puntos (⋮) solo en móvil/tablet */}
+        <AccountMobileDrawer
+          userRole={user.role}
+          userName={`${user.firstName} ${user.lastName}`}
+          userEmail={user.email}
+        />
+
+        {/* Estructura con menú lateral en escritorio y contenido principal */}
+        <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 sm:mt-6 sm:gap-6 lg:grid-cols-12 lg:gap-8">
+          {/* Navegación lateral (solo en escritorio lg+) */}
+          <aside className="hidden min-w-0 w-full space-y-5 lg:col-span-3 lg:block">
             <nav
               aria-label="Navegación de cuenta"
-              className="no-scrollbar flex flex-row overflow-x-auto rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm lg:flex-col gap-1"
+              className="flex flex-col gap-1 rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm"
             >
               <AccountNavTab href="/cuenta" icon={<FaUser className="size-3.5" />} label="Mi perfil" />
               <AccountNavTab href="/cuenta/favoritos" icon={<FaHeart className="size-3.5" />} label="Mis favoritos" />

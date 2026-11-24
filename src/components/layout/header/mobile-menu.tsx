@@ -3,172 +3,256 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Heart, MapPin, Truck, UserRound, X } from "lucide-react";
-import { mainNav } from "@/config/navigation";
-import { siteConfig } from "@/config/site";
+import {
+  ArrowRight,
+  ChevronDown,
+  Headphones,
+  Heart,
+  MapPin,
+  Percent,
+  Truck,
+  UserRound,
+  Warehouse,
+  X,
+} from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { ActionLink } from "@/components/ui/action-link";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 import { useEscapeKey, useLockBodyScroll } from "@/hooks/use-overlay";
+import { DRAWER_CATEGORIES } from "./header-categories";
 import { cn } from "@/lib/utils";
-import { ease } from "@/lib/motion";
 
 interface MobileMenuProps {
   open: boolean;
   onClose: () => void;
 }
 
-const menuTabs = mainNav.filter((item) => item.megaMenu);
-
-/** Menú móvil a pantalla completa, diseñado como experiencia propia (no una versión reducida del escritorio). */
+/** Menú lateral izquierdo moderno para móvil que desliza de izquierda a derecha con acordeones hacia abajo. */
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
   useLockBodyScroll(open);
   useEscapeKey(open, onClose);
 
-  return <AnimatePresence>{open ? <MobileMenuSheet key="mobile-menu" onClose={onClose} /> : null}</AnimatePresence>;
+  return (
+    <AnimatePresence>
+      {open ? <MobileMenuSheet key="mobile-menu" onClose={onClose} /> : null}
+    </AnimatePresence>
+  );
 }
 
 function MobileMenuSheet({ onClose }: { onClose: () => void }) {
-  const [activeId, setActiveId] = useState(menuTabs[0]?.id ?? "");
+  const [expandedCatId, setExpandedCatId] = useState<string | null>(DRAWER_CATEGORIES[0]?.id ?? null);
   const { count: favoritesCount, snapshot: favSnapshot } = useFavorites();
   const favoritesHref = favSnapshot.isAuthenticated ? "/cuenta/favoritos" : "/favoritos";
-  const active = menuTabs.find((t) => t.id === activeId) ?? menuTabs[0];
-  const links = active?.megaMenu?.columns.flatMap((c) => c.links) ?? [];
+
+  const toggleCategory = (id: string) => {
+    setExpandedCatId((prev) => (prev === id ? null : id));
+  };
 
   return (
-    <motion.div
+    <div
       role="dialog"
       aria-modal="true"
-      aria-label="Menú principal"
-      className="fixed inset-0 z-[65] flex flex-col bg-paper lg:hidden"
-      initial={{ y: "-100%" }}
-      animate={{ y: "0%" }}
-      exit={{ y: "-100%" }}
-      transition={{ duration: 0.7, ease: ease.curtain }}
+      aria-label="Menú principal móvil"
+      className="fixed inset-0 z-[75] lg:hidden"
     >
-      <div className="shell flex h-16 shrink-0 items-center justify-between border-b border-ink/10">
-        <Logo className="text-ink" />
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Cerrar menú"
-          className="-mr-2 flex size-11 items-center justify-center text-ink"
-        >
-          <X className="size-5" aria-hidden />
-        </button>
-      </div>
+      {/* Fondo difuminado */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-slate-950/55 backdrop-blur-xs"
+        aria-hidden
+      />
 
-      <div className="no-scrollbar flex-1 overflow-y-auto">
-        <div className="shell pt-6" role="tablist" aria-label="Secciones">
-          <div className="flex gap-6 border-b border-ink/10">
-            {menuTabs.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={tab.id === activeId}
-                onClick={() => setActiveId(tab.id)}
-                className={cn(
-                  "relative pb-3 text-sm font-medium uppercase tracking-[0.14em] transition-colors",
-                  tab.id === activeId ? "text-ink" : "text-taupe-400",
-                )}
-              >
-                {tab.label}
-                {tab.id === activeId ? (
-                  <motion.span layoutId="mobile-tab-indicator" className="absolute inset-x-0 -bottom-px h-0.5 bg-cochinilla" />
-                ) : null}
-              </button>
-            ))}
+      {/* Cajón lateral deslizable desde la izquierda hacia la derecha */}
+      <motion.aside
+        initial={{ x: "-100%" }}
+        animate={{ x: "0%" }}
+        exit={{ x: "-100%" }}
+        transition={{ type: "spring", stiffness: 320, damping: 32 }}
+        className="fixed inset-y-0 left-0 z-10 flex w-[85vw] max-w-[330px] flex-col overflow-hidden rounded-r-3xl bg-white shadow-2xl"
+      >
+        {/* Cabecera Roja Compacta */}
+        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#9E0812] via-[#DC1422] to-[#A80A14] px-4 py-3 text-white">
+          <Link href="/" onClick={onClose} className="inline-flex items-center">
+            <Logo size="sm" />
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar menú"
+            className="flex size-8 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white transition-colors hover:bg-white hover:text-[#DC2626]"
+          >
+            <X className="size-4" aria-hidden />
+          </button>
+        </div>
+
+        {/* Lista de Categorías del Header con Acordeones hacia abajo */}
+        <div className="no-scrollbar flex-1 overflow-y-auto px-3 py-3 space-y-2">
+          <div className="grid grid-cols-2 gap-1.5">
+            <Link
+              href="/atencion-al-cliente"
+              onClick={onClose}
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/70 px-2.5 py-2 text-[0.68rem] font-extrabold text-[#C8101E]"
+            >
+              <Headphones className="size-3.5 shrink-0" aria-hidden />
+              <span className="truncate">Atención Cliente</span>
+            </Link>
+            <Link
+              href="/mayorista/cotizaciones"
+              onClick={onClose}
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] to-[#EF233C] px-2.5 py-2 text-[0.68rem] font-extrabold text-white shadow-xs"
+            >
+              <Warehouse className="size-3.5 shrink-0" aria-hidden />
+              <span className="truncate">Mayorista B2B</span>
+            </Link>
+          </div>
+
+          <div className="space-y-1.5 pt-1">
+            {DRAWER_CATEGORIES.map((cat) => {
+              const isOpen = expandedCatId === cat.id;
+              const allLinks = cat.groups.flatMap((g) => g.items);
+
+              return (
+                <div
+                  key={cat.id}
+                  className={cn(
+                    "overflow-hidden rounded-2xl border transition-colors",
+                    isOpen ? "border-red-200 bg-red-50/25" : "border-slate-200/80 bg-white",
+                  )}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleCategory(cat.id)}
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between px-3.5 py-2.5 text-left"
+                  >
+                    <div className="min-w-0 pr-2">
+                      <span
+                        className={cn(
+                          "block text-xs font-extrabold uppercase tracking-tight",
+                          cat.highlight || isOpen ? "text-[#C8101E]" : "text-slate-900",
+                        )}
+                      >
+                        {cat.label}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "size-4 shrink-0 text-slate-400 transition-transform duration-200",
+                        isOpen && "rotate-180 text-[#DC2626]",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22 }}
+                        className="overflow-hidden border-t border-slate-100 bg-white/90"
+                      >
+                        <ul className="divide-y divide-slate-100 px-2 py-1">
+                          {allLinks.map((sub) => (
+                            <li key={`${cat.id}-${sub.label}`}>
+                              <Link
+                                href={sub.href}
+                                onClick={onClose}
+                                className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[0.72rem] font-semibold text-slate-700 hover:bg-red-50 hover:text-[#C8101E]"
+                              >
+                                <span className="truncate">{sub.label}</span>
+                                <span className="flex shrink-0 items-center gap-1.5">
+                                  {sub.tag && (
+                                    <span className="rounded-full bg-slate-100 px-1.5 py-0.5 font-mono text-[0.58rem] font-bold text-slate-600">
+                                      {sub.tag}
+                                    </span>
+                                  )}
+                                  <ArrowRight className="size-3 text-slate-400" aria-hidden />
+                                </span>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="p-2 pt-1">
+                          <Link
+                            href={cat.allHref}
+                            onClick={onClose}
+                            className="flex h-8 w-full items-center justify-center gap-1 rounded-xl bg-slate-900 text-[0.65rem] font-extrabold uppercase tracking-wider text-white hover:bg-[#DC2626]"
+                          >
+                            <span>Ver todo {cat.label}</span>
+                            <ArrowRight className="size-3" aria-hidden />
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Accesos rápidos */}
+          <div className="space-y-1.5 pt-2">
+            <Link
+              href="/catalogo?novedades=1&oferta=50"
+              onClick={onClose}
+              className="flex items-center justify-between rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] px-3.5 py-2.5 text-xs font-extrabold text-white"
+            >
+              <span className="flex items-center gap-2">
+                <Percent className="size-3.5" aria-hidden />
+                Liquidación 3x2 / -50%
+              </span>
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+            <Link
+              href="/seguir-pedido"
+              onClick={onClose}
+              className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50/70 px-3.5 py-2.5 text-xs font-bold text-[#1E3A8A]"
+            >
+              <span className="flex items-center gap-2">
+                <Truck className="size-3.5 text-[#2563EB]" aria-hidden />
+                Seguir mi Pedido
+              </span>
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+            <Link
+              href="/tiendas"
+              onClick={onClose}
+              className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-bold text-slate-800"
+            >
+              <span className="flex items-center gap-2">
+                <MapPin className="size-3.5 text-[#DC2626]" aria-hidden />
+                Nuestras Tiendas (Mapa)
+              </span>
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
           </div>
         </div>
 
-        <motion.ul
-          key={activeId}
-          className="shell mt-4"
-          initial="hidden"
-          animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.15 } } }}
-        >
-          {links.map((link) => (
-            <motion.li
-              key={link.label}
-              variants={{ hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: ease.luxe } } }}
-              className="border-b border-ink/[0.07]"
-            >
-              <ActionLink
-                target={link.target}
-                onActivate={onClose}
-                className="flex w-full items-center justify-between py-4 text-left font-display text-[1.9rem] leading-none text-ink"
-              >
-                {link.label}
-                <ArrowRight className="size-4 text-taupe-400" aria-hidden />
-              </ActionLink>
-            </motion.li>
-          ))}
-        </motion.ul>
-
-        <div className="shell mt-8 space-y-3 pb-10">
+        {/* Pie compacto del Cajón */}
+        <div className="grid grid-cols-2 gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2.5">
           <Link
-            href="/seguir-pedido"
+            href="/cuenta"
             onClick={onClose}
-            className="flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm font-extrabold text-[#1E3A8A]"
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-2 text-[0.7rem] font-bold text-slate-800"
           >
-            <span className="flex items-center gap-2.5">
-              <Truck className="size-4 text-[#2563EB]" aria-hidden />
-              Seguir mi Pedido (Rastreo en Vivo)
-            </span>
-            <ArrowRight className="size-4" aria-hidden />
+            <UserRound className="size-3.5 text-[#2563EB]" aria-hidden />
+            <span>Mi cuenta</span>
           </Link>
           <Link
-            href="/tiendas"
+            href={favoritesHref}
             onClick={onClose}
-            className="flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-extrabold text-[#991B1B]"
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-2 text-[0.7rem] font-bold text-slate-800"
           >
-            <span className="flex items-center gap-2.5">
-              <MapPin className="size-4 text-[#DC2626]" aria-hidden />
-              Nuestras Tiendas de Recojo (Mapa)
-            </span>
-            <ArrowRight className="size-4" aria-hidden />
+            <Heart className={cn("size-3.5", favoritesCount > 0 && "fill-[#DC2626] text-[#DC2626]")} aria-hidden />
+            <span>Favoritos ({favoritesCount})</span>
           </Link>
-          <Link
-            href="/mayorista"
-            onClick={onClose}
-            className="group/w relative flex items-center justify-between overflow-hidden bg-ink px-6 py-6 text-paper"
-          >
-            <span>
-              <span className="eyebrow block text-cochinilla-bright">B2B · Empresas</span>
-              <span className="mt-2 block font-display text-2xl">Venta por mayor</span>
-            </span>
-            <ArrowRight className="size-5 transition-transform group-active/w:translate-x-1" aria-hidden />
-          </Link>
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href="/cuenta"
-              onClick={onClose}
-              className="flex items-center gap-3 border border-ink/10 px-4 py-4 text-sm text-ink hover:border-ink transition-colors"
-            >
-              <UserRound className="size-4" aria-hidden /> Mi cuenta
-            </Link>
-            <Link
-              href={favoritesHref}
-              onClick={onClose}
-              className="flex items-center justify-between border border-ink/10 px-4 py-4 text-sm text-ink hover:border-ink transition-colors"
-            >
-              <span className="flex items-center gap-3">
-                <Heart
-                  className={cn("size-4", favoritesCount > 0 && "fill-cochinilla text-cochinilla")}
-                  aria-hidden
-                />
-                Favoritos
-              </span>
-              <span className="rounded-full bg-cochinilla px-2 py-0.5 font-mono text-[0.65rem] font-semibold text-paper tabular-nums">
-                {favoritesCount}
-              </span>
-            </Link>
-          </div>
-          <p className="eyebrow pt-4 text-center text-taupe-400">{siteConfig.season}</p>
         </div>
-      </div>
-    </motion.div>
+      </motion.aside>
+    </div>
   );
 }

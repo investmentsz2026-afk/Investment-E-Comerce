@@ -65,7 +65,7 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
             <div
               role="tablist"
               aria-label="Filtrar productos"
-              className="mt-4 flex flex-wrap items-center justify-center gap-2"
+              className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:mt-4 sm:gap-2"
             >
               {filters.map((f) => {
                 const active = filter === f.id;
@@ -77,7 +77,7 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
                     aria-selected={active}
                     onClick={() => setFilter(f.id)}
                     className={cn(
-                      "rounded-full px-5 py-2 text-xs font-extrabold uppercase tracking-wider transition-all duration-200",
+                      "rounded-full px-3 py-1.5 text-[0.62rem] font-extrabold uppercase tracking-wider transition-all duration-200 sm:px-5 sm:py-2 sm:text-xs",
                       active
                         ? "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-md shadow-rose-500/20 scale-105"
                         : "border border-slate-200 bg-slate-50/90 text-slate-700 hover:border-blue-300 hover:bg-gradient-to-r hover:from-[#1E3A8A] hover:to-[#2563EB] hover:text-white",
@@ -106,7 +106,7 @@ export function FeaturedProducts({ products: initialProducts }: FeaturedProducts
         </div>
 
         {/* BLOQUE 2: Segundo Carrusel 1x1 Redondeado (`rounded-3xl`) con Degradado Suave */}
-        <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 via-white to-blue-50/40 p-5 shadow-lg sm:p-7 lg:p-8">
+        <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 via-white to-blue-50/40 p-3 shadow-lg sm:rounded-3xl sm:p-7 lg:p-8">
           <div className="flex flex-col items-start justify-between gap-3 border-b border-slate-200/80 pb-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
               <span className="bg-flow flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] text-white shadow-md shadow-rose-500/20">

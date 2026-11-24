@@ -117,38 +117,38 @@ export function WholesaleStatusView({
           </div>
         </div>
 
-        {/* Tarjetas informativas modernas */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-red-50 text-[#EF233C]">
-              <BadgePercent className="size-5" aria-hidden />
+        {/* Tarjetas informativas modernas (2 columnas en móvil) */}
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-xs sm:rounded-2xl sm:p-5">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-red-50 text-[#EF233C] sm:size-10 sm:rounded-xl">
+              <BadgePercent className="size-4 sm:size-5" aria-hidden />
             </div>
-            <h2 className="mt-3 text-sm font-extrabold uppercase text-slate-900">
+            <h2 className="mt-2 text-xs font-extrabold uppercase text-slate-900 sm:mt-3 sm:text-sm">
               Tarifas Escalonadas
             </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              Descuentos progresivos desde 12, 50 y 200+ unidades acumulables por modelo.
+            <p className="mt-1 text-[0.64rem] leading-snug text-slate-600 sm:text-xs sm:leading-relaxed">
+              Descuentos desde 12, 50 y 200+ unidades por modelo.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-[#2563EB]">
-              <FileCheck2 className="size-5" aria-hidden />
+          <div className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-xs sm:rounded-2xl sm:p-5">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-blue-50 text-[#2563EB] sm:size-10 sm:rounded-xl">
+              <FileCheck2 className="size-4 sm:size-5" aria-hidden />
             </div>
-            <h2 className="mt-3 text-sm font-extrabold uppercase text-slate-900">
+            <h2 className="mt-2 text-xs font-extrabold uppercase text-slate-900 sm:mt-3 sm:text-sm">
               Facturación SUNAT
             </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              Emisión formal de Factura electrónica con RUC 10 o 20 y desglose de IGV.
+            <p className="mt-1 text-[0.64rem] leading-snug text-slate-600 sm:text-xs sm:leading-relaxed">
+              Emisión formal con RUC 10 o 20 y desglose de IGV.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-              <Sparkles className="size-5" aria-hidden />
+          <div className="col-span-2 rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-xs sm:col-span-1 sm:rounded-2xl sm:p-5">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 sm:size-10 sm:rounded-xl">
+              <Sparkles className="size-4 sm:size-5" aria-hidden />
             </div>
-            <h2 className="mt-3 text-sm font-extrabold uppercase text-slate-900">
+            <h2 className="mt-2 text-xs font-extrabold uppercase text-slate-900 sm:mt-3 sm:text-sm">
               Aprobación 24 – 48 hrs
             </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+            <p className="mt-1 text-[0.64rem] leading-snug text-slate-600 sm:text-xs sm:leading-relaxed">
               Validamos tu ficha RUC rápidamente para activar tus cotizaciones corporativas.
             </p>
           </div>
@@ -312,68 +312,68 @@ export function WholesaleStatusView({
       </div>
 
       {/* Datos comerciales registrados */}
-      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
-        <div className="border-b border-slate-100 pb-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-900">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="border-b border-slate-100 pb-3 sm:pb-4">
+          <h3 className="text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-slate-900 sm:text-xs">
             Datos comerciales registrados
           </h3>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 text-xs sm:grid-cols-2">
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+        <div className="mt-4 grid grid-cols-2 gap-2.5 text-[0.68rem] sm:mt-6 sm:gap-6 sm:text-xs">
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
               Razón Social
             </p>
-            <p className="mt-1 text-sm font-extrabold text-slate-900">{app.legalName}</p>
+            <p className="mt-0.5 truncate text-xs font-extrabold text-slate-900 sm:mt-1 sm:text-sm">{app.legalName}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
               Nombre Comercial
             </p>
-            <p className="mt-1 text-sm font-extrabold text-slate-900">{app.tradeName}</p>
+            <p className="mt-0.5 truncate text-xs font-extrabold text-slate-900 sm:mt-1 sm:text-sm">{app.tradeName}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
               RUC
             </p>
-            <p className="mt-1 font-mono text-sm font-bold text-slate-900">{app.taxId}</p>
+            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 sm:mt-1 sm:text-sm">{app.taxId}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
               Tipo de Negocio
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-800">{app.businessType}</p>
+            <p className="mt-0.5 truncate text-xs font-semibold text-slate-800 sm:mt-1 sm:text-sm">{app.businessType}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
-              Representante / Contacto
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
+              Contacto
             </p>
-            <p className="mt-1 text-sm font-bold text-slate-900">{app.contactName}</p>
-            <p className="mt-0.5 font-mono text-slate-600">{app.contactEmail}</p>
-            <p className="font-mono text-slate-600">{app.contactPhone}</p>
+            <p className="mt-0.5 truncate text-xs font-bold text-slate-900 sm:mt-1 sm:text-sm">{app.contactName}</p>
+            <p className="mt-0.5 truncate font-mono text-[0.6rem] text-slate-600 sm:text-xs">{app.contactEmail}</p>
+            <p className="font-mono text-[0.6rem] text-slate-600 sm:text-xs">{app.contactPhone}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
-              <MapPin className="size-3 text-[#EF233C]" aria-hidden />
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="flex items-center gap-1 text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
+              <MapPin className="size-2.5 text-[#EF233C] sm:size-3" aria-hidden />
               Domicilio Fiscal
             </p>
-            <p className="mt-1 text-sm font-bold text-slate-900">{app.addressLine}</p>
-            <p className="mt-0.5 text-slate-600">
-              {app.district}, {app.province}, {app.department}
+            <p className="mt-0.5 line-clamp-2 text-xs font-bold text-slate-900 sm:mt-1 sm:text-sm">{app.addressLine}</p>
+            <p className="mt-0.5 truncate text-[0.6rem] text-slate-600 sm:text-xs">
+              {app.district}, {app.province}
             </p>
           </div>
-          <div className="rounded-2xl bg-slate-50/70 p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
-              Volumen Mensual Estimado
+          <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+            <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
+              Volumen Mensual
             </p>
-            <p className="mt-1 text-sm font-bold text-slate-900">{app.estimatedVolume}</p>
+            <p className="mt-0.5 text-xs font-bold text-slate-900 sm:mt-1 sm:text-sm">{app.estimatedVolume}</p>
           </div>
           {app.additionalNotes && (
-            <div className="rounded-2xl bg-slate-50/70 p-4">
-              <p className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
-                Información Adicional
+            <div className="rounded-xl bg-slate-50/70 p-3 sm:rounded-2xl sm:p-4">
+              <p className="text-[0.55rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.65rem]">
+                Adicional
               </p>
-              <p className="mt-1 italic text-slate-700">{app.additionalNotes}</p>
+              <p className="mt-0.5 line-clamp-2 italic text-slate-700 sm:mt-1">{app.additionalNotes}</p>
             </div>
           )}
         </div>

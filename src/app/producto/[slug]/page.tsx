@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="bg-paper pt-[7.5rem] lg:pt-[8.75rem]">
+    <div className="bg-paper pt-[7rem] sm:pt-[7.25rem] lg:pt-[10.75rem]">
       <div className="shell">
         <CatalogBreadcrumbs
           variant="clean"

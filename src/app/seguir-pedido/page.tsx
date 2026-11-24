@@ -39,7 +39,7 @@ export default async function TrackOrderPage({
   const initialNotFound = Boolean(rawCode && !initialOrder);
 
   return (
-    <div className="bg-gradient-to-b from-slate-50/80 via-white to-slate-50/60 pt-[7rem] pb-20 lg:pt-[11.25rem]">
+    <div className="bg-gradient-to-b from-slate-50/80 via-white to-slate-50/60 pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-20">
       <div className="shell">
         <OrderTrackerClient
           initialQuery={rawCode}

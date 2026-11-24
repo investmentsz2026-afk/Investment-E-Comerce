@@ -12,11 +12,11 @@ export const instant = false;
 
 export default function CarritoPage() {
   return (
-    <div className="bg-paper pt-[7.5rem] pb-24 lg:pt-[8.75rem]">
+    <div className="bg-paper pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-24">
       <div className="shell">
-        <header className="mb-10 border-b border-ink/10 pb-8">
-          <p className="eyebrow text-taupe-500">INVESTMENTS · Selección Comercial</p>
-          <h1 className="mt-2 font-display text-display-md text-ink">
+        <header className="mb-5 border-b border-ink/10 pb-4 sm:mb-10 sm:pb-8">
+          <p className="eyebrow text-[0.58rem] text-taupe-500 sm:text-xs">AMERICAN COLT JEANS™ · Selección Comercial</p>
+          <h1 className="mt-1.5 font-display text-2xl text-ink sm:mt-2 sm:text-display-md">
             Tu Bolsa de <em>Compras.</em>
           </h1>
         </header>

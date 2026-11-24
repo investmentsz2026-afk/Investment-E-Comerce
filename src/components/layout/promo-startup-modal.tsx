@@ -242,16 +242,16 @@ export function PromoStartupModal({ promotions }: PromoStartupModalProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Compras por WhatsApp"
-        className="fixed bottom-16 left-3 z-40 flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-white to-blue-50 py-1.5 pl-1.5 pr-4 shadow-xl transition-transform duration-300 hover:scale-105 lg:bottom-4 lg:left-4"
+        className="fixed bottom-[3.85rem] left-2 z-40 flex items-center gap-1.5 rounded-full border border-white/90 bg-gradient-to-r from-white to-blue-50 py-1 pl-1 pr-2.5 shadow-lg transition-transform duration-300 hover:scale-105 sm:gap-2 sm:border-2 sm:py-1.5 sm:pl-1.5 sm:pr-4 lg:bottom-4 lg:left-4"
       >
-        <span className="flex size-8 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md">
-          <SiWhatsapp className="size-4" aria-hidden />
+        <span className="flex size-6 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm sm:size-8">
+          <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
         </span>
         <span className="flex flex-col leading-tight">
-          <span className="text-[0.66rem] font-extrabold text-[#0055FF]">
-            Compras por WhatsApp
+          <span className="text-[0.55rem] font-extrabold text-[#0055FF] sm:text-[0.66rem]">
+            WhatsApp
           </span>
-          <span className="font-mono text-[0.62rem] font-bold text-slate-600">
+          <span className="font-mono text-[0.52rem] font-bold text-slate-600 sm:text-[0.62rem]">
             {whatsappDisplay.replace("+51 ", "")}
           </span>
         </span>
@@ -267,10 +267,10 @@ export function PromoStartupModal({ promotions }: PromoStartupModalProps) {
             setIsOpen(true);
           }}
           aria-label="Ver oferta especial"
-          className="bg-flow fixed bottom-16 right-3 z-40 flex items-center gap-2 rounded-full border-2 border-white bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 py-2 text-white shadow-xl transition-all duration-300 hover:scale-105 lg:bottom-4 lg:right-4"
+          className="bg-flow fixed bottom-[3.85rem] right-2 z-40 flex items-center gap-1 rounded-full border border-white/90 bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-1.5 text-white shadow-lg transition-all duration-300 hover:scale-105 sm:gap-2 sm:border-2 sm:px-4 sm:py-2 lg:bottom-4 lg:right-4"
         >
-          <FaTags className="size-3.5 text-white" aria-hidden />
-          <span className="text-xs font-black uppercase tracking-wider">
+          <FaTags className="size-3 text-white sm:size-3.5" aria-hidden />
+          <span className="text-[0.58rem] font-black uppercase tracking-wider sm:text-xs">
             Oferta 3x2 / -{rawPromo.discountPercent}%
           </span>
         </button>

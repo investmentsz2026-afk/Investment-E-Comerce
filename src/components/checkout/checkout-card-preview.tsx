@@ -65,10 +65,10 @@ export function CheckoutCardPreview({
   const displayCvv = cardCvv.trim() || "•••";
 
   return (
-    <div className={cn("perspective-1000 w-full max-w-sm mx-auto", className)}>
+    <div className={cn("perspective-1000 w-full max-w-[320px] sm:max-w-sm mx-auto", className)}>
       <div
         className={cn(
-          "relative h-52 w-full rounded-2xl transition-transform duration-500 shadow-2xl",
+          "relative h-44 sm:h-52 w-full rounded-2xl transition-transform duration-500 shadow-2xl",
           "transform-style-3d",
           isFlipped ? "rotate-y-180" : "",
         )}
@@ -76,7 +76,7 @@ export function CheckoutCardPreview({
         {/* ─── ANVERSO (FRENTE) ─── */}
         <div
           className={cn(
-            "absolute inset-0 rounded-2xl p-5 flex flex-col justify-between text-white overflow-hidden",
+            "absolute inset-0 rounded-2xl p-4 sm:p-5 flex flex-col justify-between text-white overflow-hidden",
             "backface-hidden border border-white/20",
             "bg-gradient-to-tr from-[#0F1424] via-[#1B243B] to-[#581520]",
           )}
@@ -128,7 +128,7 @@ export function CheckoutCardPreview({
 
           {/* Centro: Número de tarjeta */}
           <div className="relative z-10 py-1">
-            <div className="font-mono text-lg sm:text-xl font-bold tracking-widest text-white drop-shadow-sm select-none">
+            <div className="font-mono text-base sm:text-xl font-bold tracking-widest text-white drop-shadow-sm select-none">
               {displayCardNumber}
             </div>
           </div>

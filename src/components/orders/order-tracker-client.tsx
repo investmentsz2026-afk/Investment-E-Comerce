@@ -219,9 +219,9 @@ export function OrderTrackerClient({
     order?.status === "payment_failed";
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-4 font-sans sm:space-y-8">
       {/* 1. CABECERA HERO + BUSCADOR EN TIEMPO REAL */}
-      <section className="relative overflow-hidden rounded-[2rem] border border-blue-900/20 bg-gradient-to-br from-[#091124] via-[#152C6B] to-[#0F172A] p-6 text-white shadow-[0_24px_60px_-18px_rgba(15,23,42,0.5)] sm:p-10">
+      <section className="relative overflow-hidden rounded-2xl border border-blue-900/20 bg-gradient-to-br from-[#091124] via-[#152C6B] to-[#0F172A] p-4 text-white shadow-[0_24px_60px_-18px_rgba(15,23,42,0.5)] sm:rounded-[2rem] sm:p-10">
         {/* Halos decorativos suaves */}
         <div
           aria-hidden
@@ -233,48 +233,48 @@ export function OrderTrackerClient({
         />
 
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 font-mono text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-amber-300 backdrop-blur-md">
-            <Truck className="size-3.5" aria-hidden />
-            <span>Rastreo Oficial en Tiempo Real · American Colt JEANS™</span>
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 font-mono text-[0.54rem] font-extrabold uppercase tracking-[0.14em] text-amber-300 backdrop-blur-md sm:gap-2 sm:px-4 sm:py-1.5 sm:text-[0.65rem] sm:tracking-[0.18em]">
+            <Truck className="size-3 sm:size-3.5" aria-hidden />
+            <span>Rastreo en Tiempo Real</span>
           </div>
 
-          <h1 className="mt-4 font-sans text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 className="mt-2.5 font-sans text-2xl font-black uppercase tracking-tight text-white sm:mt-4 sm:text-4xl lg:text-5xl">
             Sigue tu Pedido{" "}
             <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-white bg-clip-text text-transparent">
               al Instante
             </span>
           </h1>
 
-          <p className="mx-auto mt-3 max-w-2xl text-sm font-medium leading-relaxed text-blue-100/90 sm:text-base">
-            Ingresa tu número de pedido (ej.{" "}
-            <span className="font-mono font-bold text-white">ORD-2026-481920</span>) o el código de guía del courier para consultar la etapa exacta de tu compra.
+          <p className="mx-auto mt-1.5 max-w-2xl text-xs font-medium leading-snug text-blue-100/90 sm:mt-3 sm:text-base sm:leading-relaxed">
+            Ingresa tu código{" "}
+            <span className="font-mono font-bold text-white">ORD-2026-...</span> o guía del courier para ver tu envío.
           </p>
 
           {/* Barra de búsqueda tipo tienda flagship */}
-          <form onSubmit={handleSubmit} className="mt-7">
-            <div className="relative flex flex-col gap-2 rounded-3xl border border-white/25 bg-white/95 p-2 shadow-2xl backdrop-blur-md sm:flex-row sm:items-center sm:rounded-full">
+          <form onSubmit={handleSubmit} className="mt-4 sm:mt-7">
+            <div className="relative flex flex-col gap-1.5 rounded-2xl border border-white/25 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md sm:flex-row sm:items-center sm:gap-2 sm:rounded-full sm:p-2">
               <div className="relative flex flex-1 items-center">
                 <Search
-                  className="pointer-events-none absolute left-4 size-5 text-slate-400"
+                  className="pointer-events-none absolute left-3 size-4 text-slate-400 sm:left-4 sm:size-5"
                   aria-hidden
                 />
                 <input
                   type="text"
                   value={queryInput}
                   onChange={(e) => setQueryInput(e.target.value)}
-                  placeholder="Ej: ORD-2026-481920 o código de tracking..."
+                  placeholder="Ej: ORD-2026-481920 o tracking..."
                   aria-label="Número de pedido o código de seguimiento"
                   data-testid="track-order-input"
-                  className="h-12 w-full rounded-full bg-transparent pl-12 pr-10 font-mono text-sm font-bold uppercase tracking-wide text-slate-900 placeholder:font-sans placeholder:normal-case placeholder:font-medium placeholder:text-slate-400 focus:outline-none sm:text-base"
+                  className="h-10 w-full rounded-full bg-transparent pl-9 pr-8 font-mono text-xs font-bold uppercase tracking-wide text-slate-900 placeholder:font-sans placeholder:normal-case placeholder:font-medium placeholder:text-slate-400 focus:outline-none sm:h-12 sm:pl-12 sm:pr-10 sm:text-base"
                 />
                 {queryInput && (
                   <button
                     type="button"
                     onClick={handleClear}
                     aria-label="Limpiar búsqueda"
-                    className="absolute right-2 flex size-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="absolute right-1.5 flex size-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 sm:right-2 sm:size-8"
                   >
-                    <X className="size-4" aria-hidden />
+                    <X className="size-3.5 sm:size-4" aria-hidden />
                   </button>
                 )}
               </div>
@@ -283,16 +283,16 @@ export function OrderTrackerClient({
                 type="submit"
                 disabled={isPending}
                 data-testid="track-order-submit"
-                className="bg-flow inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-7 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/30 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 sm:rounded-full sm:text-sm"
+                className="bg-flow inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-5 text-[0.68rem] font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/30 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:gap-2 sm:rounded-full sm:px-7 sm:text-sm"
               >
                 {isPending ? (
                   <>
-                    <RefreshCw className="size-4 animate-spin" aria-hidden />
+                    <RefreshCw className="size-3.5 animate-spin sm:size-4" aria-hidden />
                     <span>Buscando...</span>
                   </>
                 ) : (
                   <>
-                    <Search className="size-4" aria-hidden />
+                    <Search className="size-3.5 sm:size-4" aria-hidden />
                     <span>Rastrear Pedido</span>
                   </>
                 )}
@@ -302,9 +302,9 @@ export function OrderTrackerClient({
 
           {/* Accesos rápidos a pedidos recientes si el usuario está autenticado */}
           {recentOrders.length > 0 && (
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-[0.7rem] font-bold uppercase tracking-wider text-blue-200/90">
-                Tus pedidos recientes:
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:mt-5 sm:gap-2">
+              <span className="text-[0.6rem] font-bold uppercase tracking-wider text-blue-200/90 sm:text-[0.7rem]">
+                Recientes:
               </span>
               {recentOrders.map((item) => {
                 const isSelected = order?.orderNumber === item.orderNumber;
@@ -314,14 +314,14 @@ export function OrderTrackerClient({
                     type="button"
                     onClick={() => executeLookup(item.orderNumber)}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-xs font-bold transition",
+                      "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[0.62rem] font-bold transition sm:gap-1.5 sm:px-3 sm:py-1 sm:text-xs",
                       isSelected
                         ? "border-amber-300 bg-amber-300 text-slate-950 shadow-md"
                         : "border-white/20 bg-white/10 text-white hover:border-white/50 hover:bg-white/20",
                     )}
                   >
                     <span>{item.orderNumber}</span>
-                    <ArrowRight className="size-3 opacity-75" aria-hidden />
+                    <ArrowRight className="size-2.5 opacity-75 sm:size-3" aria-hidden />
                   </button>
                 );
               })}
@@ -383,63 +383,63 @@ export function OrderTrackerClient({
             className="space-y-6"
           >
             {/* Tarjeta Superior: Resumen + Botón Actualizar + Stepper Animado */}
-            <div className="overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white shadow-[0_18px_45px_-18px_rgba(15,23,42,0.16)]">
+            <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_18px_45px_-18px_rgba(15,23,42,0.16)] sm:rounded-[2rem]">
               {/* Cabecera del Pedido */}
-              <div className="flex flex-col justify-between gap-4 border-b border-slate-100 bg-slate-50/70 px-6 py-5 sm:flex-row sm:items-center sm:px-8">
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+              <div className="flex flex-col justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4 sm:px-8 sm:py-5">
+                <div className="space-y-1 sm:space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
+                    <span className="font-mono text-base font-black tracking-tight text-slate-900 sm:text-2xl">
                       {order.orderNumber}
                     </span>
                     <OrderStatusBadge status={order.status} />
                     <PaymentStatusBadge status={order.paymentStatus} />
-                    <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 font-mono text-[0.62rem] font-extrabold uppercase text-[#1E40AF]">
-                      {order.orderMode === "wholesale" ? "Mayorista B2B" : "Tienda Online"}
+                    <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 font-mono text-[0.56rem] font-extrabold uppercase text-[#1E40AF] sm:px-2.5 sm:text-[0.62rem]">
+                      {order.orderMode === "wholesale" ? "Mayorista B2B" : "Online"}
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-slate-500">
+                  <p className="text-[0.66rem] font-semibold text-slate-500 sm:text-xs">
                     Registrado el{" "}
                     <strong className="text-slate-700">{formatDateTimePE(order.createdAt)}</strong>{" "}
-                    · Última actualización:{" "}
+                    · Act.:{" "}
                     <strong className="text-slate-700">{formatShortDatePE(order.updatedAt)}</strong>
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                   <button
                     type="button"
                     onClick={() => executeLookup(order.orderNumber, true)}
                     disabled={isPending}
                     data-testid="track-order-refresh"
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-800 shadow-xs transition hover:border-blue-300 hover:bg-blue-50/50 hover:text-[#1E40AF] disabled:opacity-60"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[0.66rem] font-extrabold text-slate-800 shadow-xs transition hover:border-blue-300 hover:bg-blue-50/50 hover:text-[#1E40AF] disabled:opacity-60 sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
                   >
                     <RefreshCw
-                      className={cn("size-3.5", isPending && "animate-spin text-[#2563EB]")}
+                      className={cn("size-3 sm:size-3.5", isPending && "animate-spin text-[#2563EB]")}
                       aria-hidden
                     />
-                    <span>Actualizar Estado</span>
+                    <span>Actualizar</span>
                   </button>
 
                   {order.isOwner && order.ownerOrderId && (
                     <Link
                       href={`/cuenta/pedidos/${order.ownerOrderId}`}
-                      className="bg-flow inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-4 py-2 text-xs font-extrabold text-white shadow-sm transition hover:scale-105"
+                      className="bg-flow inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-3 py-1.5 text-[0.66rem] font-extrabold text-white shadow-sm transition hover:scale-105 sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs"
                     >
                       <span>Ver Detalle y SUNAT</span>
-                      <ArrowRight className="size-3.5" aria-hidden />
+                      <ArrowRight className="size-3 sm:size-3.5" aria-hidden />
                     </Link>
                   )}
                 </div>
               </div>
 
               {lastRefreshedLabel && (
-                <div className="border-b border-emerald-100 bg-emerald-50/70 px-6 py-2 text-center font-mono text-[0.68rem] font-bold text-emerald-800">
-                  Estado sincronizado en vivo ({lastRefreshedLabel})
+                <div className="border-b border-emerald-100 bg-emerald-50/70 px-4 py-1.5 text-center font-mono text-[0.62rem] font-bold text-emerald-800 sm:px-6 sm:py-2 sm:text-[0.68rem]">
+                  Estado sincronizado ({lastRefreshedLabel})
                 </div>
               )}
 
               {/* STEPPER VISUAL DE PROGRESO */}
-              <div className="p-6 sm:p-8">
+              <div className="p-3.5 sm:p-8">
                 {isTerminalIssue ? (
                   <div
                     className={cn(
@@ -493,7 +493,7 @@ export function OrderTrackerClient({
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-5 md:gap-2">
+                    <div className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-2">
                       {TRACKING_STAGES.map((stage, idx) => {
                         const Icon = stage.icon;
                         const isDone = stageIndex > idx || (stageIndex === 4 && idx === 4);
@@ -513,7 +513,8 @@ export function OrderTrackerClient({
                           <div
                             key={stage.id}
                             className={cn(
-                              "relative flex items-center gap-3.5 rounded-2xl border p-3 transition-all md:flex-col md:border-transparent md:bg-transparent md:p-0 md:text-center",
+                              "relative flex items-center gap-2 rounded-xl border p-2 transition-all sm:gap-3.5 sm:rounded-2xl sm:p-3 md:flex-col md:border-transparent md:bg-transparent md:p-0 md:text-center",
+                              idx === 4 && "col-span-2 md:col-span-1",
                               isCurrent
                                 ? "border-blue-200 bg-blue-50/50 md:bg-transparent"
                                 : isDone
@@ -523,7 +524,7 @@ export function OrderTrackerClient({
                           >
                             <div
                               className={cn(
-                                "relative z-10 flex size-12 shrink-0 items-center justify-center rounded-2xl border-2 transition-all duration-300",
+                                "relative z-10 flex size-9 shrink-0 items-center justify-center rounded-xl border-2 transition-all duration-300 sm:size-12 sm:rounded-2xl",
                                 isDone
                                   ? "border-emerald-500 bg-emerald-500 text-white shadow-md shadow-emerald-500/25"
                                   : isCurrent
@@ -532,17 +533,17 @@ export function OrderTrackerClient({
                               )}
                             >
                               {isDone ? (
-                                <Check className="size-5 stroke-[2.75]" aria-hidden />
+                                <Check className="size-4 stroke-[2.75] sm:size-5" aria-hidden />
                               ) : (
-                                <Icon className="size-5" aria-hidden />
+                                <Icon className="size-4 sm:size-5" aria-hidden />
                               )}
                               {isCurrent && (
                                 <span
                                   aria-hidden
-                                  className="absolute -right-1 -top-1 flex size-3.5"
+                                  className="absolute -right-1 -top-1 flex size-3 sm:size-3.5"
                                 >
                                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                                  <span className="relative inline-flex size-3.5 rounded-full border-2 border-white bg-amber-400" />
+                                  <span className="relative inline-flex size-3 rounded-full border-2 border-white bg-amber-400 sm:size-3.5" />
                                 </span>
                               )}
                             </div>
@@ -550,7 +551,7 @@ export function OrderTrackerClient({
                             <div className="min-w-0">
                               <p
                                 className={cn(
-                                  "text-xs font-black uppercase tracking-wide",
+                                  "truncate text-[0.65rem] font-black uppercase tracking-wide sm:text-xs",
                                   isCurrent
                                     ? "text-[#1E3A8A]"
                                     : isDone
@@ -560,11 +561,11 @@ export function OrderTrackerClient({
                               >
                                 {stage.label}
                               </p>
-                              <p className="text-[0.7rem] font-semibold text-slate-500">
+                              <p className="truncate text-[0.6rem] font-semibold text-slate-500 sm:text-[0.7rem]">
                                 {stage.sublabel}
                               </p>
                               {stepDate && (isDone || isCurrent) && (
-                                <p className="mt-0.5 font-mono text-[0.62rem] font-bold text-[#2563EB]">
+                                <p className="mt-0.5 font-mono text-[0.55rem] font-bold text-[#2563EB] sm:text-[0.62rem]">
                                   {formatShortDatePE(stepDate)}
                                 </p>
                               )}
@@ -868,47 +869,51 @@ export function OrderTrackerClient({
             </div>
           </motion.div>
         ) : !errorMsg ? (
-          /* ESTADO INICIAL SIN BÚSQUEDA: Guía visual moderna de 3 pasos */
+          /* ESTADO INICIAL SIN BÚSQUEDA: Guía visual moderna de 3 pasos (2 cols en móvil) */
           <motion.div
             key="track-empty-guide"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-1 gap-5 md:grid-cols-3"
+            className="grid grid-cols-2 gap-2.5 sm:gap-5 md:grid-cols-3"
           >
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-blue-50 text-[#2563EB]">
-                <Search className="size-5" aria-hidden />
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md sm:rounded-3xl sm:p-6">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-[#2563EB] sm:size-11 sm:rounded-2xl">
+                <Search className="size-4 sm:size-5" aria-hidden />
               </div>
-              <h2 className="mt-4 text-sm font-black uppercase tracking-wide text-slate-900">
+              <h2 className="mt-2.5 text-xs font-black uppercase tracking-wide text-slate-900 sm:mt-4 sm:text-sm">
                 1. Ingresa tu Código
               </h2>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
-                Encuentra tu código <strong className="font-mono text-slate-800">ORD-2026-...</strong> en tu correo de confirmación o en la sección Mis Pedidos de tu cuenta.
+              <p className="mt-1 text-[0.66rem] leading-snug text-slate-600 sm:mt-1.5 sm:text-xs sm:leading-relaxed">
+                Encuentra <strong className="font-mono text-slate-800">ORD-2026-...</strong> en tu correo o en Mis Pedidos.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-red-200 hover:shadow-md">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-red-50 text-[#DC2626]">
-                <Truck className="size-5" aria-hidden />
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm transition hover:-translate-y-1 hover:border-red-200 hover:shadow-md sm:rounded-3xl sm:p-6">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#DC2626] sm:size-11 sm:rounded-2xl">
+                <Truck className="size-4 sm:size-5" aria-hidden />
               </div>
-              <h2 className="mt-4 text-sm font-black uppercase tracking-wide text-slate-900">
-                2. Avance en Tiempo Real
+              <h2 className="mt-2.5 text-xs font-black uppercase tracking-wide text-slate-900 sm:mt-4 sm:text-sm">
+                2. Avance en Vivo
               </h2>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
-                Cada vez que nuestro almacén prepara, embala o despacha tu compra con el courier, la barra de progreso se actualiza al instante.
+              <p className="mt-1 text-[0.66rem] leading-snug text-slate-600 sm:mt-1.5 sm:text-xs sm:leading-relaxed">
+                Cada cambio en almacén o courier actualiza la barra al instante.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                <ShieldCheck className="size-5" aria-hidden />
+            <div className="col-span-2 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md sm:rounded-3xl sm:p-6 md:col-span-1">
+              <div className="flex items-start gap-3 md:block">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 sm:size-11 sm:rounded-2xl">
+                  <ShieldCheck className="size-4 sm:size-5" aria-hidden />
+                </div>
+                <div>
+                  <h2 className="text-xs font-black uppercase tracking-wide text-slate-900 md:mt-4 sm:text-sm">
+                    3. Guía y Evidencia Oficial
+                  </h2>
+                  <p className="mt-1 text-[0.66rem] leading-snug text-slate-600 sm:mt-1.5 sm:text-xs sm:leading-relaxed">
+                    Consulta tu courier (Olva, Shalom o Express), copia tu guía y revisa la foto de entrega.
+                  </p>
+                </div>
               </div>
-              <h2 className="mt-4 text-sm font-black uppercase tracking-wide text-slate-900">
-                3. Guía y Evidencia Oficial
-              </h2>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
-                Consulta tu transportista asignado (Olva, Shalom o Motorizado Express), copia tu guía con un clic y revisa la foto de entrega.
-              </p>
             </div>
           </motion.div>
         ) : null}

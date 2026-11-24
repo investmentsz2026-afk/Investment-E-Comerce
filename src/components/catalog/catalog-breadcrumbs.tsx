@@ -24,13 +24,13 @@ export function CatalogBreadcrumbs({
   const isClean = variant === "clean";
 
   return (
-    <nav aria-label="Ruta de navegación" className={cn("py-3 sm:py-4", className)}>
+    <nav aria-label="Ruta de navegación" className={cn("py-1.5 sm:py-3.5", className)}>
       <ol
         className={cn(
-          "flex flex-wrap items-center gap-1.5",
+          "flex flex-wrap items-center gap-1 sm:gap-1.5",
           isClean
-            ? "text-xs font-medium text-neutral-500"
-            : "text-[0.68rem] font-medium uppercase tracking-[0.16em] text-taupe-500",
+            ? "text-[0.68rem] font-medium text-neutral-500 sm:text-xs"
+            : "text-[0.58rem] font-medium uppercase tracking-[0.14em] text-taupe-500 sm:text-[0.68rem] sm:tracking-[0.16em]",
         )}
         itemScope
         itemType="https://schema.org/BreadcrumbList"

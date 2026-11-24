@@ -556,12 +556,12 @@ export function InteractiveStoresMapViewer({
         <div ref={containerRef} className="size-full" />
 
         {activeStore && (
-          <div className="pointer-events-auto absolute bottom-3 left-3 right-3 z-[400] flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3.5 shadow-lg backdrop-blur-md sm:left-4 sm:right-auto sm:max-w-md">
+          <div className="pointer-events-auto absolute bottom-2 left-2 right-2 z-[400] flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white/95 p-2 shadow-lg backdrop-blur-md sm:bottom-3 sm:left-4 sm:right-auto sm:max-w-md sm:gap-3 sm:rounded-2xl sm:p-3.5">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-black text-slate-900">
+              <p className="truncate text-[0.68rem] font-black text-slate-900 sm:text-xs">
                 {activeStore.name}
               </p>
-              <p className="truncate text-[0.7rem] font-semibold text-slate-600">
+              <p className="truncate text-[0.6rem] font-semibold text-slate-600 sm:text-[0.7rem]">
                 {activeStore.address} · {activeStore.district}
               </p>
             </div>
@@ -569,9 +569,9 @@ export function InteractiveStoresMapViewer({
               href={getStoreGoogleMapsHref(activeStore)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] to-[#DC2626] px-3 py-2 text-[0.68rem] font-extrabold text-white shadow-sm hover:brightness-110"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-gradient-to-r from-[#991B1B] to-[#DC2626] px-2.5 py-1.5 text-[0.6rem] font-extrabold text-white shadow-sm hover:brightness-110 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:py-2 sm:text-[0.68rem]"
             >
-              <Navigation className="size-3.5" />
+              <Navigation className="size-3 sm:size-3.5" />
               <span>Abrir Mapa</span>
             </a>
           </div>

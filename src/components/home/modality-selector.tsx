@@ -72,19 +72,19 @@ export function ModalitySelector() {
           </h2>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-6">
           {modalities.map((modality) => {
             const isBlue = modality.tone === "blue";
             return (
               <article
                 key={modality.id}
-                className="group relative isolate flex min-h-[390px] flex-col justify-between overflow-hidden rounded-3xl bg-[#0F172A] p-6 text-paper shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:p-8"
+                className="group relative isolate flex min-h-[255px] flex-col justify-between overflow-hidden rounded-2xl bg-[#0F172A] p-3 text-paper shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:min-h-[390px] sm:rounded-3xl sm:p-8"
               >
                 <Image
                   src={modality.image.src}
                   alt={modality.image.alt}
                   fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
+                  sizes="(min-width: 768px) 50vw, 50vw"
                   placeholder={typeof modality.image.src === "string" ? "empty" : "blur"}
                   className="-z-20 object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -98,60 +98,60 @@ export function ModalitySelector() {
                   )}
                 />
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3.5 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-paper px-2 py-0.5 font-mono text-[0.46rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md sm:gap-1.5 sm:px-3.5 sm:py-1 sm:text-[0.65rem]">
                     {modality.id === "menor" ? (
-                      <ShoppingBag className="size-3.5 text-[#DC2626]" aria-hidden />
+                      <ShoppingBag className="size-2.5 text-[#DC2626] sm:size-3.5" aria-hidden />
                     ) : (
-                      <Boxes className="size-3.5 text-[#DC2626]" aria-hidden />
+                      <Boxes className="size-2.5 text-[#DC2626] sm:size-3.5" aria-hidden />
                     )}
                     {modality.badge}
                   </span>
-                  <span className="bg-flow rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase text-paper shadow-md">
+                  <span className="bg-flow hidden rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 font-mono text-[0.55rem] font-bold uppercase text-paper shadow-md sm:inline-flex sm:px-3 sm:py-1 sm:text-[0.62rem]">
                     {modality.subtitle}
                   </span>
                 </div>
 
-                <div className="mt-8">
-                  <h3 className="font-sans text-2xl font-black uppercase tracking-tight text-paper drop-shadow-xs sm:text-3xl">
+                <div className="mt-4 sm:mt-8">
+                  <h3 className="font-sans text-xs font-black uppercase leading-tight tracking-tight text-paper drop-shadow-xs sm:text-3xl">
                     {modality.title}
                   </h3>
-                  <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/95 sm:text-sm">
+                  <p className="mt-1 hidden max-w-lg text-xs leading-relaxed text-white/95 sm:mt-2 sm:block sm:text-sm">
                     {modality.description}
                   </p>
 
-                  <ul className="mt-4 space-y-1.5">
+                  <ul className="mt-2 space-y-1 sm:mt-4 sm:space-y-1.5">
                     {modality.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-xs font-semibold text-paper">
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-paper text-[#1E40AF]">
-                          <Check className="size-3 stroke-[3]" aria-hidden />
+                      <li key={feature} className="flex items-start gap-1.5 text-[0.58rem] font-semibold leading-tight text-paper sm:items-center sm:gap-2 sm:text-xs">
+                        <span className="mt-0.5 flex size-3 shrink-0 items-center justify-center rounded-full bg-paper text-[#1E40AF] sm:mt-0 sm:size-4">
+                          <Check className="size-2 stroke-[3] sm:size-3" aria-hidden />
                         </span>
-                        <span>{feature}</span>
+                        <span className="line-clamp-2 sm:line-clamp-none">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="mt-6 flex flex-wrap items-center gap-2.5">
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:mt-6 sm:gap-2.5">
                     <Link
                       href={modality.cta.href}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-paper px-5 text-xs font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-[#DC2626] hover:to-[#B91C1C] hover:text-paper"
+                      className="inline-flex h-7 items-center justify-center gap-1 rounded-xl bg-paper px-2.5 text-[0.54rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-[#DC2626] hover:to-[#B91C1C] hover:text-paper sm:h-11 sm:gap-2 sm:rounded-2xl sm:px-5 sm:text-xs"
                     >
                       <span>{modality.cta.label}</span>
-                      <ArrowRight className="size-4" aria-hidden />
+                      <ArrowRight className="size-2.5 sm:size-4" aria-hidden />
                     </Link>
                     <Link
                       href={modality.secondaryCta.href}
-                      className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-paper bg-white/15 px-4 text-xs font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#1E40AF]"
+                      className="inline-flex h-7 items-center justify-center rounded-xl border border-paper/80 bg-white/15 px-2.5 text-[0.54rem] font-extrabold uppercase tracking-wider text-paper transition-colors hover:bg-paper hover:text-[#1E40AF] sm:h-11 sm:rounded-2xl sm:border-2 sm:px-4 sm:text-xs"
                     >
                       {modality.secondaryCta.label}
                     </Link>
                     {modality.id === "mayor" && (
                       <Link
                         href="/catalogo?mayorista=1"
-                        className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#EF233C] px-4 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#D90429]"
+                        className="inline-flex h-7 items-center justify-center gap-1 rounded-xl bg-[#EF233C] px-2.5 text-[0.54rem] font-extrabold uppercase tracking-wider text-white shadow-md transition-colors hover:bg-[#D90429] sm:h-11 sm:gap-1.5 sm:rounded-2xl sm:px-4 sm:text-xs"
                       >
-                        <span>Ver Prendas Mayoristas</span>
-                        <ArrowRight className="size-3.5" aria-hidden />
+                        <span>Ver Mayoristas</span>
+                        <ArrowRight className="size-2.5 sm:size-3.5" aria-hidden />
                       </Link>
                     )}
                   </div>

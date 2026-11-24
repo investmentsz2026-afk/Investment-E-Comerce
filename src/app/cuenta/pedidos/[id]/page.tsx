@@ -77,22 +77,21 @@ export default async function CustomerOrderDetailPage({
       )}
 
       {/* Cabecera del Pedido */}
-      <header className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:flex-row sm:items-start">
+      <header className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:flex-row sm:items-start sm:gap-4 sm:p-6">
         <div>
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
             <h1
               data-testid="order-detail-number"
-              className="text-2xl font-black uppercase tracking-tight text-slate-900"
+              className="text-lg font-black uppercase tracking-tight text-slate-900 sm:text-2xl"
             >
               Pedido {order.orderNumber}
             </h1>
             <OrderStatusBadge status={order.status} />
             <PaymentStatusBadge status={order.paymentStatus} />
           </div>
-          <p className="mt-2 font-mono text-xs text-slate-500 flex items-center gap-2 flex-wrap">
+          <p className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[0.66rem] text-slate-500 sm:mt-2 sm:gap-2 sm:text-xs">
             <FaCalendarDays className="size-3 text-[#0055FF]" />
             <span>
-              Registrado el{" "}
               {new Date(order.createdAt).toLocaleString("es-PE", {
                 day: "2-digit",
                 month: "short",
@@ -103,7 +102,6 @@ export default async function CustomerOrderDetailPage({
             </span>
             <span>·</span>
             <span>
-              Modalidad:{" "}
               <strong className="uppercase text-[#0055FF]">
                 {order.orderMode === "wholesale" ? "Mayorista B2B" : "Minorista B2C"}
               </strong>
@@ -111,13 +109,13 @@ export default async function CustomerOrderDetailPage({
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-100 bg-slate-50 px-5 py-3 text-right">
-          <span className="block font-mono text-[0.62rem] font-bold uppercase tracking-wider text-slate-400">
+        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2 sm:block sm:px-5 sm:py-3 sm:text-right">
+          <span className="block font-mono text-[0.58rem] font-bold uppercase tracking-wider text-slate-400 sm:text-[0.62rem]">
             Total Oficial (PEN)
           </span>
           <span
             data-testid="order-detail-total"
-            className="text-2xl font-black tabular-nums text-slate-900"
+            className="text-lg font-black tabular-nums text-slate-900 sm:text-2xl"
           >
             {formatPEN(order.totalAmount)}
           </span>

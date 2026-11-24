@@ -156,29 +156,29 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
               : `Guardar ${product.name} en favoritos`
           }
           className={cn(
-            "absolute left-2.5 top-2.5 z-20 flex size-8 sm:size-9 items-center justify-center rounded-full shadow-md transition-transform duration-200 hover:scale-110 active:scale-90",
+            "absolute left-2 top-2 z-20 flex size-7 items-center justify-center rounded-full shadow-md transition-transform duration-200 hover:scale-110 active:scale-90 sm:left-2.5 sm:top-2.5 sm:size-9",
             favorited
               ? "bg-gradient-to-r from-[#DC2626] to-[#B91C1C] text-white"
               : "bg-white/95 text-slate-800 hover:bg-white hover:text-[#DC2626]",
           )}
         >
-          <Heart className={cn("size-4", favorited && "fill-current")} aria-hidden />
+          <Heart className={cn("size-3.5 sm:size-4", favorited && "fill-current")} aria-hidden />
         </button>
 
         {/* Insignias arriba a la derecha: "Envío 24Hrs" + Círculo de Descuento % */}
-        <div className="pointer-events-none absolute right-2 top-2.5 z-10 flex flex-col items-end gap-1.5 sm:right-2.5 sm:top-3">
-          <span className="rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-2.5 py-1 text-[0.6rem] font-extrabold tracking-tight text-white shadow-md sm:px-3 sm:text-[0.66rem]">
+        <div className="pointer-events-none absolute right-1.5 top-2 z-10 flex flex-col items-end gap-1 sm:right-2.5 sm:top-3 sm:gap-1.5">
+          <span className="rounded-full bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#3B82F6] px-2 py-0.5 text-[0.5rem] font-extrabold tracking-tight text-white shadow-md sm:px-3 sm:py-1 sm:text-[0.66rem]">
             Envío 24Hrs
           </span>
 
           {discount ? (
-            <span className="bg-flow flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] font-mono text-[0.65rem] font-black text-white shadow-md shadow-rose-500/25 sm:size-9 sm:text-xs">
+            <span className="bg-flow flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-[#991B1B] via-[#DC2626] to-[#EF233C] font-mono text-[0.55rem] font-black text-white shadow-md shadow-rose-500/25 sm:size-9 sm:text-xs">
               -{discount}%
             </span>
           ) : badge ? (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 font-mono text-[0.55rem] font-extrabold uppercase tracking-wider shadow-xs",
+                "rounded-full px-2 py-0.5 font-mono text-[0.5rem] font-extrabold uppercase tracking-wider shadow-xs sm:px-2.5 sm:text-[0.55rem]",
                 badge.className,
               )}
             >
@@ -217,16 +217,16 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
       </div>
 
       {/* Información centrada con tipografía limpia y colores modernos */}
-      <div className="mt-3 flex flex-col items-center px-2 text-center">
+      <div className="mt-2 flex flex-col items-center px-1 text-center sm:mt-3 sm:px-2">
         {product.category ? (
-          <span className="mb-1 inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-wider text-[#DC2626] border border-red-100">
+          <span className="mb-0.5 inline-flex items-center rounded-full border border-red-100 bg-red-50 px-2 py-0.5 font-mono text-[0.5rem] font-extrabold uppercase tracking-wider text-[#DC2626] sm:mb-1 sm:px-2.5 sm:text-[0.58rem]">
             {product.category}
           </span>
         ) : null}
 
         <h3
           id={`${product.id}-name`}
-          className="line-clamp-1 w-full text-xs font-extrabold uppercase tracking-tight text-slate-900 sm:text-[0.82rem]"
+          className="line-clamp-1 w-full text-[0.7rem] font-extrabold uppercase tracking-tight text-slate-900 sm:text-[0.82rem]"
         >
           <Link
             href={productHref}
@@ -236,24 +236,24 @@ export function ProductCard({ product, eager = false }: ProductCardProps) {
           </Link>
         </h3>
 
-        <p className="mt-0.5 font-mono text-[0.66rem] text-slate-400">
+        <p className="mt-0.5 font-mono text-[0.56rem] text-slate-400 sm:text-[0.66rem]">
           SKU: {skuCode}
         </p>
 
         {/* Precio actual + Precio anterior tachado */}
-        <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-2">
-          <p className="text-sm font-black tabular-nums text-[#1E40AF] sm:text-[1rem]">
+        <div className="mt-1 flex flex-wrap items-baseline justify-center gap-1.5 sm:mt-1.5 sm:gap-2">
+          <p className="text-xs font-black tabular-nums text-[#1E40AF] sm:text-[1rem]">
             {formatPEN(product.price)}
           </p>
           {product.compareAtPrice ? (
-            <p className="text-[0.72rem] tabular-nums text-slate-400 line-through">
-              Antes {formatPEN(product.compareAtPrice)}
+            <p className="text-[0.62rem] tabular-nums text-slate-400 line-through sm:text-[0.72rem]">
+              {formatPEN(product.compareAtPrice)}
             </p>
           ) : null}
         </div>
 
         {/* Cantidad de colores disponibles + Selector de color */}
-        <p className="mt-1 text-[0.68rem] font-semibold text-slate-500">
+        <p className="mt-0.5 text-[0.58rem] font-semibold text-slate-500 sm:mt-1 sm:text-[0.68rem]">
           {product.colors.length}{" "}
           {product.colors.length === 1 ? "Color disponible" : "Colores disponibles"}
           <span className="sr-only"> — Color seleccionado: {color?.name}</span>

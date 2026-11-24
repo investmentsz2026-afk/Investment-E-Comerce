@@ -378,42 +378,42 @@ export function Manifesto({ brandSlides, brandConfig }: ManifestoProps) {
             className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-br from-slate-200/70 via-blue-100/50 to-red-100/45 opacity-80 blur-2xl"
           />
 
-          <div className="relative rounded-3xl border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur-xl sm:p-8">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="relative rounded-2xl border border-slate-200/80 bg-white/75 p-4 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur-xl sm:rounded-3xl sm:p-8">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Logo size="sm" />
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-3.5 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-[#1E40AF] shadow-xs">
-                <Award className="size-3.5 text-[#DC2626]" aria-hidden />
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/95 px-2.5 py-0.5 font-mono text-[0.55rem] font-extrabold uppercase tracking-widest text-[#1E40AF] shadow-xs sm:gap-1.5 sm:px-3.5 sm:py-1 sm:text-[0.62rem]">
+                <Award className="size-3 text-[#DC2626] sm:size-3.5" aria-hidden />
                 <span>{cfg.centerBadge}</span>
               </span>
             </div>
 
             <h2
               id="manifiesto-title"
-              className="mt-4 font-sans text-2xl font-black uppercase leading-tight tracking-tight text-slate-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] sm:text-3xl"
+              className="mt-3 font-sans text-lg font-black uppercase leading-tight tracking-tight text-slate-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] sm:mt-4 sm:text-3xl"
             >
               {cfg.centerTitle}{" "}
-              <span className="bg-flow mt-1 inline-block rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-0.5 text-white shadow-md">
+              <span className="bg-flow mt-1 inline-block rounded-lg bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2.5 py-0.5 text-white shadow-md sm:rounded-xl sm:px-3">
                 {cfg.centerHighlight}
               </span>
             </h2>
 
             {cfg.centerSubtitle && (
-              <p className="mt-3 max-w-lg text-xs font-semibold leading-relaxed text-slate-700 sm:text-sm">
+              <p className="mt-2 max-w-lg text-[0.7rem] font-semibold leading-relaxed text-slate-700 sm:mt-3 sm:text-sm">
                 {cfg.centerSubtitle}
               </p>
             )}
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
               <Link
                 href="/catalogo"
-                className="bg-flow inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-6 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition-all hover:scale-105 hover:brightness-110"
+                className="bg-flow inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-4 text-[0.65rem] font-extrabold uppercase tracking-wider text-white shadow-lg shadow-red-600/20 transition-all hover:scale-105 hover:brightness-110 sm:h-11 sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-xs sm:tracking-widest"
               >
                 <span>Comprar por Unidad</span>
-                <ArrowRight className="size-4" aria-hidden />
+                <ArrowRight className="size-3.5 sm:size-4" aria-hidden />
               </Link>
               <Link
                 href="/mayorista"
-                className="inline-flex h-11 items-center justify-center rounded-2xl border-2 border-slate-900 bg-white/85 px-6 text-xs font-extrabold uppercase tracking-widest text-slate-900 shadow-xs transition-colors hover:bg-slate-900 hover:text-white"
+                className="inline-flex h-9 items-center justify-center rounded-xl border-2 border-slate-900 bg-white/85 px-4 text-[0.65rem] font-extrabold uppercase tracking-wider text-slate-900 shadow-xs transition-colors hover:bg-slate-900 hover:text-white sm:h-11 sm:rounded-2xl sm:px-6 sm:text-xs sm:tracking-widest"
               >
                 <span>Programa Mayorista B2B</span>
               </Link>

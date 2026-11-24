@@ -242,13 +242,13 @@ export function ProductDetailView({
   }, [product.name, product.shortDescription]);
 
   return (
-    <div className="pb-20 pt-4 lg:pb-32 lg:pt-8 text-neutral-900">
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+    <div className="pb-16 pt-2 text-neutral-900 sm:pt-4 lg:pb-28 lg:pt-8">
+      <div className="grid gap-5 lg:grid-cols-12 lg:gap-14">
         {/* ─── Columna Izquierda: Galería Moderna ─── */}
-        <div className="lg:col-span-6 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-start">
-          {/* Miniaturas verticales (escritorio) */}
+        <div className="flex flex-col-reverse items-start gap-2.5 sm:flex-row sm:gap-4 lg:col-span-6">
+          {/* Miniaturas verticales (escritorio) / fila horizontal (móvil) */}
           {images.length > 1 && (
-            <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto sm:max-h-[640px] no-scrollbar w-full sm:w-20 shrink-0">
+            <div className="no-scrollbar flex w-full shrink-0 gap-2 overflow-x-auto sm:max-h-[640px] sm:w-20 sm:flex-col sm:gap-2.5 sm:overflow-y-auto">
               {images.map((img, i) => {
                 const roleLabel = img.imageType
                   ? IMAGE_ROLE_LABEL[img.imageType] ?? null
@@ -259,10 +259,10 @@ export function ProductDetailView({
                     type="button"
                     onClick={() => setSelectedImageIdx(i)}
                     className={cn(
-                      "relative aspect-[3/4] w-16 sm:w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+                      "relative aspect-[3/4] w-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] sm:w-20",
                       i === selectedImageIdx
                         ? "border-[#2563EB] shadow-sm ring-1 ring-[#2563EB]"
-                        : "border-neutral-200/80 opacity-70 hover:opacity-100 hover:border-neutral-400",
+                        : "border-neutral-200/80 opacity-70 hover:border-neutral-400 hover:opacity-100",
                     )}
                     aria-label={`Ver foto ${i + 1} de ${product.name}`}
                   >
@@ -275,7 +275,7 @@ export function ProductDetailView({
                       className="object-cover"
                     />
                     {roleLabel && (
-                      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-slate-950/70 py-0.5 text-center font-mono text-[0.52rem] font-bold uppercase tracking-wider text-white backdrop-blur-2xs">
+                      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-slate-950/70 py-0.5 text-center font-mono text-[0.48rem] font-bold uppercase tracking-wider text-white backdrop-blur-2xs sm:text-[0.52rem]">
                         {roleLabel}
                       </span>
                     )}
@@ -286,7 +286,7 @@ export function ProductDetailView({
           )}
 
           {/* Imagen Principal Grande con Bordes Redondeados 3D y Fondo Suave */}
-          <div className="relative aspect-[3/4] w-full flex-1 overflow-hidden rounded-3xl bg-[#EBF3EF] border border-neutral-200/60 shadow-xs">
+          <div className="relative aspect-[3/3.55] w-full flex-1 overflow-hidden rounded-2xl border border-neutral-200/60 bg-[#EBF3EF] shadow-xs sm:aspect-[3/4] sm:rounded-3xl">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${selectedImage.id}-${selectedImage.url}`}
@@ -351,25 +351,25 @@ export function ProductDetailView({
                 <button
                   type="button"
                   onClick={handlePrevImage}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-transform hover:scale-110 hover:bg-white active:scale-95"
+                  className="absolute left-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-transform hover:scale-110 hover:bg-white active:scale-95 sm:left-3 sm:size-9"
                   aria-label="Foto anterior"
                 >
-                  <ChevronLeft className="size-5" />
+                  <ChevronLeft className="size-4 sm:size-5" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNextImage}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-transform hover:scale-110 hover:bg-white active:scale-95"
+                  className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-transform hover:scale-110 hover:bg-white active:scale-95 sm:right-3 sm:size-9"
                   aria-label="Foto siguiente"
                 >
-                  <ChevronRight className="size-5" />
+                  <ChevronRight className="size-4 sm:size-5" />
                 </button>
               </>
             )}
 
             {/* Contador de Fotos (ej: 1 / 4) */}
             {images.length > 1 && (
-              <div className="absolute bottom-4 right-4 z-10 rounded-full bg-white/90 px-3 py-1 font-mono text-xs font-bold text-neutral-800 shadow-xs backdrop-blur-xs">
+              <div className="absolute bottom-3 right-3 z-10 rounded-full bg-white/90 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-neutral-800 shadow-xs backdrop-blur-xs sm:bottom-4 sm:right-4 sm:px-3 sm:py-1 sm:text-xs">
                 {selectedImageIdx + 1} / {images.length}
               </div>
             )}
@@ -377,37 +377,37 @@ export function ProductDetailView({
         </div>
 
         {/* ─── Columna Derecha: Información y Opciones de Compra ─── */}
-        <div className="lg:col-span-6 space-y-5">
+        <div className="space-y-3.5 sm:space-y-5 lg:col-span-6">
           <Reveal y={12}>
             {/* Categoría oficial de la prenda */}
-            <div className="mb-2 flex flex-wrap items-center gap-2">
+            <div className="mb-1.5 flex flex-wrap items-center gap-2 sm:mb-2">
               <Link
                 href={`/catalogo/${product.category.slug}`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-red-200/80 bg-red-50 px-3 py-1 font-mono text-[0.65rem] font-extrabold uppercase tracking-widest text-[#DC2626] transition-colors hover:border-[#DC2626] hover:bg-[#DC2626] hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-full border border-red-200/80 bg-red-50 px-2.5 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-widest text-[#DC2626] transition-colors hover:border-[#DC2626] hover:bg-[#DC2626] hover:text-white sm:px-3 sm:py-1 sm:text-[0.65rem]"
               >
                 <span>{product.category.name}</span>
               </Link>
             </div>
 
             {/* Título de la Prenda */}
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 leading-tight">
+            <h1 className="text-xl font-extrabold leading-tight tracking-tight text-neutral-900 sm:text-3xl lg:text-4xl">
               {product.name}
             </h1>
 
             {/* Subtítulo / Fit */}
             {fitLabel && (
-              <p className="mt-1 text-lg font-medium text-neutral-500">
+              <p className="mt-0.5 text-sm font-medium text-neutral-500 sm:mt-1 sm:text-lg">
                 {fitLabel}
               </p>
             )}
 
             {/* Precio */}
-            <div className="mt-3 flex items-baseline gap-3">
-              <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-neutral-900">
+            <div className="mt-2 flex items-baseline gap-2.5 sm:mt-3 sm:gap-3">
+              <span className="text-xl font-extrabold tabular-nums text-neutral-900 sm:text-3xl">
                 {retailPrice ? formatPEN(retailPrice.amount) : "Precio no disponible"}
               </span>
               {retailPrice?.compareAtAmount && (
-                <span className="text-base tabular-nums text-neutral-400 line-through">
+                <span className="text-sm tabular-nums text-neutral-400 line-through sm:text-base">
                   {formatPEN(retailPrice.compareAtAmount)}
                 </span>
               )}
@@ -415,19 +415,19 @@ export function ProductDetailView({
 
             {/* Resumen corto / Balas */}
             {product.shortDescription && (
-              <p className="mt-3 text-sm leading-relaxed text-neutral-600">
+              <p className="mt-2 text-xs leading-relaxed text-neutral-600 sm:mt-3 sm:text-sm">
                 {product.shortDescription}
               </p>
             )}
 
             {/* Selector de Color */}
             {uniqueColors.length > 0 && (
-              <div className="mt-6">
-                <p className="text-sm font-bold text-neutral-900">
+              <div className="mt-4 sm:mt-6">
+                <p className="text-xs font-bold text-neutral-900 sm:text-sm">
                   Color: <span className="font-semibold text-neutral-700">{selectedColor}</span>
                 </p>
                 <div
-                  className="mt-2.5 flex items-center gap-3"
+                  className="mt-2 flex flex-wrap items-center gap-2.5 sm:mt-2.5 sm:gap-3"
                   role="radiogroup"
                   aria-label="Seleccionar color"
                 >
@@ -445,8 +445,8 @@ export function ProductDetailView({
                         onClick={() => handleSelectColor(c.name)}
                         title={inStock ? c.name : `${c.name} (agotado)`}
                         className={cn(
-                          "size-8 rounded-full border border-black/10 transition-all duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
-                          isSelected && "ring-2 ring-offset-2 ring-[#2563EB]",
+                          "size-7 rounded-full border border-black/10 transition-all duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] sm:size-8",
+                          isSelected && "ring-2 ring-[#2563EB] ring-offset-2",
                           !inStock && "opacity-35",
                         )}
                         style={{ backgroundColor: c.swatch }}
@@ -463,16 +463,16 @@ export function ProductDetailView({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       role="status"
-                      className="mt-3 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/90 px-3.5 py-2.5 text-xs font-medium text-amber-950 shadow-2xs"
+                      className="mt-2.5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2 text-[0.7rem] font-medium text-amber-950 shadow-2xs sm:mt-3 sm:gap-2.5 sm:rounded-2xl sm:px-3.5 sm:py-2.5 sm:text-xs"
                     >
                       <Clock
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
+                        className="mt-0.5 size-3.5 shrink-0 text-amber-600 sm:size-4"
                         aria-hidden
                       />
                       <p>
-                        La imagen de esta prenda en color{" "}
+                        La imagen en color{" "}
                         <strong className="font-extrabold">{pendingColorNotice}</strong>{" "}
-                        está en proceso de subida. Mientras tanto, te mostramos la vista de referencia disponible.
+                        está en proceso de subida. Mostramos la vista de referencia.
                       </p>
                     </motion.div>
                   )}
@@ -482,13 +482,13 @@ export function ProductDetailView({
 
             {/* Selector de Talla con Enlace a Guía de Tallas */}
             {uniqueSizes.length > 0 && (
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-neutral-900">Elige tu talla</p>
+                  <p className="text-xs font-bold text-neutral-900 sm:text-sm">Elige tu talla</p>
                   <button
                     type="button"
                     onClick={() => setShowSizeGuide(true)}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0055FF] hover:underline transition-colors"
+                    className="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-[#0055FF] transition-colors hover:underline sm:gap-1.5 sm:text-xs"
                   >
                     <FaRulerHorizontal className="size-3 text-[#0055FF]" />
                     <span>Guía de tallas</span>
@@ -496,7 +496,7 @@ export function ProductDetailView({
                 </div>
 
                 <div
-                  className="mt-2.5 flex flex-wrap gap-2.5"
+                  className="mt-2 flex flex-wrap gap-1.5 sm:mt-2.5 sm:gap-2.5"
                   role="radiogroup"
                   aria-label="Seleccionar talla"
                 >
@@ -516,12 +516,12 @@ export function ProductDetailView({
                           setSizeHint(false);
                         }}
                         className={cn(
-                          "flex h-11 min-w-14 items-center justify-center rounded-xl border text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+                          "flex h-9 min-w-11 items-center justify-center rounded-xl border px-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] sm:h-11 sm:min-w-14 sm:text-sm",
                           isSelected
                             ? "border-[#2563EB] bg-blue-50/70 font-bold text-[#1E40AF] shadow-xs"
                             : available
                               ? "border-neutral-300 bg-white text-neutral-800 hover:border-neutral-500"
-                              : "border-neutral-200 bg-neutral-100 text-neutral-400 line-through cursor-not-allowed",
+                              : "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400 line-through",
                         )}
                       >
                         {size}
@@ -531,70 +531,71 @@ export function ProductDetailView({
                 </div>
 
                 {sizeHint && !selectedSize && (
-                  <p role="alert" className="mt-2 text-xs font-semibold text-[#DC2626]">
+                  <p role="alert" className="mt-1.5 text-xs font-semibold text-[#DC2626] sm:mt-2">
                     Selecciona una talla para continuar.
                   </p>
                 )}
               </div>
             )}
 
-            {/* Disponibilidad en stock */}
-            {selectedVariant && (
-              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium">
-                {selectedVariant.stock > 0 ? (
-                  <>
-                    <Check className="size-4 text-emerald-600" aria-hidden />
-                    <span className="text-emerald-800">
-                      En stock — {selectedVariant.stock} {selectedVariant.stock === 1 ? "unidad disponible" : "unidades disponibles"}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Package className="size-4 text-neutral-400" aria-hidden />
-                    <span className="text-neutral-500">Agotado en esta combinación</span>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Selector de Cantidad */}
-            {!isOutOfStock && (
-              <div className="mt-6">
-                <p className="text-xs font-bold text-neutral-700">Cantidad</p>
-                <div className="mt-2 inline-flex items-center rounded-xl border border-neutral-300 bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    disabled={quantity <= 1 || isAddingCurrent}
-                    aria-label="Disminuir cantidad"
-                    className="flex size-10 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30"
-                  >
-                    <Minus className="size-3.5" aria-hidden />
-                  </button>
-                  <span className="w-12 text-center font-mono text-sm font-bold tabular-nums text-neutral-900">
-                    {quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => Math.min(maxSelectableQty, q + 1))}
-                    disabled={quantity >= maxSelectableQty || isAddingCurrent}
-                    aria-label="Aumentar cantidad"
-                    className="flex size-10 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30"
-                  >
-                    <Plus className="size-3.5" aria-hidden />
-                  </button>
+            {/* Disponibilidad en stock + Selector de Cantidad compactos */}
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 sm:mt-6 sm:block">
+              {selectedVariant && (
+                <div className="flex items-center gap-1.5 text-[0.7rem] font-medium sm:text-xs">
+                  {selectedVariant.stock > 0 ? (
+                    <>
+                      <Check className="size-3.5 text-emerald-600 sm:size-4" aria-hidden />
+                      <span className="text-emerald-800">
+                        En stock — {selectedVariant.stock} {selectedVariant.stock === 1 ? "ud." : "uds."}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Package className="size-3.5 text-neutral-400 sm:size-4" aria-hidden />
+                      <span className="text-neutral-500">Agotado en esta combinación</span>
+                    </>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+
+              {!isOutOfStock && (
+                <div className="flex items-center gap-2.5 sm:mt-5 sm:block">
+                  <p className="text-[0.7rem] font-bold text-neutral-700 sm:text-xs">Cantidad</p>
+                  <div className="inline-flex items-center rounded-xl border border-neutral-300 bg-white shadow-2xs sm:mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1 || isAddingCurrent}
+                      aria-label="Disminuir cantidad"
+                      className="flex size-8 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30 sm:size-10"
+                    >
+                      <Minus className="size-3 sm:size-3.5" aria-hidden />
+                    </button>
+                    <span className="w-9 text-center font-mono text-xs font-bold tabular-nums text-neutral-900 sm:w-12 sm:text-sm">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.min(maxSelectableQty, q + 1))}
+                      disabled={quantity >= maxSelectableQty || isAddingCurrent}
+                      aria-label="Aumentar cantidad"
+                      className="flex size-8 items-center justify-center text-neutral-600 transition-colors hover:text-black disabled:opacity-30 sm:size-10"
+                    >
+                      <Plus className="size-3 sm:size-3.5" aria-hidden />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {actionFeedback && (
-              <p role="alert" className="mt-3 text-xs font-semibold text-[#DC2626]">
+              <p role="alert" className="mt-2.5 text-xs font-semibold text-[#DC2626] sm:mt-3">
                 {actionFeedback}
               </p>
             )}
 
             {/* Botones de Acción: Agregar a la bolsa + Favorito */}
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-4 flex items-center gap-2.5 sm:mt-6 sm:gap-3">
               <button
                 type="button"
                 onClick={async () => {
@@ -625,10 +626,10 @@ export function ProductDetailView({
                   (selectedVariant !== null && selectedVariant.stock <= 0)
                 }
                 className={cn(
-                  "flex h-13 flex-1 items-center justify-center gap-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+                  "flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[0.7rem] font-bold uppercase tracking-wider text-white shadow-md transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] sm:h-13 sm:gap-2.5 sm:text-xs",
                   isOutOfStock || (selectedVariant !== null && selectedVariant.stock <= 0)
                     ? "cursor-not-allowed bg-neutral-300 text-neutral-500 shadow-none"
-                    : "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626] shadow-red-600/25",
+                    : "bg-flow bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] shadow-red-600/25 hover:from-[#7F1D1D] hover:via-[#B91C1C] hover:to-[#DC2626]",
                 )}
               >
                 {isAddingCurrent ? (
@@ -652,7 +653,7 @@ export function ProductDetailView({
                 aria-pressed={favorited}
                 onClick={() => void toggleFavorite(product.slug, product.name)}
                 className={cn(
-                  "flex size-13 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]",
+                  "flex size-11 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] sm:size-13",
                   favorited
                     ? "border-rose-300 bg-rose-50 text-[#DC2626]"
                     : "border-neutral-300 bg-white text-neutral-700 hover:border-black hover:text-black",
@@ -664,7 +665,7 @@ export function ProductDetailView({
                 }
               >
                 <Heart
-                  className={cn("size-5", favorited && "fill-[#DC2626] text-[#DC2626]")}
+                  className={cn("size-4 sm:size-5", favorited && "fill-[#DC2626] text-[#DC2626]")}
                 />
               </button>
             </div>
@@ -672,7 +673,7 @@ export function ProductDetailView({
             {/* ═════════════════════════════════════════════════════════════════════
                 LOS TRES DESPLEGABLES OFICIALES DE LA FICHA AMERICAN COLT
                 ═════════════════════════════════════════════════════════════════════ */}
-            <div className="mt-8 space-y-3">
+            <div className="mt-5 space-y-2.5 sm:mt-8 sm:space-y-3">
               {/* ── 1. DESPLEGABLE: DESCRIPCIÓN REAL DEL PRODUCTO ── */}
               <div className="overflow-hidden rounded-2xl border border-neutral-200/90 bg-[#FAF8F5] shadow-2xs transition-colors">
                 <button
@@ -1158,24 +1159,24 @@ export function ProductDetailView({
 
       {/* ── También te puede interesar ── */}
       {related.length > 0 && (
-        <section className="mt-20 lg:mt-28" aria-labelledby="relacionados-title">
+        <section className="mt-12 lg:mt-28" aria-labelledby="relacionados-title">
           <Reveal>
-            <div className="flex items-baseline justify-between border-b border-neutral-200/80 pb-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-neutral-200/80 pb-3 sm:pb-4">
               <h2
                 id="relacionados-title"
-                className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900"
+                className="text-lg font-extrabold tracking-tight text-neutral-900 sm:text-3xl"
               >
                 También te puede interesar
               </h2>
               <Link
                 href={`/catalogo/${product.category.slug}`}
-                className="text-xs font-bold text-[#0055FF] hover:underline"
+                className="text-[0.7rem] font-bold text-[#0055FF] hover:underline sm:text-xs"
               >
                 Ver más {product.category.name.toLowerCase()} →
               </Link>
             </div>
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
             {related.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.05}>
                 <ProductCard product={p} eager={i < 2} />

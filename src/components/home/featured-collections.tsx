@@ -111,24 +111,24 @@ export function FeaturedCollections() {
                   className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#1E3A8A]/25 to-transparent"
                 />
 
-                <span className="bg-flow absolute left-3.5 top-3.5 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-3 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-widest text-paper shadow-md">
+                <span className="bg-flow absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.48rem] font-extrabold uppercase tracking-widest text-paper shadow-md sm:left-3.5 sm:top-3.5 sm:px-3 sm:py-1 sm:text-[0.6rem]">
                   {col.tag}
                 </span>
 
-                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-2.5 sm:gap-3 sm:p-5">
                   <span className="min-w-0">
-                    <span className="block font-sans text-lg font-black uppercase leading-tight tracking-tight text-paper drop-shadow-xs">
+                    <span className="block font-sans text-xs font-black uppercase leading-tight tracking-tight text-paper drop-shadow-xs sm:text-lg">
                       {col.name}
                     </span>
-                    <span className="mt-1 block line-clamp-2 text-xs leading-relaxed text-white/90">
+                    <span className="mt-1 hidden line-clamp-2 text-xs leading-relaxed text-white/90 sm:block">
                       {col.description}
                     </span>
-                    <span className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 font-mono text-[0.63rem] font-extrabold uppercase tracking-wider text-amber-300 backdrop-blur-xs">
+                    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 font-mono text-[0.52rem] font-extrabold uppercase tracking-wider text-amber-300 backdrop-blur-xs sm:mt-2.5 sm:px-2.5 sm:text-[0.63rem]">
                       Explorar Línea
                     </span>
                   </span>
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-paper text-[#1E40AF] shadow-md transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper">
-                    <ArrowUpRight className="size-4" aria-hidden />
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-xl bg-paper text-[#1E40AF] shadow-md transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper sm:size-10 sm:rounded-2xl">
+                    <ArrowUpRight className="size-3.5 sm:size-4" aria-hidden />
                   </span>
                 </span>
               </Link>

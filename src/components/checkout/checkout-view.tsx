@@ -561,11 +561,11 @@ export function CheckoutView({
   if (orderSuccessData && confirmedOrderId) {
     return (
       <div className="text-neutral-900 animate-in fade-in duration-300">
-        <div className="flex items-center justify-between border-b border-neutral-200/90 pb-4 mb-6">
-          <Link href="/" className="text-lg font-black tracking-tighter text-neutral-900">
+        <div className="flex items-center justify-between border-b border-neutral-200/90 pb-3 mb-4 sm:pb-4 sm:mb-6">
+          <Link href="/" className="text-base sm:text-lg font-black tracking-tighter text-neutral-900">
             AMERICAN COLT<span className="text-[#DC2626]">.</span>
           </Link>
-          <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold flex items-center gap-1.5">
+          <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.68rem] sm:text-xs font-bold flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-emerald-600" />
             Compra Protegida
           </span>
@@ -591,11 +591,11 @@ export function CheckoutView({
   return (
     <div className="text-neutral-900">
       {/* ─── Encabezado de Navegación Rápida y Marca ─── */}
-      <div className="flex items-center justify-between border-b border-neutral-200/90 pb-4 mb-8">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between border-b border-neutral-200/90 pb-2.5 mb-4 sm:pb-4 sm:mb-8">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/"
-            className="text-base sm:text-lg font-black tracking-tighter text-neutral-900 transition-opacity hover:opacity-80"
+            className="text-sm sm:text-lg font-black tracking-tighter text-neutral-900 transition-opacity hover:opacity-80"
           >
             AMERICAN COLT<span className="text-[#DC2626]">.</span>
           </Link>
@@ -604,8 +604,8 @@ export function CheckoutView({
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-xs">
-          <span className="inline-flex items-center gap-1.5 font-bold text-neutral-700">
+        <div className="flex items-center gap-3 sm:gap-4 text-[0.7rem] sm:text-xs">
+          <span className="inline-flex items-center gap-1 font-bold text-neutral-700">
             <Lock className="size-3.5 text-emerald-600" />
             <span className="hidden min-[400px]:inline">Checkout seguro</span>
           </span>
@@ -620,39 +620,39 @@ export function CheckoutView({
       </div>
 
       {/* Título Principal */}
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-neutral-900">
           Finaliza tu compra
         </h1>
-        <p className="mt-1 text-xs text-neutral-500">
+        <p className="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-xs text-neutral-500">
           Revisa tus prendas, selecciona tu dirección en el Perú y elige tu comprobante electrónico.
         </p>
       </div>
 
       {/* Grid de 2 Columnas (Izquierda: Pasos, Derecha: Resumen de Pedido) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 lg:gap-10 items-start">
         {/* ═══════════════════════════════════════════════════════════════════
             COLUMNA IZQUIERDA: STEPPER DE 3 PASOS (ENTREGA, COMPROBANTE, PAGO)
             ═══════════════════════════════════════════════════════════════════ */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-3.5 sm:space-y-5">
           {/* ────────────────────────────────────────────────────────────────
               PASO 1: ENTREGA Y MODALIDAD
               ──────────────────────────────────────────────────────────────── */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-3.5 sm:p-6 shadow-2xs transition-all">
             {currentStep === 1 ? (
-              <div className="space-y-5">
-                <div className="border-b border-neutral-100 pb-3">
-                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <MapPin className="size-5 text-[#DC2626]" />
+              <div className="space-y-3.5 sm:space-y-5">
+                <div className="border-b border-neutral-100 pb-2.5 sm:pb-3">
+                  <h2 className="flex items-center gap-2 text-sm sm:text-base font-bold text-neutral-900">
+                    <MapPin className="size-4 sm:size-5 text-[#DC2626]" />
                     <span>1. Entrega</span>
                   </h2>
-                  <p className="mt-0.5 text-xs text-neutral-500">
-                    El costo de envío se calcula en el servidor según el departamento, provincia y distrito.
+                  <p className="mt-0.5 text-[0.68rem] sm:text-xs text-neutral-500">
+                    El costo de envío se calcula según el departamento, provincia y distrito.
                   </p>
                 </div>
 
                 {step1Error && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 sm:p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
                     <AlertCircle className="size-4 shrink-0 text-red-600" />
                     <span>{step1Error}</span>
                   </div>
@@ -660,27 +660,27 @@ export function CheckoutView({
 
                 {/* Modalidad de entrega: 3 opciones con tarjetas */}
                 <div>
-                  <label className="block text-xs font-bold text-neutral-800 mb-2">
+                  <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-800 mb-1.5 sm:mb-2">
                     Modalidad de Entrega *
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
                     {/* Opción 1: Domicilio */}
                     <button
                       type="button"
                       onClick={() => handleDeliveryMethodChange("delivery")}
                       className={cn(
-                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        "rounded-xl border p-2 sm:p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "delivery"
                           ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Truck className={cn("size-4", deliveryMethod === "delivery" ? "text-[#DC2626]" : "text-neutral-500")} />
-                        {deliveryMethod === "delivery" && <Check className="size-3.5 text-[#DC2626]" />}
+                        <Truck className={cn("size-3.5 sm:size-4", deliveryMethod === "delivery" ? "text-[#DC2626]" : "text-neutral-500")} />
+                        {deliveryMethod === "delivery" && <Check className="size-3 sm:size-3.5 text-[#DC2626]" />}
                       </div>
-                      <span className="font-bold text-xs text-neutral-900 block">Envío a Domicilio</span>
-                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Lima Metropolitana y Provincias</span>
+                      <span className="font-bold text-[0.65rem] sm:text-xs text-neutral-900 block leading-tight">A Domicilio</span>
+                      <span className="text-[0.58rem] sm:text-[0.68rem] text-neutral-500 leading-tight mt-0.5 line-clamp-2">Lima y Provincias</span>
                     </button>
 
                     {/* Opción 2: Express / Provincias */}
@@ -688,18 +688,18 @@ export function CheckoutView({
                       type="button"
                       onClick={() => handleDeliveryMethodChange("express")}
                       className={cn(
-                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        "rounded-xl border p-2 sm:p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "express"
                           ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Zap className={cn("size-4", deliveryMethod === "express" ? "text-[#DC2626]" : "text-neutral-500")} />
-                        {deliveryMethod === "express" && <Check className="size-3.5 text-[#DC2626]" />}
+                        <Zap className={cn("size-3.5 sm:size-4", deliveryMethod === "express" ? "text-[#DC2626]" : "text-neutral-500")} />
+                        {deliveryMethod === "express" && <Check className="size-3 sm:size-3.5 text-[#DC2626]" />}
                       </div>
-                      <span className="font-bold text-xs text-neutral-900 block">Envío Express</span>
-                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Agencia Shalom / Olva a todo el Perú</span>
+                      <span className="font-bold text-[0.65rem] sm:text-xs text-neutral-900 block leading-tight">Envío Express</span>
+                      <span className="text-[0.58rem] sm:text-[0.68rem] text-neutral-500 leading-tight mt-0.5 line-clamp-2">Shalom / Olva Perú</span>
                     </button>
 
                     {/* Opción 3: Recojo en Tienda */}
@@ -707,28 +707,28 @@ export function CheckoutView({
                       type="button"
                       onClick={() => handleDeliveryMethodChange("store_pickup")}
                       className={cn(
-                        "rounded-xl border p-3 text-left transition-all relative flex flex-col justify-between",
+                        "rounded-xl border p-2 sm:p-3 text-left transition-all relative flex flex-col justify-between",
                         deliveryMethod === "store_pickup"
                           ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                           : "border-neutral-200 hover:border-neutral-400 bg-white",
                       )}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <Store className={cn("size-4", deliveryMethod === "store_pickup" ? "text-[#DC2626]" : "text-neutral-500")} />
-                        <span className="rounded bg-emerald-100 px-1 py-0.2 text-[0.6rem] font-bold text-emerald-800">
+                      <div className="flex items-center justify-between mb-1 gap-1">
+                        <Store className={cn("size-3.5 sm:size-4 shrink-0", deliveryMethod === "store_pickup" ? "text-[#DC2626]" : "text-neutral-500")} />
+                        <span className="rounded bg-emerald-100 px-1 py-0.5 text-[0.55rem] sm:text-[0.6rem] font-bold text-emerald-800 leading-none">
                           Gratis
                         </span>
                       </div>
-                      <span className="font-bold text-xs text-neutral-900 block">Recojo en Tienda</span>
-                      <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">Tiendas oficiales American Colt</span>
+                      <span className="font-bold text-[0.65rem] sm:text-xs text-neutral-900 block leading-tight">En Tienda</span>
+                      <span className="text-[0.58rem] sm:text-[0.68rem] text-neutral-500 leading-tight mt-0.5 line-clamp-2">Tiendas American Colt</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Sub-formulario Persona que Recibe y Teléfono */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 pt-0.5">
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                    <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                       Persona que recibe / recoge *
                     </label>
                     <input
@@ -737,12 +737,12 @@ export function CheckoutView({
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
                       placeholder="Ej: Jhosep Colchado"
-                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                      className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                    <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                       Teléfono de contacto (Perú) *
                     </label>
                     <input
@@ -751,7 +751,7 @@ export function CheckoutView({
                       value={recipientPhone}
                       onChange={(e) => setRecipientPhone(e.target.value)}
                       placeholder="987 654 321"
-                      className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                      className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -759,41 +759,41 @@ export function CheckoutView({
                 {/* Contenido condicional según Modalidad */}
                 {deliveryMethod === "store_pickup" ? (
                   /* Modo: Recojo en Tienda */
-                  <div className="rounded-xl border border-neutral-200 bg-[#FAF8F5] p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                        <Store className="size-4 text-[#DC2626]" />
-                        Tienda seleccionada para retiro gratuito
+                  <div className="rounded-xl border border-neutral-200 bg-[#FAF8F5] p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[0.7rem] sm:text-xs font-bold text-neutral-900 flex items-center gap-1.5">
+                        <Store className="size-3.5 sm:size-4 text-[#DC2626]" />
+                        Tienda para retiro gratuito
                       </span>
                       <button
                         type="button"
                         onClick={() => setIsStoreModalOpen(true)}
-                        className="text-xs font-bold text-[#0055FF] hover:underline"
+                        className="text-[0.7rem] sm:text-xs font-bold text-[#0055FF] hover:underline"
                       >
                         Cambiar tienda
                       </button>
                     </div>
 
                     {selectedStore ? (
-                      <div className="rounded-xl border border-neutral-200/80 bg-white p-3.5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="rounded-xl border border-neutral-200/80 bg-white p-2.5 sm:p-3.5 space-y-1">
+                        <div className="flex items-center justify-between gap-2">
                           <strong className="text-xs font-extrabold text-neutral-900">
                             {selectedStore.name}
                           </strong>
-                          <span className="rounded bg-emerald-50 px-2 py-0.5 text-[0.62rem] font-bold text-emerald-800 border border-emerald-200">
+                          <span className="rounded bg-emerald-50 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-800 border border-emerald-200 shrink-0">
                             Costo: S/ 0.00
                           </span>
                         </div>
-                        <p className="text-xs text-neutral-700 flex items-start gap-1.5">
+                        <p className="text-[0.7rem] sm:text-xs text-neutral-700 flex items-start gap-1.5">
                           <MapPin className="size-3.5 text-[#DC2626] shrink-0 mt-0.5" />
                           <span>{selectedStore.address} — {selectedStore.district}, {selectedStore.department}</span>
                         </p>
                         {selectedStore.reference && (
-                          <p className="text-[0.7rem] text-neutral-500 pl-5">
+                          <p className="text-[0.65rem] sm:text-[0.7rem] text-neutral-500 pl-5">
                             Ref: {selectedStore.reference}
                           </p>
                         )}
-                        <p className="text-[0.7rem] text-neutral-600 flex items-center gap-1.5 pt-0.5 pl-5">
+                        <p className="text-[0.65rem] sm:text-[0.7rem] text-neutral-600 flex items-center gap-1.5 pt-0.5 pl-5">
                           <Clock className="size-3 text-neutral-400 shrink-0" />
                           <span>{selectedStore.openingHours}</span>
                         </p>
@@ -804,16 +804,16 @@ export function CheckoutView({
                       </p>
                     )}
 
-                    <p className="text-[0.7rem] text-neutral-500">
-                      ℹ️ Podrás retirar tus prendas presentando tu DNI y el código de pedido una vez confirmado.
+                    <p className="text-[0.65rem] sm:text-[0.7rem] text-neutral-500">
+                      ℹ️ Retira tus prendas presentando tu DNI y código de pedido confirmado.
                     </p>
                   </div>
                 ) : (
                   /* Modo: Domicilio o Express */
-                  <div className="space-y-4 pt-1">
+                  <div className="space-y-3 sm:space-y-4 pt-0.5">
                     {/* Selector de direcciones guardadas si el usuario tiene alguna */}
                     {context.savedAddresses.length > 0 && (
-                      <div className="flex items-center gap-4 text-xs pb-1">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[0.72rem] sm:text-xs pb-0.5">
                         <label className="inline-flex items-center gap-1.5 cursor-pointer font-bold text-neutral-800">
                           <input
                             type="radio"
@@ -841,7 +841,7 @@ export function CheckoutView({
                     )}
 
                     {addressMode === "saved" && context.savedAddresses.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                         {context.savedAddresses.map((addr) => {
                           const isSelected = selectedAddressId === addr.id;
                           return (
@@ -849,18 +849,18 @@ export function CheckoutView({
                               key={addr.id}
                               onClick={() => handleSelectSavedAddress(addr.id)}
                               className={cn(
-                                "rounded-xl border p-3 cursor-pointer transition-all text-xs",
+                                "rounded-xl border p-2.5 sm:p-3 cursor-pointer transition-all text-[0.7rem] sm:text-xs",
                                 isSelected
                                   ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                                   : "border-neutral-200 bg-white hover:border-neutral-300",
                               )}
                             >
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-extrabold text-neutral-900">{addr.title}</span>
-                                {isSelected && <Check className="size-3.5 text-[#DC2626]" />}
+                              <div className="flex items-center justify-between mb-0.5 sm:mb-1 gap-1">
+                                <span className="font-extrabold text-neutral-900 truncate">{addr.title}</span>
+                                {isSelected && <Check className="size-3.5 text-[#DC2626] shrink-0" />}
                               </div>
                               <p className="text-neutral-600 line-clamp-1">{addr.addressLine1}</p>
-                              <p className="text-[0.68rem] text-neutral-400">
+                              <p className="text-[0.62rem] sm:text-[0.68rem] text-neutral-400 line-clamp-1">
                                 {addr.district}, {addr.province} ({addr.department})
                               </p>
                             </div>
@@ -869,17 +869,17 @@ export function CheckoutView({
                       </div>
                     ) : (
                       /* Formulario de Nueva Dirección Completa de Perú */
-                      <div className="space-y-3.5">
+                      <div className="space-y-2.5 sm:space-y-3.5">
                         {/* Selectores de 3 niveles: Departamento -> Provincia -> Distrito */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
                           <div>
-                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                              Departamento *
+                            <label className="block text-[0.6rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1 truncate">
+                              Depto. *
                             </label>
                             <select
                               value={department}
                               onChange={(e) => handleDepartmentChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-2 py-2 sm:px-3 text-[0.7rem] sm:text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {departments.map((d) => (
                                 <option key={d} value={d}>
@@ -890,13 +890,13 @@ export function CheckoutView({
                           </div>
 
                           <div>
-                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                            <label className="block text-[0.6rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1 truncate">
                               Provincia *
                             </label>
                             <select
                               value={province}
                               onChange={(e) => handleProvinceChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-2 py-2 sm:px-3 text-[0.7rem] sm:text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {provinces.map((p) => (
                                 <option key={p} value={p}>
@@ -907,13 +907,13 @@ export function CheckoutView({
                           </div>
 
                           <div>
-                            <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                            <label className="block text-[0.6rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-neutral-600 mb-1 truncate">
                               Distrito *
                             </label>
                             <select
                               value={district}
                               onChange={(e) => handleDistrictChange(e.target.value)}
-                              className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 bg-white px-2 py-2 sm:px-3 text-[0.7rem] sm:text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             >
                               {districts.map((dst) => (
                                 <option key={dst} value={dst}>
@@ -926,7 +926,7 @@ export function CheckoutView({
 
                         {/* Dirección Exacta */}
                         <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                             Dirección exacta (Av. / Calle / Jr. / N° / Dpto.) *
                           </label>
                           <input
@@ -935,21 +935,21 @@ export function CheckoutView({
                             value={addressLine1}
                             onChange={(e) => setAddressLine1(e.target.value)}
                             placeholder="Ej: Av. Conquistadores 450, Dpto. 302"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
                         {/* Referencia */}
                         <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
+                          <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                             Referencia para el courier (opcional)
                           </label>
                           <input
                             type="text"
                             value={reference}
                             onChange={(e) => setReference(e.target.value)}
-                            placeholder="Ej: Frente al parque, edificio de ladrillo visto, recepción 24h"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                            placeholder="Ej: Frente al parque, edificio de ladrillo visto"
+                            className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
@@ -995,11 +995,11 @@ export function CheckoutView({
                 )}
 
                 {/* Botón de Continuar a Paso 2 */}
-                <div className="pt-3 border-t border-neutral-100 flex justify-end">
+                <div className="pt-2.5 sm:pt-3 border-t border-neutral-100 flex justify-end">
                   <button
                     type="button"
                     onClick={handleProceedToStep2}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-2.5 sm:px-6 sm:py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
                   >
                     <span>Continuar al comprobante</span>
                     <ArrowRight className="size-4" />
@@ -1008,21 +1008,21 @@ export function CheckoutView({
               </div>
             ) : (
               /* Paso 1 Contraído (Resumen con botón Editar) */
-              <div className="flex items-center justify-between">
-                <div className="flex items-start gap-3 text-xs">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
-                    <Check className="size-4 stroke-[3]" />
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-start gap-2.5 sm:gap-3 text-xs min-w-0">
+                  <div className="flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                    <Check className="size-3.5 sm:size-4 stroke-[3]" />
                   </div>
-                  <div>
-                    <h3 className="font-extrabold uppercase tracking-wider text-neutral-900 text-[0.72rem]">
+                  <div className="min-w-0">
+                    <h3 className="font-extrabold uppercase tracking-wider text-neutral-900 text-[0.68rem] sm:text-[0.72rem]">
                       1. Entrega
                     </h3>
-                    <p className="text-neutral-700 font-medium">
+                    <p className="text-neutral-700 font-medium text-[0.72rem] sm:text-xs line-clamp-2">
                       {deliveryMethod === "store_pickup"
                         ? `Recojo en Tienda Oficial: ${selectedStore?.name ?? "American Colt"} (${selectedStore?.district ?? ""})`
                         : `${department}, ${province}, ${district} — ${addressLine1}`}
                     </p>
-                    <p className="text-[0.68rem] text-neutral-500">
+                    <p className="text-[0.64rem] sm:text-[0.68rem] text-neutral-500">
                       Destinatario: {recipientName} ({recipientPhone})
                     </p>
                   </div>
@@ -1031,7 +1031,7 @@ export function CheckoutView({
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-neutral-50 transition-colors"
+                  className="shrink-0 rounded-lg border border-neutral-200 px-2.5 py-1 sm:px-3 sm:py-1.5 text-[0.7rem] sm:text-xs font-bold text-[#0055FF] hover:bg-neutral-50 transition-colors"
                 >
                   Editar
                 </button>
@@ -1042,15 +1042,15 @@ export function CheckoutView({
           {/* ────────────────────────────────────────────────────────────────
               PASO 2: COMPROBANTE TRIBUTARIO (BOLETA O FACTURA)
               ──────────────────────────────────────────────────────────────── */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-3.5 sm:p-6 shadow-2xs transition-all">
             {currentStep === 2 ? (
-              <div className="space-y-5">
-                <div className="border-b border-neutral-100 pb-3">
-                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <Receipt className="size-5 text-[#DC2626]" />
+              <div className="space-y-3.5 sm:space-y-5">
+                <div className="border-b border-neutral-100 pb-2.5 sm:pb-3">
+                  <h2 className="flex items-center gap-2 text-sm sm:text-base font-bold text-neutral-900">
+                    <Receipt className="size-4 sm:size-5 text-[#DC2626]" />
                     <span>2. Comprobante</span>
                   </h2>
-                  <p className="mt-0.5 text-xs text-neutral-500">
+                  <p className="mt-0.5 text-[0.68rem] sm:text-xs text-neutral-500">
                     Selecciona Boleta de Venta (DNI / CE) o Factura Electrónica Comercial (RUC 11 dígitos).
                   </p>
                 </div>
@@ -1099,24 +1099,24 @@ export function CheckoutView({
 
                 {taxDocumentType === "boleta" ? (
                   /* Formulario de Boleta */
-                  <div className="space-y-3.5">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
-                          Documento *
+                  <div className="space-y-2.5 sm:space-y-3.5">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      <div className="col-span-1">
+                        <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
+                          Doc. *
                         </label>
                         <select
                           value={billingDocType}
                           onChange={(e) => setBillingDocType(e.target.value as "DNI" | "CE")}
-                          className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 bg-white px-2 py-2 sm:px-3 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         >
-                          <option value="DNI">DNI (8 dígitos)</option>
-                          <option value="CE">Carné de Extranjería</option>
+                          <option value="DNI">DNI</option>
+                          <option value="CE">C.E.</option>
                         </select>
                       </div>
 
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      <div className="col-span-2">
+                        <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                           Número de {billingDocType} *
                         </label>
                         <input
@@ -1125,13 +1125,13 @@ export function CheckoutView({
                           value={billingDocNumber}
                           onChange={(e) => setBillingDocNumber(e.target.value)}
                           placeholder="Ej: 12345678"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                         Nombres y apellidos del titular *
                       </label>
                       <input
@@ -1140,29 +1140,29 @@ export function CheckoutView({
                         value={billingCustomerName}
                         onChange={(e) => setBillingCustomerName(e.target.value)}
                         placeholder="Ej: Jhosep Colchado"
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
                   </div>
                 ) : (
                   /* Formulario de Factura */
-                  <div className="space-y-3.5">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
-                          Tipo Documento
+                  <div className="space-y-2.5 sm:space-y-3.5">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      <div className="col-span-1">
+                        <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
+                          Tipo
                         </label>
                         <input
                           type="text"
                           disabled
-                          value="RUC (11 dígitos)"
-                          className="w-full rounded-xl border border-neutral-200 bg-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-600"
+                          value="RUC"
+                          className="w-full rounded-xl border border-neutral-200 bg-neutral-100 px-2.5 py-2 text-xs font-semibold text-neutral-600"
                         />
                       </div>
 
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
-                          Número de RUC (Inicia en 10 o 20) *
+                      <div className="col-span-2">
+                        <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
+                          Número de RUC (10 o 20) *
                         </label>
                         <input
                           type="text"
@@ -1170,13 +1170,13 @@ export function CheckoutView({
                           value={billingDocNumber}
                           onChange={(e) => setBillingDocNumber(e.target.value)}
                           placeholder="Ej: 20601234567"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                         Razón Social registrada en SUNAT *
                       </label>
                       <input
@@ -1185,12 +1185,12 @@ export function CheckoutView({
                         value={billingCustomerName}
                         onChange={(e) => setBillingCustomerName(e.target.value)}
                         placeholder="Ej: TEXTILES Y MODA DEL PERU S.A.C."
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs uppercase text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 text-xs uppercase text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                         Domicilio Fiscal en el Perú *
                       </label>
                       <input
@@ -1199,18 +1199,18 @@ export function CheckoutView({
                         value={billingFiscalAddress}
                         onChange={(e) => setBillingFiscalAddress(e.target.value)}
                         placeholder="Ej: Av. Gamarra 1043, La Victoria, Lima"
-                        className="w-full rounded-xl border border-neutral-300 px-3.5 py-2 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                        className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 text-xs text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                       />
                     </div>
                   </div>
                 )}
 
                 {/* Botones de Navegación del Paso 2 */}
-                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
+                <div className="pt-2.5 sm:pt-3 border-t border-neutral-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2.5">
                   <button
                     type="button"
                     onClick={() => setCurrentStep(1)}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                    className="inline-flex items-center justify-center sm:justify-start gap-1.5 py-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
                   >
                     <ArrowLeft className="size-4" />
                     <span>Volver a Entrega</span>
@@ -1219,7 +1219,7 @@ export function CheckoutView({
                   <button
                     type="button"
                     onClick={handleProceedToStep3}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-2.5 sm:px-6 sm:py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-[#DC2626]/20 hover:bg-[#B91C1C] active:scale-[0.99] transition-all"
                   >
                     <span>Continuar al método de pago</span>
                     <ArrowRight className="size-4" />
@@ -1269,50 +1269,50 @@ export function CheckoutView({
           {/* ────────────────────────────────────────────────────────────────
               PASO 3: MÉTODO DE PAGO, TARJETA INTERACTIVA Y CONFIRMACIÓN
               ──────────────────────────────────────────────────────────────── */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs transition-all">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-3.5 sm:p-6 shadow-2xs transition-all">
             {currentStep === 3 ? (
-              <div className="space-y-6">
-                <div className="border-b border-neutral-100 pb-3">
-                  <h2 className="flex items-center gap-2 text-base font-bold text-neutral-900">
-                    <CreditCard className="size-5 text-[#DC2626]" />
+              <div className="space-y-4 sm:space-y-6">
+                <div className="border-b border-neutral-100 pb-2.5 sm:pb-3">
+                  <h2 className="flex items-center gap-2 text-sm sm:text-base font-bold text-neutral-900">
+                    <CreditCard className="size-4 sm:size-5 text-[#DC2626]" />
                     <span>3. Método de pago</span>
                   </h2>
-                  <p className="mt-0.5 text-xs text-neutral-500">
-                    Las operaciones se procesan de forma segura con verificación bancaria SSL 256-Bit.
+                  <p className="mt-0.5 text-[0.68rem] sm:text-xs text-neutral-500">
+                    Operaciones seguras con verificación bancaria SSL 256-Bit.
                   </p>
                 </div>
 
                 {generalError && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs font-semibold text-red-800 flex items-center gap-2">
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800 flex items-center gap-2">
                     <AlertCircle className="size-4 shrink-0 text-red-600" />
                     <span>{generalError}</span>
                   </div>
                 )}
 
                 {/* Selector de Método de Pago Principal */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {/* Opción 1: Tarjeta Crédito o Débito */}
                   <button
                     type="button"
                     onClick={() => setPaymentType("card")}
                     className={cn(
-                      "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
+                      "rounded-xl sm:rounded-2xl border p-2.5 sm:p-4 text-left transition-all relative flex flex-col justify-between",
                       paymentType === "card"
                         ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                         : "border-neutral-200 bg-white hover:border-neutral-300",
                     )}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <CreditCard className={cn("size-5", paymentType === "card" ? "text-[#DC2626]" : "text-neutral-500")} />
-                      <span className="rounded bg-blue-50 px-2 py-0.5 text-[0.6rem] font-bold text-[#0055FF]">
-                        Visa, Mastercard, Amex
+                    <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
+                      <CreditCard className={cn("size-4 sm:size-5 shrink-0", paymentType === "card" ? "text-[#DC2626]" : "text-neutral-500")} />
+                      <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[0.55rem] sm:text-[0.6rem] font-bold text-[#0055FF] truncate">
+                        Visa / MC / Amex
                       </span>
                     </div>
-                    <strong className="text-xs font-extrabold text-neutral-900 block">
-                      Tarjeta de Crédito o Débito
+                    <strong className="text-[0.72rem] sm:text-xs font-extrabold text-neutral-900 block leading-tight">
+                      Tarjeta Crédito / Débito
                     </strong>
-                    <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">
-                      Aprobación instantánea con pasarela segura
+                    <span className="text-[0.6rem] sm:text-[0.68rem] text-neutral-500 leading-tight mt-0.5 line-clamp-2">
+                      Aprobación instantánea
                     </span>
                   </button>
 
@@ -1321,25 +1321,25 @@ export function CheckoutView({
                     type="button"
                     onClick={() => setPaymentType("transfer")}
                     className={cn(
-                      "rounded-2xl border p-4 text-left transition-all relative flex flex-col justify-between",
+                      "rounded-xl sm:rounded-2xl border p-2.5 sm:p-4 text-left transition-all relative flex flex-col justify-between",
                       paymentType === "transfer"
                         ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                         : "border-neutral-200 bg-white hover:border-neutral-300",
                     )}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="size-5 rounded-full bg-[#25D366] text-white flex items-center justify-center">
-                        <SiWhatsapp className="size-3" />
+                    <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
+                      <div className="size-4 sm:size-5 rounded-full bg-[#25D366] text-white flex items-center justify-center shrink-0">
+                        <SiWhatsapp className="size-2.5 sm:size-3" />
                       </div>
-                      <span className="rounded bg-emerald-50 px-2 py-0.5 text-[0.6rem] font-bold text-emerald-700">
-                        Cero comisiones
+                      <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[0.55rem] sm:text-[0.6rem] font-bold text-emerald-700 truncate">
+                        0% comisión
                       </span>
                     </div>
-                    <strong className="text-xs font-extrabold text-neutral-900 block">
-                      Transferencia bancaria / Yape / Plin
+                    <strong className="text-[0.72rem] sm:text-xs font-extrabold text-neutral-900 block leading-tight">
+                      Transferencia / Yape / Plin
                     </strong>
-                    <span className="text-[0.68rem] text-neutral-500 leading-tight mt-0.5">
-                      BCP, BBVA, Interbank y WhatsApp oficial
+                    <span className="text-[0.6rem] sm:text-[0.68rem] text-neutral-500 leading-tight mt-0.5 line-clamp-2">
+                      BCP, BBVA, Interbank
                     </span>
                   </button>
                 </div>
@@ -1348,7 +1348,7 @@ export function CheckoutView({
                     PAGO CON TARJETA (CON TARJETA 3D INTERACTIVA Y SIMULADOR)
                     ══════════════════════════════════════════════════════════════ */}
                 {paymentType === "card" && (
-                  <div className="rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-4 sm:p-5 space-y-5">
+                  <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-3 sm:p-5 space-y-3.5 sm:space-y-5">
                     {/* Switch de Modo: Simulación vs Mercado Pago Real */}
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200/80 pb-3">
                       <div className="flex items-center gap-1.5">
@@ -1462,10 +1462,10 @@ export function CheckoutView({
                       </div>
 
                       {/* Fila: Expiración + CVV + DNI */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
                         <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            Vencimiento (MM/AA) *
+                          <label className="block text-[0.68rem] sm:text-xs font-bold text-neutral-700 mb-1 truncate">
+                            Vence *
                           </label>
                           <input
                             type="text"
@@ -1475,14 +1475,14 @@ export function CheckoutView({
                             onChange={(e) => setCardExp(formatExpInput(e.target.value))}
                             onFocus={() => setIsCardFlipped(false)}
                             placeholder="12/28"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-2 py-2 sm:px-3.5 sm:py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1 flex items-center justify-between">
-                            <span>Código CVV *</span>
-                            <span className="text-[0.62rem] text-neutral-400 font-normal">3 dígitos</span>
+                          <label className="block text-[0.68rem] sm:text-xs font-bold text-neutral-700 mb-1 flex items-center justify-between">
+                            <span>CVV *</span>
+                            <span className="hidden sm:inline text-[0.62rem] text-neutral-400 font-normal">3 dígitos</span>
                           </label>
                           <div className="relative">
                             <input
@@ -1494,15 +1494,15 @@ export function CheckoutView({
                               onFocus={() => setIsCardFlipped(true)}
                               onBlur={() => setIsCardFlipped(false)}
                               placeholder="123"
-                              className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                              className="w-full rounded-xl border border-neutral-300 px-2 py-2 sm:px-3.5 sm:py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                             />
-                            <Lock className="size-3 text-neutral-400 absolute right-3 top-3.5" />
+                            <Lock className="hidden sm:block size-3 text-neutral-400 absolute right-3 top-3.5" />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-neutral-700 mb-1">
-                            DNI del Titular *
+                          <label className="block text-[0.68rem] sm:text-xs font-bold text-neutral-700 mb-1 truncate">
+                            DNI Titular *
                           </label>
                           <input
                             type="text"
@@ -1512,7 +1512,7 @@ export function CheckoutView({
                             onChange={(e) => setCardDni(e.target.value.replace(/\D/g, ""))}
                             onFocus={() => setIsCardFlipped(false)}
                             placeholder="12345678"
-                            className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                            className="w-full rounded-xl border border-neutral-300 px-2 py-2 sm:px-3.5 sm:py-2.5 text-xs font-mono text-center text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                           />
                         </div>
                       </div>
@@ -1524,91 +1524,91 @@ export function CheckoutView({
                     PAGO POR TRANSFERENCIA BANCARIA / YAPE / PLIN
                     ══════════════════════════════════════════════════════════════ */}
                 {paymentType === "transfer" && (
-                  <div className="rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-4 sm:p-5 space-y-4">
+                  <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-[#FAF8F5] p-3 sm:p-5 space-y-3 sm:space-y-4">
                     <div className="border-b border-neutral-200 pb-2">
                       <span className="font-extrabold text-xs text-neutral-900 block">
                         Cuentas Oficiales de American Colt JEANS S.A.C.
                       </span>
-                      <p className="text-[0.68rem] text-neutral-500">
-                        Transfiere el monto exacto de {formatPEN(taxBreakdown.totalAmount)} y registra tu número de operación.
+                      <p className="text-[0.65rem] sm:text-[0.68rem] text-neutral-500">
+                        Transfiere el monto exacto de {formatPEN(taxBreakdown.totalAmount)} y registra tu operación.
                       </p>
                     </div>
 
                     {/* Cuentas en Rejilla */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-2.5 text-[0.68rem] sm:text-xs">
                       {/* Yape / Plin */}
-                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-emerald-950 font-extrabold">Yape / Plin Oficial</strong>
+                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-2.5 sm:p-3 space-y-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <strong className="text-emerald-950 font-extrabold truncate">Yape / Plin</strong>
                           <button
                             type="button"
                             onClick={() => handleCopyAccount(OFFICIAL_WHATSAPP_DISPLAY, "yape")}
-                            className="text-[0.65rem] font-bold text-emerald-800 hover:underline flex items-center gap-1"
+                            className="text-[0.6rem] sm:text-[0.65rem] font-bold text-emerald-800 hover:underline flex items-center gap-0.5 shrink-0"
                           >
                             {copiedAccount === "yape" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
-                            <span>{copiedAccount === "yape" ? "Copiado" : "Copiar"}</span>
+                            <span>{copiedAccount === "yape" ? "Listo" : "Copiar"}</span>
                           </button>
                         </div>
-                        <p className="font-mono font-black text-sm text-emerald-900">{OFFICIAL_WHATSAPP_DISPLAY}</p>
-                        <p className="text-[0.65rem] text-emerald-800">Titular: American Colt JEANS S.A.C.</p>
+                        <p className="font-mono font-black text-xs sm:text-sm text-emerald-900 break-all">{OFFICIAL_WHATSAPP_DISPLAY}</p>
+                        <p className="text-[0.58rem] sm:text-[0.65rem] text-emerald-800 line-clamp-1">American Colt JEANS</p>
                       </div>
 
                       {/* BCP */}
-                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-neutral-900 font-extrabold">Banco de Crédito (BCP)</strong>
+                      <div className="rounded-xl border border-neutral-200 bg-white p-2.5 sm:p-3 space-y-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <strong className="text-neutral-900 font-extrabold truncate">BCP</strong>
                           <button
                             type="button"
                             onClick={() => handleCopyAccount("191-94829104-0-32", "bcp")}
-                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                            className="text-[0.6rem] sm:text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-0.5 shrink-0"
                           >
                             {copiedAccount === "bcp" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
-                            <span>{copiedAccount === "bcp" ? "Copiado" : "Copiar Cta"}</span>
+                            <span>{copiedAccount === "bcp" ? "Listo" : "Copiar"}</span>
                           </button>
                         </div>
-                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 191-94829104-0-32</p>
-                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 002-191009482910403254</p>
+                        <p className="font-mono font-bold text-[0.65rem] sm:text-xs text-neutral-800 break-all">191-94829104-0-32</p>
+                        <p className="font-mono text-[0.56rem] sm:text-[0.65rem] text-neutral-500 break-all">CCI: 002-191009482910403254</p>
                       </div>
 
                       {/* BBVA */}
-                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-neutral-900 font-extrabold">BBVA Perú</strong>
+                      <div className="rounded-xl border border-neutral-200 bg-white p-2.5 sm:p-3 space-y-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <strong className="text-neutral-900 font-extrabold truncate">BBVA Perú</strong>
                           <button
                             type="button"
                             onClick={() => handleCopyAccount("0011-0175-0100049281", "bbva")}
-                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                            className="text-[0.6rem] sm:text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-0.5 shrink-0"
                           >
                             {copiedAccount === "bbva" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
-                            <span>{copiedAccount === "bbva" ? "Copiado" : "Copiar"}</span>
+                            <span>{copiedAccount === "bbva" ? "Listo" : "Copiar"}</span>
                           </button>
                         </div>
-                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 0011-0175-0100049281</p>
-                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 011-17500010004928173</p>
+                        <p className="font-mono font-bold text-[0.65rem] sm:text-xs text-neutral-800 break-all">0011-0175-0100049281</p>
+                        <p className="font-mono text-[0.56rem] sm:text-[0.65rem] text-neutral-500 break-all">CCI: 011-17500010004928173</p>
                       </div>
 
                       {/* Interbank */}
-                      <div className="rounded-xl border border-neutral-200 bg-white p-3 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-neutral-900 font-extrabold">Interbank</strong>
+                      <div className="rounded-xl border border-neutral-200 bg-white p-2.5 sm:p-3 space-y-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <strong className="text-neutral-900 font-extrabold truncate">Interbank</strong>
                           <button
                             type="button"
                             onClick={() => handleCopyAccount("200-3001849201", "interbank")}
-                            className="text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-1"
+                            className="text-[0.6rem] sm:text-[0.65rem] font-bold text-[#0055FF] hover:underline flex items-center gap-0.5 shrink-0"
                           >
                             {copiedAccount === "interbank" ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
-                            <span>{copiedAccount === "interbank" ? "Copiado" : "Copiar"}</span>
+                            <span>{copiedAccount === "interbank" ? "Listo" : "Copiar"}</span>
                           </button>
                         </div>
-                        <p className="font-mono font-bold text-xs text-neutral-800">Cta Cte: 200-3001849201</p>
-                        <p className="font-mono text-[0.65rem] text-neutral-500">CCI: 003-20000300184920188</p>
+                        <p className="font-mono font-bold text-[0.65rem] sm:text-xs text-neutral-800 break-all">200-3001849201</p>
+                        <p className="font-mono text-[0.56rem] sm:text-[0.65rem] text-neutral-500 break-all">CCI: 003-20000300184920188</p>
                       </div>
                     </div>
 
                     {/* Inputs de Operación y Voucher */}
-                    <div className="space-y-3 pt-2 bg-white p-4 rounded-xl border border-neutral-200">
+                    <div className="space-y-2.5 sm:space-y-3 pt-1.5 bg-white p-3 sm:p-4 rounded-xl border border-neutral-200">
                       <div>
-                        <label className="block text-xs font-bold text-neutral-700 mb-1">
+                        <label className="block text-[0.7rem] sm:text-xs font-bold text-neutral-700 mb-1">
                           Número o Código de Operación del Voucher *
                         </label>
                         <input
@@ -1617,7 +1617,7 @@ export function CheckoutView({
                           value={operationCode}
                           onChange={(e) => setOperationCode(e.target.value)}
                           placeholder="Ej: 849201 ó OP-948291"
-                          className="w-full rounded-xl border border-neutral-300 px-3.5 py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
+                          className="w-full rounded-xl border border-neutral-300 px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs font-mono text-neutral-900 focus:border-[#DC2626] focus:outline-none"
                         />
                       </div>
 
@@ -1680,11 +1680,11 @@ export function CheckoutView({
                 </div>
 
                 {/* Botones de Navegación del Paso 3 */}
-                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
+                <div className="pt-2.5 sm:pt-3 border-t border-neutral-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2.5">
                   <button
                     type="button"
                     onClick={() => setCurrentStep(2)}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                    className="inline-flex items-center justify-center sm:justify-start gap-1.5 py-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
                   >
                     <ArrowLeft className="size-4" />
                     <span>Volver a Comprobante</span>
@@ -1694,7 +1694,7 @@ export function CheckoutView({
                     type="button"
                     onClick={handleConfirmOrder}
                     disabled={isPending || isProcessingPayment}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-8 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-[#DC2626]/25 hover:bg-[#B91C1C] active:scale-[0.99] disabled:opacity-50 transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3 sm:px-8 sm:py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-lg shadow-[#DC2626]/25 hover:bg-[#B91C1C] active:scale-[0.99] disabled:opacity-50 transition-all"
                   >
                     {isPending || isProcessingPayment ? (
                       <>
@@ -1732,31 +1732,31 @@ export function CheckoutView({
         {/* ═══════════════════════════════════════════════════════════════════
             COLUMNA DERECHA: RESUMEN DEL PEDIDO CON PRENDAS Y CÁLCULOS
             ═══════════════════════════════════════════════════════════════════ */}
-        <div className="lg:col-span-5 sticky top-20">
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+        <div className="lg:col-span-5 lg:sticky lg:top-28">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-3.5 sm:p-6 shadow-2xs space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5 sm:pb-3">
               <div>
                 <h2 className="text-sm font-extrabold text-neutral-900">
                   Resumen del pedido
                 </h2>
-                <span className="font-mono text-[0.62rem] font-bold uppercase tracking-wider text-neutral-500">
+                <span className="font-mono text-[0.6rem] sm:text-[0.62rem] font-bold uppercase tracking-wider text-neutral-500">
                   {context.orderMode === "wholesale" ? "MODALIDAD: MAYORISTA B2B" : "MODALIDAD: MINORISTA B2C"}
                 </span>
               </div>
 
               <Link
                 href="/catalogo"
-                className="text-xs font-bold text-[#0055FF] hover:underline"
+                className="text-[0.72rem] sm:text-xs font-bold text-[#0055FF] hover:underline shrink-0"
               >
                 ✏️ Editar bolsa
               </Link>
             </div>
 
             {/* Lista de Prendas en el Checkout */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 pr-1 no-scrollbar">
+            <div className="max-h-64 sm:max-h-80 overflow-y-auto divide-y divide-neutral-100 pr-1 no-scrollbar">
               {context.lines.map((line) => (
-                <div key={line.variantId} className="flex gap-3 py-3 items-center">
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+                <div key={line.variantId} className="flex gap-2.5 sm:gap-3 py-2 sm:py-3 items-center">
+                  <div className="relative size-12 sm:size-14 shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
                     <Image
                       src={line.imageUrl}
                       alt={line.productName}
@@ -1768,18 +1768,18 @@ export function CheckoutView({
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <strong className="text-xs font-bold text-neutral-900 line-clamp-1">
+                    <strong className="text-[0.74rem] sm:text-xs font-bold text-neutral-900 line-clamp-1">
                       {line.productName}
                     </strong>
-                    <div className="font-mono text-[0.65rem] text-neutral-500 line-clamp-1">
+                    <div className="font-mono text-[0.6rem] sm:text-[0.65rem] text-neutral-500 line-clamp-1">
                       SKU: {line.sku} {line.colorName ? `· ${line.colorName}` : ""} {line.size ? `· Talla ${line.size}` : ""}
                     </div>
-                    <div className="text-[0.72rem] text-neutral-700 font-semibold mt-0.5">
+                    <div className="text-[0.68rem] sm:text-[0.72rem] text-neutral-700 font-semibold mt-0.5">
                       {line.quantity} × {formatPEN(line.effectiveUnitAmount)}
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0 font-mono text-xs font-extrabold text-neutral-900">
+                  <div className="text-right shrink-0 font-mono text-[0.74rem] sm:text-xs font-extrabold text-neutral-900">
                     {formatPEN(line.lineSubtotalAmount)}
                   </div>
                 </div>
@@ -1854,16 +1854,16 @@ export function CheckoutView({
       {/* ─── MODAL DE SELECCIÓN DE TIENDAS OFICIALES ─── */}
       {isStoreModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
         >
-          <div className="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+          <div className="relative w-full max-w-xl rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 shadow-2xl space-y-3 sm:space-y-4 max-h-[88vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5 sm:pb-3">
               <div className="flex items-center gap-2">
-                <Store className="size-5 text-[#DC2626]" />
-                <h3 className="text-base font-extrabold text-neutral-900">
-                  Selecciona la Tienda Oficial de Recojo
+                <Store className="size-4 sm:size-5 text-[#DC2626] shrink-0" />
+                <h3 className="text-sm sm:text-base font-extrabold text-neutral-900">
+                  Selecciona Tienda de Recojo
                 </h3>
               </div>
               <button

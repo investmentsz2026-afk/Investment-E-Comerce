@@ -39,7 +39,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   ]);
 
   return (
-    <div className="bg-paper pt-[6.5rem] lg:pt-[10.25rem]">
+    <div className="bg-paper pt-[7rem] pb-14 sm:pt-[7.25rem] lg:pt-[10.75rem]">
       <div className="shell">
         <CatalogBreadcrumbs items={[{ label: "Catálogo" }]} />
 

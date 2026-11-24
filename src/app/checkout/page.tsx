@@ -31,9 +31,9 @@ export default async function CheckoutPage({
       : "/checkout";
 
     return (
-      <div className="bg-paper pt-[7.5rem] pb-24 lg:pt-[8.75rem]">
+      <div className="bg-paper pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-24">
         <div className="shell max-w-2xl">
-          <div className="border border-ink/15 bg-[#fbfaf7] p-8 sm:p-12 text-center space-y-6">
+          <div className="rounded-2xl border border-ink/15 bg-[#fbfaf7] p-5 sm:p-12 text-center space-y-4 sm:space-y-6">
             <div className="mx-auto flex size-16 items-center justify-center rounded-full border border-ink/15 bg-paper text-ink">
               <Lock className="size-7" aria-hidden />
             </div>
@@ -80,7 +80,7 @@ export default async function CheckoutPage({
   const initialIdempotencyKey = `chk_${user.id}_${randomBytes(12).toString("hex")}`;
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pt-24 sm:pt-28 pb-20">
+    <div className="min-h-screen bg-[#FAF8F5] pt-[7rem] pb-16 sm:pt-[7.25rem] lg:pt-[10.75rem] lg:pb-20">
       <div className="shell max-w-6xl">
         <CheckoutView
           context={context}

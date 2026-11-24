@@ -417,7 +417,7 @@ export function Interactive3DShowcase() {
                     handleScannerMove(e.touches[0].clientX);
                   }
                 }}
-                className="relative h-[310px] w-full cursor-ew-resize select-none overflow-hidden rounded-xl bg-slate-100 sm:h-[335px] lg:h-[350px]"
+                className="relative h-[230px] w-full cursor-ew-resize select-none overflow-hidden rounded-xl bg-slate-100 sm:h-[335px] lg:h-[350px]"
               >
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -581,32 +581,32 @@ export function Interactive3DShowcase() {
                 </div>
               </div>
 
-              <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
-                <div className="flex items-center gap-2 rounded-xl bg-slate-950/55 px-2.5 py-2">
-                  <Ruler className="size-4 shrink-0 text-cyan-300" aria-hidden />
+              <div className="mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
+                <div className="flex items-center gap-1.5 rounded-xl bg-slate-950/55 px-2 py-1.5 sm:gap-2 sm:px-2.5 sm:py-2">
+                  <Ruler className="size-3.5 shrink-0 text-cyan-300 sm:size-4" aria-hidden />
                   <div className="min-w-0">
-                    <p className="font-mono text-[0.52rem] uppercase text-slate-400">Entalle / Fit</p>
-                    <p className="truncate text-[0.68rem] font-extrabold text-white">{current.fitLabel}</p>
+                    <p className="font-mono text-[0.46rem] uppercase text-slate-400 sm:text-[0.52rem]">Entalle / Fit</p>
+                    <p className="truncate text-[0.58rem] font-extrabold text-white sm:text-[0.68rem]">{current.fitLabel}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl bg-slate-950/55 px-2.5 py-2">
-                  <ShieldCheck className="size-4 shrink-0 text-amber-300" aria-hidden />
+                <div className="flex items-center gap-1.5 rounded-xl bg-slate-950/55 px-2 py-1.5 sm:gap-2 sm:px-2.5 sm:py-2">
+                  <ShieldCheck className="size-3.5 shrink-0 text-amber-300 sm:size-4" aria-hidden />
                   <div className="min-w-0">
-                    <p className="font-mono text-[0.52rem] uppercase text-slate-400">Tela Oficial</p>
-                    <p className="truncate text-[0.68rem] font-extrabold text-white">{current.fabricLabel}</p>
+                    <p className="font-mono text-[0.46rem] uppercase text-slate-400 sm:text-[0.52rem]">Tela Oficial</p>
+                    <p className="truncate text-[0.58rem] font-extrabold text-white sm:text-[0.68rem]">{current.fabricLabel}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl bg-slate-950/55 px-2.5 py-2">
-                  <Tag className="size-4 shrink-0 text-[#EF233C]" aria-hidden />
+                <div className="flex items-center gap-1.5 rounded-xl bg-slate-950/55 px-2 py-1.5 sm:gap-2 sm:px-2.5 sm:py-2">
+                  <Tag className="size-3.5 shrink-0 text-[#EF233C] sm:size-4" aria-hidden />
                   <div className="min-w-0">
-                    <p className="font-mono text-[0.52rem] uppercase text-slate-400">Rango de Tallas</p>
-                    <p className="truncate text-[0.68rem] font-extrabold text-white">{current.sizesLabel}</p>
+                    <p className="font-mono text-[0.46rem] uppercase text-slate-400 sm:text-[0.52rem]">Tallas</p>
+                    <p className="truncate text-[0.58rem] font-extrabold text-white sm:text-[0.68rem]">{current.sizesLabel}</p>
                   </div>
                 </div>
               </div>
 
               {/* Puntos de Inspección Técnica de la Prenda */}
-              <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
+              <div className="mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
                 {current.hotspots.map((spot, idx) => (
                   <button
                     key={spot.title}
@@ -616,19 +616,19 @@ export function Interactive3DShowcase() {
                       setViewMode("closeup");
                     }}
                     className={cn(
-                      "flex flex-col items-start rounded-xl border p-2 text-left transition-all",
+                      "flex flex-col items-start rounded-xl border p-1.5 text-left transition-all sm:p-2",
                       activeHotspot === idx
                         ? "border-cyan-300 bg-[#0055FF]/40 shadow-sm"
                         : "border-white/15 bg-slate-950/40 hover:border-white/35",
                     )}
                   >
                     <div className="flex items-center gap-1">
-                      <CheckCircle2 className="size-3 text-amber-300" aria-hidden />
-                      <span className="font-sans text-[0.65rem] font-black uppercase text-white">
+                      <CheckCircle2 className="size-2.5 shrink-0 text-amber-300 sm:size-3" aria-hidden />
+                      <span className="line-clamp-1 font-sans text-[0.55rem] font-black uppercase text-white sm:text-[0.65rem]">
                         {spot.title}
                       </span>
                     </div>
-                    <p className="mt-0.5 line-clamp-2 text-[0.6rem] leading-snug text-blue-100/85">
+                    <p className="mt-0.5 hidden line-clamp-2 text-[0.6rem] leading-snug text-blue-100/85 sm:block">
                       {spot.detail}
                     </p>
                   </button>
