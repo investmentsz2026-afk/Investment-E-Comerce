@@ -73,8 +73,8 @@ function MobileMenuSheet({ onClose }: { onClose: () => void }) {
         transition={{ type: "spring", stiffness: 320, damping: 32 }}
         className="fixed inset-y-0 left-0 z-10 flex w-[85vw] max-w-[330px] flex-col overflow-hidden rounded-r-3xl bg-white shadow-2xl"
       >
-        {/* Cabecera Roja Compacta */}
-        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#9E0812] via-[#DC1422] to-[#A80A14] px-4 py-3 text-white">
+        {/* Cabecera Granate Oscura Compacta */}
+        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#45060B] via-[#680C14] to-[#42050A] px-4 py-3 text-white border-b border-black/25">
           <Link href="/" onClick={onClose} className="inline-flex items-center">
             <Logo size="sm" />
           </Link>
