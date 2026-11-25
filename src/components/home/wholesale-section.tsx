@@ -445,9 +445,9 @@ export function WholesaleSection({
     <section
       id="mayorista"
       aria-labelledby="mayorista-title"
-      className="overflow-hidden bg-gradient-to-b from-bone via-paper to-bone py-14 text-ink lg:py-20"
+      className="overflow-hidden bg-gradient-to-b from-bone via-paper to-bone py-10 text-ink lg:py-14"
     >
-      <div className="shell space-y-12">
+      <div className="shell space-y-8 sm:space-y-10">
         {/* ESCENARIO SIMÉTRICO 3D EN TONO AZUL DENIM SUAVE (DISTINGUIBLE DEL FONDO, SIN OSCURECER) + HILOS WEB A TODO COLOR */}
         <div className="relative overflow-hidden rounded-3xl border border-blue-300/60 bg-gradient-to-br from-[#BDCEF0] via-[#D1DFF5] to-[#B6C8EB] px-4 py-8 text-slate-900 shadow-[0_24px_60px_-20px_rgba(30,58,138,0.22)] sm:px-6 sm:py-10 lg:px-8">
           {/* Hilos Web WebGL2 en modo color puro (sin destello blanco que opaque los colores) */}

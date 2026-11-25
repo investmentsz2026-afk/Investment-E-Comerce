@@ -90,7 +90,7 @@
   top: 0;
   width: 100%;
   overflow: hidden;
-  background: #0f172a;
+  background: #f8fafc;
 }
 
 .circular-carousel__photo {
@@ -121,7 +121,7 @@
 }
 
 .circular-carousel__inner {
-  background: #000000;
+  background: #334155;
   opacity: var(--cc-inner);
 }
 

@@ -10,7 +10,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Expand, Images, Sparkles, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Images, Sparkles, X } from "lucide-react";
 import CircularCarousel, {
   type CircularCarouselItem,
 } from "@/components/ui/circular-carousel";
@@ -228,35 +228,33 @@ export function CircularGalleryShowcase({ items }: CircularGalleryShowcaseProps)
   };
 
   return (
-    <div id="galeria-circular" className="space-y-4 sm:space-y-6">
-      {/* Encabezado Editorial Sobrio (solo exhibición, sin botones de compra) */}
+    <div id="galeria-circular" className="space-y-3 sm:space-y-4">
+      {/* Encabezado Editorial Compacto */}
       <div className="flex flex-col items-center text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300/80 bg-[#0F172A] px-3.5 py-1 font-mono text-[0.6rem] font-extrabold uppercase tracking-[0.18em] text-slate-100 shadow-xs sm:text-[0.65rem]">
-          <Sparkles className="size-3 text-[#C81E2B]" aria-hidden />
-          <span>GALERÍA CIRCULAR 3D · EXHIBICIÓN OFICIAL</span>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-0.5 font-mono text-[0.58rem] font-extrabold uppercase tracking-[0.16em] text-slate-700 shadow-2xs sm:text-[0.62rem]">
+          <Sparkles className="size-3 text-[#680C14]" aria-hidden />
+          <span>GALERÍA CIRCULAR 3D · TOCA PARA ZOOM</span>
         </span>
-        <h3 className="mt-2 font-sans text-xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
+        <h3 className="mt-1.5 font-sans text-lg font-black uppercase tracking-tight text-slate-900 sm:text-2xl">
           NUESTRAS PRENDAS EN{" "}
           <span className="text-[#680C14]">MOVIMIENTO 360°</span>
         </h3>
-        <p className="mt-1 max-w-xl text-[0.7rem] font-medium text-slate-600 sm:text-xs">
-          Arrastra para girar la galería circular o toca cualquier imagen para centrarla y abrir su vista detallada en 3D.
-        </p>
       </div>
 
-      {/* Escenario Oscuro de Estudio para el Cilindro 3D */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-[#070B12] shadow-[0_26px_65px_-18px_rgba(7,11,18,0.65)]">
-        {/* Luces ambientales sutiles */}
+      {/* Escenario Moderno Claro con Sombra Suave Detrás (sin espacio muerto arriba ni abajo) */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-[#F1F5F9]/85 via-white to-[#E8EEF5]/90 py-1.5 shadow-[0_18px_45px_-20px_rgba(15,23,42,0.16)] sm:py-2">
+        {/* Sombra ambiental suave detrás del cilindro 3D */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 left-1/2 h-56 w-[70%] -translate-x-1/2 rounded-full bg-[#680C14]/22 blur-3xl"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_62%_56%_at_50%_52%,rgba(15,23,42,0.16)_0%,rgba(51,65,85,0.06)_52%,transparent_78%)]"
         />
+        {/* Sombra de apoyo difuminada en la base */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-24 left-1/2 h-48 w-[65%] -translate-x-1/2 rounded-full bg-slate-500/10 blur-3xl"
+          className="pointer-events-none absolute bottom-2 left-1/2 h-6 w-[74%] -translate-x-1/2 rounded-full bg-slate-900/18 blur-xl"
         />
 
-        <div className="relative h-[340px] w-full sm:h-[460px] lg:h-[560px]">
+        <div className="relative h-[196px] w-full sm:h-[236px] lg:h-[264px]">
           <CircularCarousel
             items={carouselItems}
             preset="cylinder"
@@ -266,7 +264,7 @@ export function CircularGalleryShowcase({ items }: CircularGalleryShowcaseProps)
             speed={14}
             captions={false}
             gap={25}
-            tilt={-5}
+            tilt={-4}
             curve={1}
             perspective={2500}
             autoplay="drift"
@@ -279,18 +277,12 @@ export function CircularGalleryShowcase({ items }: CircularGalleryShowcaseProps)
             draggable
             parallax={0.3}
             stretch={0.5}
-            fadeColor="#070B12"
-            depthFade={0.55}
-            innerShade={0.6}
+            fadeColor="#CBD5E1"
+            depthFade={0.34}
+            innerShade={0.72}
             cornerRadius={12}
             onItemClick={handleCarouselItemClick}
           />
-        </div>
-
-        {/* Indicador inferior discreto */}
-        <div className="pointer-events-none relative z-10 flex items-center justify-center gap-2 border-t border-white/10 bg-black/35 px-4 py-2.5 text-[0.65rem] font-semibold tracking-wide text-slate-300 sm:text-xs">
-          <Expand className="size-3.5 text-slate-400" aria-hidden />
-          <span>Toca una prenda para centrarla y hacer zoom en cuadro 3D</span>
         </div>
       </div>
 

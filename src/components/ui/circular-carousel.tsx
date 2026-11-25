@@ -560,8 +560,8 @@ export default function CircularCarousel({
       const rect = root.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const room = s.captions ? CAPTION_SPACE : 0;
-      const width = rect.width * 0.94;
-      const height = (rect.height - room) * 0.92;
+      const width = rect.width * 0.96;
+      const height = (rect.height - room) * 0.96;
       const P = s.perspective;
       let minX = Infinity;
       let maxX = -Infinity;
