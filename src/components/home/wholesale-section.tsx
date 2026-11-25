@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   AnimatePresence,
@@ -12,22 +11,16 @@ import {
 } from "motion/react";
 import {
   ArrowRight,
-  BadgePercent,
-  Boxes,
   ChevronLeft,
   ChevronRight,
-  FileText,
-  Headset,
-  Shirt,
   Sparkles,
 } from "lucide-react";
 import { FaBoxesStacked } from "react-icons/fa6";
-import { media } from "@/config/media";
-import { demoCollections } from "@/data/demo/collections";
-import { InfiniteCardSlider } from "@/components/ui/infinite-card-slider";
 import { WebThreads } from "@/components/ui/web-threads";
+import { CircularGalleryShowcase } from "@/components/home/circular-gallery-showcase";
 import { cn } from "@/lib/utils";
 import type {
+  CircularGalleryItem,
   EcommerceShowcaseConfig,
   LookbookSlideItem,
 } from "@/server/queries/lookbook";
@@ -119,59 +112,6 @@ const FALLBACK_RIGHT: LookbookSlideItem[] = [
     isActive: true,
   },
 ];
-
-const WHOLESALE_CARDS = [
-  {
-    id: "w-1",
-    badge: "BENEFICIO 01",
-    title: "Compras por Volumen",
-    subtitle: "Combina tallas y colores en una sola orden mayorista.",
-    cta: "Armar Pedido →",
-    href: "/mayorista/cotizaciones",
-    image: media.wholesale,
-    icon: Boxes,
-  },
-  {
-    id: "w-2",
-    badge: "BENEFICIO 02",
-    title: "Precios de Fábrica",
-    subtitle: "Tarifas escalonadas exclusivas para negocios con RUC.",
-    cta: "Ver Escalas →",
-    href: "/mayorista",
-    image: demoCollections[2]?.image ?? media.heroMain,
-    icon: BadgePercent,
-  },
-  {
-    id: "w-3",
-    badge: "BENEFICIO 03",
-    title: "Cotizaciones a Medida",
-    subtitle: "Recibe atención personalizada de nuestro equipo B2B.",
-    cta: "Solicitar Cotización →",
-    href: "/mayorista/cotizaciones",
-    image: media.atelier,
-    icon: FileText,
-  },
-  {
-    id: "w-4",
-    badge: "BENEFICIO 04",
-    title: "Surtido Completo",
-    subtitle: "Jeans, polos, camisas y casacas de alta rotación comercial.",
-    cta: "Ver Catálogo Mayorista →",
-    href: "/catalogo?mayorista=1",
-    image: demoCollections[0]?.image ?? media.heroMain,
-    icon: Shirt,
-  },
-  {
-    id: "w-5",
-    badge: "BENEFICIO 05",
-    title: "Despacho Nacional",
-    subtitle: "Envíos asegurados a Lima y todas las provincias del Perú.",
-    cta: "Registrar Empresa →",
-    href: "/mayorista/registro",
-    image: media.retail,
-    icon: Headset,
-  },
-] as const;
 
 interface OrbitalLookbookDeckProps {
   label: string;
@@ -484,11 +424,13 @@ function OrbitalLookbookDeck({
 interface WholesaleSectionProps {
   lookbookSlides?: LookbookSlideItem[];
   showcaseConfig?: EcommerceShowcaseConfig;
+  circularGalleryItems?: CircularGalleryItem[];
 }
 
 export function WholesaleSection({
   lookbookSlides,
   showcaseConfig,
+  circularGalleryItems,
 }: WholesaleSectionProps) {
   const cfg = showcaseConfig ?? DEFAULT_CONFIG;
   const allSlides = lookbookSlides ?? [];
@@ -609,67 +551,8 @@ export function WholesaleSection({
           </div>
         </div>
 
-        {/* Carrusel 1 por 1 de Tarjetas Redondeadas con Fotos de Ventajas Mayoristas */}
-        <div>
-          <div className="flex flex-col items-center text-center">
-            <span className="bg-flow inline-block rounded-full bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#2563EB] px-4 py-1 font-mono text-[0.62rem] font-extrabold uppercase tracking-widest text-paper shadow-sm">
-              SOLUCIONES TEXTILES CON IMÁGENES EN MOVIMIENTO
-            </span>
-            <h3 className="mt-2 font-sans text-2xl font-black uppercase tracking-tight text-slate-900 sm:text-3xl">
-              ¿POR QUÉ COMPRAR POR MAYOR EN{" "}
-              <span className="bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] bg-clip-text text-transparent">
-                AMERICAN COLT?
-              </span>
-            </h3>
-          </div>
-
-          <div className="mt-5 px-2 sm:px-5">
-            <InfiniteCardSlider
-              items={WHOLESALE_CARDS}
-              desktopCols={4}
-              autoPlayMs={3300}
-              keyExtractor={(item) => item.id}
-              renderItem={(card) => (
-                <Link
-                  href={card.href}
-                  className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl border border-slate-200 bg-[#0F172A] shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
-                >
-                  <Image
-                    src={card.image.src}
-                    alt={card.title}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, 50vw"
-                    placeholder={
-                      typeof card.image.src === "string" ? "empty" : "blur"
-                    }
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#1E3A8A]/45 to-transparent"
-                  />
-
-                  <span className="bg-flow absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#991B1B] via-[#DC2626] to-[#EF233C] px-2 py-0.5 font-mono text-[0.48rem] font-extrabold uppercase tracking-wider text-paper shadow-md sm:left-3.5 sm:top-3.5 sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[0.6rem]">
-                    <card.icon className="size-2.5 sm:size-3" aria-hidden />
-                    {card.badge}
-                  </span>
-
-                  <div className="absolute inset-x-0 bottom-0 p-2.5 text-left text-paper sm:p-5">
-                    <h4 className="font-sans text-xs font-black uppercase leading-tight drop-shadow-xs sm:text-lg">
-                      {card.title}
-                    </h4>
-                    <p className="mt-1 hidden line-clamp-2 text-xs text-white/90 sm:block">
-                      {card.subtitle}
-                    </p>
-                    <span className="mt-2 inline-flex items-center gap-1 rounded-xl bg-paper px-2.5 py-1 text-[0.54rem] font-extrabold uppercase tracking-wider text-[#1E40AF] shadow-md transition-all group-hover:bg-gradient-to-r group-hover:from-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-paper sm:mt-3 sm:px-3.5 sm:py-1.5 sm:text-[0.68rem]">
-                      {card.cta}
-                    </span>
-                  </div>
-                </Link>
-              )}
-            />
-          </div>
-        </div>
+        {/* Galería Circular 3D de Exhibición (reemplaza las tarjetas de beneficios mayoristas) */}
+        <CircularGalleryShowcase items={circularGalleryItems} />
       </div>
     </section>
   );

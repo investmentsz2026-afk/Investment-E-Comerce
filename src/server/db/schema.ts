@@ -1398,6 +1398,25 @@ export const homeLineSlides = pgTable(
   (t) => [index("home_line_slides_active_sort_idx").on(t.isActive, t.sortOrder)],
 );
 
+// ──────────────────────────────────────────────────────────────
+// Circular Gallery Slides (Galería Circular 3D + 2.ª Foto Opcional en Zoom)
+// ──────────────────────────────────────────────────────────────
+export const circularGallerySlides = pgTable(
+  "circular_gallery_slides",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 140 }).notNull(),
+    subtitle: varchar("subtitle", { length: 180 }),
+    imageUrl: text("image_url").notNull(),
+    secondaryImageUrl: text("secondary_image_url"),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("circular_gallery_slides_active_sort_idx").on(t.isActive, t.sortOrder)],
+);
+
 
 
 

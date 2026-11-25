@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/server/db";
 import {
   auditLogs,
+  circularGallerySlides,
   ecommerceShowcaseConfig,
   heroSlides,
   homeLineSlides,
@@ -13,6 +14,7 @@ import {
 import { requireAdmin } from "@/server/auth/session";
 import {
   BRAND_CONFIG_KEY,
+  ensureCircularGalleryTable,
   SHOWCASE_CONFIG_KEY,
   type LookbookSlot,
 } from "@/server/queries/lookbook";
@@ -676,5 +678,199 @@ export async function deleteHomeLineAction(input: {
   return {
     success: true,
     message: `Línea "${found[0].title}" eliminada.`,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────
+// CRUD GALERÍA CIRCULAR 3D (IMAGEN PRINCIPAL + 2.ª IMAGEN OPCIONAL EN ZOOM)
+// ────────────────────────────────────────────────────────────────
+
+export async function saveCircularGalleryItemAction(input: {
+  id?: number | null;
+  title: string;
+  subtitle?: string | null;
+  imageUrl: string;
+  secondaryImageUrl?: string | null;
+  sortOrder?: number;
+  isActive: boolean;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  await ensureCircularGalleryTable();
+  const db = getDb();
+
+  const title = (input.title ?? "").trim();
+  const imageUrl = (input.imageUrl ?? "").trim();
+  const rawSecondary = (input.secondaryImageUrl ?? "").trim();
+  const secondaryImageUrl = rawSecondary.length > 0 ? rawSecondary : null;
+
+  if (title.length < 2) {
+    return {
+      success: false,
+      error: "Ingresa un nombre o título para la prenda de la galería (mínimo 2 caracteres).",
+    };
+  }
+  if (!imageUrl || (!imageUrl.startsWith("/") && !imageUrl.startsWith("http"))) {
+    return {
+      success: false,
+      error: "Sube o selecciona la imagen principal para la galería circular.",
+    };
+  }
+  if (
+    secondaryImageUrl &&
+    !secondaryImageUrl.startsWith("/") &&
+    !secondaryImageUrl.startsWith("http")
+  ) {
+    return {
+      success: false,
+      error: "La segunda imagen opcional no tiene un formato de ruta válido.",
+    };
+  }
+
+  const subtitle = input.subtitle?.trim() ? input.subtitle.trim().slice(0, 180) : null;
+  const sortOrder = Number.isFinite(Number(input.sortOrder))
+    ? Math.max(0, Math.min(999, Math.round(Number(input.sortOrder))))
+    : 0;
+  const isActive = Boolean(input.isActive);
+  const itemId = input.id ? Number(input.id) : null;
+
+  let savedId: number;
+  if (!itemId) {
+    const [inserted] = await db
+      .insert(circularGallerySlides)
+      .values({
+        title: title.slice(0, 140),
+        subtitle,
+        imageUrl,
+        secondaryImageUrl,
+        sortOrder,
+        isActive,
+      })
+      .returning({ id: circularGallerySlides.id });
+    savedId = inserted.id;
+  } else {
+    const existing = await db
+      .select({ id: circularGallerySlides.id })
+      .from(circularGallerySlides)
+      .where(eq(circularGallerySlides.id, itemId))
+      .limit(1);
+
+    if (existing.length === 0) {
+      return { success: false, error: "El elemento de la galería ya no existe." };
+    }
+
+    await db
+      .update(circularGallerySlides)
+      .set({
+        title: title.slice(0, 140),
+        subtitle,
+        imageUrl,
+        secondaryImageUrl,
+        sortOrder,
+        isActive,
+        updatedAt: new Date(),
+      })
+      .where(eq(circularGallerySlides.id, itemId));
+    savedId = itemId;
+  }
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "circular_gallery_slide",
+    targetId: savedId,
+    details: `${itemId ? "Actualización" : "Creación"} en Galería Circular 3D #${savedId} ("${title}", 2da imagen: ${secondaryImageUrl ? "sí" : "no"}).`,
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/contenido");
+
+  return {
+    success: true,
+    message: itemId
+      ? `"${title}" actualizado en la Galería Circular 3D.`
+      : `"${title}" agregado a la Galería Circular 3D.`,
+  };
+}
+
+export async function toggleCircularGalleryItemStatusAction(input: {
+  id: number;
+  isActive: boolean;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  await ensureCircularGalleryTable();
+  const db = getDb();
+
+  const itemId = Number(input.id);
+  const found = await db
+    .select({ id: circularGallerySlides.id, title: circularGallerySlides.title })
+    .from(circularGallerySlides)
+    .where(eq(circularGallerySlides.id, itemId))
+    .limit(1);
+
+  if (found.length === 0) {
+    return { success: false, error: "Elemento de galería no encontrado." };
+  }
+
+  const nextActive = Boolean(input.isActive);
+  await db
+    .update(circularGallerySlides)
+    .set({ isActive: nextActive, updatedAt: new Date() })
+    .where(eq(circularGallerySlides.id, itemId));
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "circular_gallery_slide",
+    targetId: itemId,
+    details: `Galería Circular "${found[0].title}" ${nextActive ? "activada" : "pausada"}.`,
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/contenido");
+
+  return {
+    success: true,
+    message: nextActive
+      ? `"${found[0].title}" ahora está visible en la Galería Circular 3D.`
+      : `"${found[0].title}" pausado de la Galería Circular 3D.`,
+  };
+}
+
+export async function deleteCircularGalleryItemAction(input: {
+  id: number;
+}): Promise<AdminActionResult> {
+  const { user: admin } = await requireAdmin();
+  await ensureCircularGalleryTable();
+  const db = getDb();
+
+  const itemId = Number(input.id);
+  const found = await db
+    .select({ id: circularGallerySlides.id, title: circularGallerySlides.title })
+    .from(circularGallerySlides)
+    .where(eq(circularGallerySlides.id, itemId))
+    .limit(1);
+
+  if (found.length === 0) {
+    return { success: false, error: "Elemento de galería no encontrado." };
+  }
+
+  await db
+    .delete(circularGallerySlides)
+    .where(eq(circularGallerySlides.id, itemId));
+
+  await db.insert(auditLogs).values({
+    actorId: admin.id,
+    action: "product_updated",
+    targetType: "circular_gallery_slide",
+    targetId: itemId,
+    details: `Eliminación permanente en Galería Circular "${found[0].title}" (#${itemId}).`,
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/contenido");
+
+  return {
+    success: true,
+    message: `"${found[0].title}" eliminado de la Galería Circular 3D.`,
   };
 }

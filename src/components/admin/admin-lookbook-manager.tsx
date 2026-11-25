@@ -34,7 +34,9 @@ import {
   AdminLinesSubmanager,
   type LineCategoryOption,
 } from "./admin-lines-submanager";
+import { AdminCircularGallerySubmanager } from "./admin-circular-gallery-submanager";
 import type {
+  CircularGalleryItem,
   EcommerceShowcaseConfig,
   HeroSlideItem,
   HomeLineItem,
@@ -64,13 +66,14 @@ interface AdminLookbookManagerProps {
   slides: LookbookSlideItem[];
   heroSlides: HeroSlideItem[];
   homeLines: HomeLineItem[];
+  circularGallery: CircularGalleryItem[];
   showcaseConfig: EcommerceShowcaseConfig;
   brandConfig: EcommerceShowcaseConfig;
   products: LookbookProductOption[];
   categories: LineCategoryOption[];
 }
 
-type AdminSubModule = "hero" | "lines" | "b2b" | "brand";
+type AdminSubModule = "hero" | "lines" | "b2b" | "gallery" | "brand";
 type StatusTab = "all" | "left" | "right" | "active" | "paused";
 type ViewMode = "cards" | "table";
 
@@ -84,6 +87,7 @@ export function AdminLookbookManager({
   slides,
   heroSlides,
   homeLines,
+  circularGallery,
   showcaseConfig,
   brandConfig,
   products,
@@ -106,6 +110,11 @@ export function AdminLookbookManager({
   // Modal ¡Explora Nuestras Líneas! (Submódulo Líneas)
   const [lineModalOpen, setLineModalOpen] = useState(false);
   const [editingLine, setEditingLine] = useState<HomeLineItem | null>(null);
+
+  // Modal Galería Circular 3D (Submódulo Galería)
+  const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [editingGalleryItem, setEditingGalleryItem] =
+    useState<CircularGalleryItem | null>(null);
 
   const handleSelectSubModule = (next: AdminSubModule) => {
     setSubModule(next);
@@ -436,7 +445,9 @@ export function AdminLookbookManager({
                     ? "Submódulo 02 · ¡Explora Nuestras Líneas!"
                     : subModule === "b2b"
                       ? "Submódulo 03 · Escenario Lookbook 3D"
-                      : "Submódulo 04 · Sección Marca Oficial Peruana"}
+                      : subModule === "gallery"
+                        ? "Submódulo 04 · Galería Circular 3D (Principal + Zoom)"
+                        : "Submódulo 05 · Sección Marca Oficial Peruana"}
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight sm:text-4xl">
@@ -446,7 +457,9 @@ export function AdminLookbookManager({
                   ? "¡Explora Nuestras Líneas! · Enlace a Categorías"
                   : subModule === "b2b"
                     ? `${centerBadge} — ${centerTitle} ${centerHighlight}`
-                    : `${bBadge} — ${bTitle} ${bHighlight}`}
+                    : subModule === "gallery"
+                      ? "Galería Circular 3D · Exhibición y 2.ª Foto en Zoom"
+                      : `${bBadge} — ${bTitle} ${bHighlight}`}
             </h1>
             <p className="text-sm font-medium leading-relaxed text-white/90 sm:text-base">
               {subModule === "hero"
@@ -455,7 +468,9 @@ export function AdminLookbookManager({
                   ? "Administra las tarjetas de líneas de ropa, sus fotos (modelo y acercamiento) y elige a qué categoría del catálogo lleva el botón «Ver Prendas →»."
                   : subModule === "b2b"
                     ? `Edita únicamente las fotos de ${leftLabel}, ${rightLabel} y los textos centrales del Escenario 3D B2B.`
-                    : "Edita únicamente las fotografías de campaña 3D y los textos institucionales de Marca Oficial Peruana."}
+                    : subModule === "gallery"
+                      ? "Sube las fotos principales que giran en el cilindro 3D y agrega una segunda foto opcional por prenda para activar las flechas laterales ‹ › cuando el cliente hace zoom."
+                      : "Edita únicamente las fotografías de campaña 3D y los textos institucionales de Marca Oficial Peruana."}
             </p>
           </div>
 
@@ -488,7 +503,9 @@ export function AdminLookbookManager({
                     ? "/#lineas-catalogo"
                     : subModule === "b2b"
                       ? "/#mayorista"
-                      : "/#manifiesto-marca"
+                      : subModule === "gallery"
+                        ? "/#galeria-circular"
+                        : "/#manifiesto-marca"
               }
               target="_blank"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/35 bg-white/15 px-4 py-3.5 text-xs font-extrabold uppercase tracking-[0.12em] text-white backdrop-blur-md transition hover:bg-white/25"
@@ -508,6 +525,9 @@ export function AdminLookbookManager({
                 } else if (subModule === "lines") {
                   setEditingLine(null);
                   setLineModalOpen(true);
+                } else if (subModule === "gallery") {
+                  setEditingGalleryItem(null);
+                  setGalleryModalOpen(true);
                 } else {
                   openCreateModal(subModule === "brand" ? "brand" : "right");
                 }
@@ -522,17 +542,19 @@ export function AdminLookbookManager({
                     ? "Nueva Línea / Categoría"
                     : subModule === "b2b"
                       ? "Subir Foto Lookbook"
-                      : "Subir Foto de Marca"}
+                      : subModule === "gallery"
+                        ? "Nueva Foto Galería 3D"
+                        : "Subir Foto de Marca"}
               </span>
             </motion.button>
           </div>
         </div>
       </motion.section>
 
-      {/* SELECTOR DE 4 SUB-MÓDULOS PARA EDITAR POR SEPARADO SIN CONFUNDIRSE */}
+      {/* SELECTOR DE 5 SUB-MÓDULOS PARA EDITAR POR SEPARADO SIN CONFUNDIRSE */}
       <section
         aria-label="Submódulos de Contenido E-Commerce"
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
       >
         <button
           type="button"
@@ -656,6 +678,46 @@ export function AdminLookbookManager({
 
         <button
           type="button"
+          onClick={() => handleSelectSubModule("gallery")}
+          className={`group relative overflow-hidden rounded-3xl border-2 p-4 text-left transition-all ${
+            subModule === "gallery"
+              ? "border-[#680C14] bg-white shadow-[0_18px_40px_-14px_rgba(104,12,20,0.28)]"
+              : "border-slate-200/90 bg-white/75 opacity-80 hover:border-slate-300 hover:bg-white hover:opacity-100"
+          }`}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[0.58rem] font-black uppercase tracking-wider ${
+                  subModule === "gallery"
+                    ? "bg-[#680C14] text-white"
+                    : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                <ImageIcon className="size-3" />
+                <span>04 · {circularGallery.length} prendas</span>
+              </span>
+              <h2 className="mt-2 truncate text-sm font-black uppercase tracking-tight text-slate-900">
+                Galería Circular 3D
+              </h2>
+              <p className="mt-0.5 truncate text-[0.72rem] font-semibold text-slate-500">
+                Foto principal + 2.ª foto en zoom.
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-xl px-2 py-0.5 text-[0.6rem] font-black uppercase ${
+                subModule === "gallery"
+                  ? "bg-red-50 text-[#680C14]"
+                  : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              {subModule === "gallery" ? "Abierto" : "Entrar"}
+            </span>
+          </div>
+        </button>
+
+        <button
+          type="button"
           onClick={() => handleSelectSubModule("brand")}
           className={`group relative overflow-hidden rounded-3xl border-2 p-4 text-left transition-all ${
             subModule === "brand"
@@ -673,7 +735,7 @@ export function AdminLookbookManager({
                 }`}
               >
                 <Award className="size-3" />
-                <span>04 · {kpis.brandTotal} fotos</span>
+                <span>05 · {kpis.brandTotal} fotos</span>
               </span>
               <h2 className="mt-2 truncate text-sm font-black uppercase tracking-tight text-slate-900">
                 Marca Peruana 3D
@@ -759,6 +821,26 @@ export function AdminLookbookManager({
           onCloseModal={() => {
             setLineModalOpen(false);
             setEditingLine(null);
+          }}
+          onFeedback={setFeedback}
+        />
+      ) : subModule === "gallery" ? (
+        <AdminCircularGallerySubmanager
+          items={circularGallery}
+          products={products}
+          modalOpen={galleryModalOpen}
+          editingItem={editingGalleryItem}
+          onCreateNew={() => {
+            setEditingGalleryItem(null);
+            setGalleryModalOpen(true);
+          }}
+          onEditItem={(item) => {
+            setEditingGalleryItem(item);
+            setGalleryModalOpen(true);
+          }}
+          onCloseModal={() => {
+            setGalleryModalOpen(false);
+            setEditingGalleryItem(null);
           }}
           onFeedback={setFeedback}
         />

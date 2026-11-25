@@ -52,6 +52,7 @@ export default async function AdminEcommerceContentPage() {
         slides={showcase.slides}
         heroSlides={showcase.heroSlides}
         homeLines={showcase.homeLines}
+        circularGallery={showcase.circularGallery}
         showcaseConfig={showcase.config}
         brandConfig={showcase.brandConfig}
         products={productOptions}

@@ -61,6 +61,7 @@ export default async function HomePage() {
       <WholesaleSection
         lookbookSlides={showcaseData.slides}
         showcaseConfig={showcaseData.config}
+        circularGalleryItems={showcaseData.circularGallery}
       />
       <ModalitySelector />
       <FeaturedCollections />

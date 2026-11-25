@@ -1,8 +1,9 @@
 import "server-only";
 
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/server/db";
 import {
+  circularGallerySlides,
   ecommerceShowcaseConfig,
   heroSlides,
   homeLineSlides,
@@ -49,6 +50,109 @@ export interface HomeLineItem {
   sortOrder: number;
   isActive: boolean;
 }
+
+export interface CircularGalleryItem {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string;
+  secondaryImageUrl: string | null;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export const DEFAULT_CIRCULAR_GALLERY_ITEMS: ReadonlyArray<CircularGalleryItem> = [
+  {
+    id: 1,
+    title: "Pantalón Drill King 767",
+    subtitle: "Skinny Fit · Tela Drill Stretch",
+    imageUrl: "/catalogo-colt/pantalon-king-767-model.png",
+    secondaryImageUrl: "/catalogo-colt/pantalon-king-767-closeup.png",
+    sortOrder: 1,
+    isActive: true,
+  },
+  {
+    id: 2,
+    title: "Camisa Denim Zair",
+    subtitle: "Slim Fit · 100% Algodón Peruano",
+    imageUrl: "/catalogo-colt/camisa-zair-model.png",
+    secondaryImageUrl: "/catalogo-colt/camisa-zair-closeup.png",
+    sortOrder: 2,
+    isActive: true,
+  },
+  {
+    id: 3,
+    title: "Jean Denim Comfort 762",
+    subtitle: "Classic Fit · Denim de Alto Gramaje",
+    imageUrl: "/catalogo-colt/jean-comfort-762-model.png",
+    secondaryImageUrl: "/catalogo-colt/jean-comfort-762-closeup.png",
+    sortOrder: 3,
+    isActive: true,
+  },
+  {
+    id: 4,
+    title: "Camisa Clásica Kendall",
+    subtitle: "Slim Fit · Acabado Ejecutivo",
+    imageUrl: "/catalogo-colt/camisa-kendall-model.png",
+    secondaryImageUrl: "/catalogo-colt/camisa-kendall-closeup.png",
+    sortOrder: 4,
+    isActive: true,
+  },
+  {
+    id: 5,
+    title: "Pantalón Drill Fendy 769",
+    subtitle: "Slim Fit Semipitillo · 9 Colores",
+    imageUrl: "/catalogo-colt/pantalon-fendy-769-model.png",
+    secondaryImageUrl: "/catalogo-colt/pantalon-fendy-769-closeup.png",
+    sortOrder: 5,
+    isActive: true,
+  },
+  {
+    id: 6,
+    title: "Polo Piqué Clásico Mark",
+    subtitle: "Cuello Camisero · Algodón Peruano",
+    imageUrl: "/catalogo-colt/polo-mark-model.png",
+    secondaryImageUrl: "/catalogo-colt/polo-mark-closeup.png",
+    sortOrder: 6,
+    isActive: true,
+  },
+  {
+    id: 7,
+    title: "Jean Denim Relaxed 750",
+    subtitle: "Relaxed Fit · Lavado Tradicional",
+    imageUrl: "/catalogo-colt/jean-relaxed-750-model.png",
+    secondaryImageUrl: "/catalogo-colt/jean-relaxed-750-closeup.png",
+    sortOrder: 7,
+    isActive: true,
+  },
+  {
+    id: 8,
+    title: "Pantalón Drill Rolex 770",
+    subtitle: "Straight Fit · Bota Recta",
+    imageUrl: "/catalogo-colt/pantalon-rolex-770-model.png",
+    secondaryImageUrl: "/catalogo-colt/pantalon-rolex-770-closeup.png",
+    sortOrder: 8,
+    isActive: true,
+  },
+  {
+    id: 9,
+    title: "Bermuda Drill Balance 770",
+    subtitle: "Straight Fit · Temporada 2026",
+    imageUrl: "/catalogo-colt/bermuda-balance-770-model.png",
+    secondaryImageUrl: "/catalogo-colt/bermuda-balance-770-closeup.png",
+    sortOrder: 9,
+    isActive: true,
+  },
+  {
+    id: 10,
+    title: "Jean Bull Denim 750",
+    subtitle: "Línea Clásica · Alta Resistencia",
+    imageUrl: "/catalogo-colt/jean-bull-denim-750-model.png",
+    secondaryImageUrl: "/catalogo-colt/jean-bull-denim-750-closeup.png",
+    sortOrder: 10,
+    isActive: true,
+  },
+];
 
 export const DEFAULT_HOME_LINES: ReadonlyArray<HomeLineItem> = [
   {
@@ -671,6 +775,65 @@ async function runEnsureSeeded() {
       await db.delete(homeLineSlides).where(inArray(homeLineSlides.id, dupLineIds));
     }
   }
+
+  // 5. Asegurar tabla y sembrar ítems iniciales de la Galería Circular 3D
+  await ensureCircularGalleryTable();
+  const existingGallery = await db
+    .select({
+      id: circularGallerySlides.id,
+      title: circularGallerySlides.title,
+      imageUrl: circularGallerySlides.imageUrl,
+    })
+    .from(circularGallerySlides)
+    .orderBy(asc(circularGallerySlides.id));
+
+  if (existingGallery.length === 0) {
+    await db.insert(circularGallerySlides).values(
+      DEFAULT_CIRCULAR_GALLERY_ITEMS.map((g) => ({
+        title: g.title,
+        subtitle: g.subtitle,
+        imageUrl: g.imageUrl,
+        secondaryImageUrl: g.secondaryImageUrl,
+        sortOrder: g.sortOrder,
+        isActive: g.isActive,
+      })),
+    );
+  }
+}
+
+export async function ensureCircularGalleryTable(): Promise<void> {
+  const db = getDb();
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "circular_gallery_slides" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "title" varchar(140) NOT NULL,
+      "subtitle" varchar(180),
+      "image_url" text NOT NULL,
+      "secondary_image_url" text,
+      "sort_order" integer DEFAULT 0 NOT NULL,
+      "is_active" boolean DEFAULT true NOT NULL,
+      "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+      "updated_at" timestamp with time zone DEFAULT now() NOT NULL
+    )
+  `);
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS "circular_gallery_slides_active_sort_idx"
+    ON "circular_gallery_slides" ("is_active", "sort_order")
+  `);
+}
+
+function mapCircularGallery(
+  r: typeof circularGallerySlides.$inferSelect,
+): CircularGalleryItem {
+  return {
+    id: r.id,
+    title: r.title,
+    subtitle: r.subtitle ?? null,
+    imageUrl: r.imageUrl,
+    secondaryImageUrl: r.secondaryImageUrl ?? null,
+    sortOrder: r.sortOrder,
+    isActive: r.isActive,
+  };
 }
 
 function mapHeroSlide(r: typeof heroSlides.$inferSelect): HeroSlideItem {
@@ -753,13 +916,14 @@ export async function getActivePublicShowcaseData(): Promise<{
   slides: LookbookSlideItem[];
   heroSlides: HeroSlideItem[];
   homeLines: HomeLineItem[];
+  circularGallery: CircularGalleryItem[];
   config: EcommerceShowcaseConfig;
   brandConfig: EcommerceShowcaseConfig;
 }> {
   try {
     await ensureSeededIfEmpty();
     const db = getDb();
-    const [rows, heroRows, lineRows, cfgRows] = await Promise.all([
+    const [rows, heroRows, lineRows, galleryRows, cfgRows] = await Promise.all([
       db
         .select()
         .from(lookbookSlides)
@@ -775,6 +939,11 @@ export async function getActivePublicShowcaseData(): Promise<{
         .from(homeLineSlides)
         .where(eq(homeLineSlides.isActive, true))
         .orderBy(asc(homeLineSlides.sortOrder), asc(homeLineSlides.id)),
+      db
+        .select()
+        .from(circularGallerySlides)
+        .where(eq(circularGallerySlides.isActive, true))
+        .orderBy(asc(circularGallerySlides.sortOrder), asc(circularGallerySlides.id)),
       db.select().from(ecommerceShowcaseConfig),
     ]);
 
@@ -787,6 +956,10 @@ export async function getActivePublicShowcaseData(): Promise<{
         heroRows.length > 0 ? heroRows.map(mapHeroSlide) : [...DEFAULT_HERO_SLIDES],
       homeLines:
         lineRows.length > 0 ? lineRows.map(mapHomeLine) : [...DEFAULT_HOME_LINES],
+      circularGallery:
+        galleryRows.length > 0
+          ? galleryRows.map(mapCircularGallery)
+          : [...DEFAULT_CIRCULAR_GALLERY_ITEMS],
       config: mapConfigRow(mainCfg, DEFAULT_SHOWCASE_CONFIG),
       brandConfig: mapConfigRow(brandCfg, DEFAULT_BRAND_CONFIG),
     };
@@ -795,6 +968,7 @@ export async function getActivePublicShowcaseData(): Promise<{
       slides: DEFAULT_LOOKBOOK_SLIDES.map((s, idx) => ({ ...s, id: idx + 1 })),
       heroSlides: [...DEFAULT_HERO_SLIDES],
       homeLines: [...DEFAULT_HOME_LINES],
+      circularGallery: [...DEFAULT_CIRCULAR_GALLERY_ITEMS],
       config: DEFAULT_SHOWCASE_CONFIG,
       brandConfig: DEFAULT_BRAND_CONFIG,
     };
@@ -808,13 +982,14 @@ export async function getAdminShowcaseData(): Promise<{
   slides: LookbookSlideItem[];
   heroSlides: HeroSlideItem[];
   homeLines: HomeLineItem[];
+  circularGallery: CircularGalleryItem[];
   config: EcommerceShowcaseConfig;
   brandConfig: EcommerceShowcaseConfig;
 }> {
   await requireAdmin();
   await ensureSeededIfEmpty();
   const db = getDb();
-  const [rows, heroRows, lineRows, cfgRows] = await Promise.all([
+  const [rows, heroRows, lineRows, galleryRows, cfgRows] = await Promise.all([
     db
       .select()
       .from(lookbookSlides)
@@ -827,6 +1002,10 @@ export async function getAdminShowcaseData(): Promise<{
       .select()
       .from(homeLineSlides)
       .orderBy(asc(homeLineSlides.sortOrder), asc(homeLineSlides.id)),
+    db
+      .select()
+      .from(circularGallerySlides)
+      .orderBy(asc(circularGallerySlides.sortOrder), asc(circularGallerySlides.id)),
     db.select().from(ecommerceShowcaseConfig),
   ]);
 
@@ -837,6 +1016,7 @@ export async function getAdminShowcaseData(): Promise<{
     slides: rows.map(mapSlide),
     heroSlides: heroRows.map(mapHeroSlide),
     homeLines: lineRows.map(mapHomeLine),
+    circularGallery: galleryRows.map(mapCircularGallery),
     config: mapConfigRow(mainCfg, DEFAULT_SHOWCASE_CONFIG),
     brandConfig: mapConfigRow(brandCfg, DEFAULT_BRAND_CONFIG),
   };
